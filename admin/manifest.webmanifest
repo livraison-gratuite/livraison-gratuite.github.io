@@ -1,6 +1,6 @@
 {
-  "name": "ABROMARKET Gestion",
-  "short_name": "ABROMARKET",
+  "name": "Vendoo",
+  "short_name": "Vendoo",
   "description": "Commandes, ventes et visiteurs de ta boutique en direct.",
   "start_url": "./",
   "scope": "./",
