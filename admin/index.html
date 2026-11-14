@@ -1023,7 +1023,7 @@ html.ordi{--pcbg:#F1F1F1;--pccard:#FFFFFF;--pcline:#E3E3E3;--pcside:#EBEBEB;--pc
 html.ordi body{background:var(--pcbg);font-size:14px}
 /* Barre latérale */
 html.ordi .nav{width:236px;background:var(--pcside);border-right:1px solid var(--pcline);padding:14px 10px 120px;gap:1px}
-html.ordi .nav::before{font:650 15px "Inter",sans-serif;letter-spacing:-.01em;color:var(--ink);background-size:26px;padding:4px 10px 16px 46px!important;line-height:28px}
+html.ordi .nav::before{font:700 15px "Inter",sans-serif;letter-spacing:-.01em;color:var(--ink);background:url(logo-v8-nav.png) 8px 7px/22px no-repeat;padding:4px 10px 16px 38px!important;line-height:28px}
 html.ordi .nav button{height:34px;border-radius:8px;padding:0 10px;gap:10px;color:var(--ink)}
 html.ordi .nav button svg{width:18px;height:18px;color:var(--soft)}
 html.ordi .nav .nl{font-size:13.5px;font-weight:600}
@@ -1047,7 +1047,7 @@ html.ordi .otools .filters{padding:8px 0 6px;gap:4px;flex-wrap:wrap}
 html.ordi .otools .filters button{height:30px;padding:0 11px;border-radius:8px;font-size:13px;font-weight:600;background:none;border:0;color:var(--soft)}
 html.ordi .otools .filters button:hover{background:var(--pchover);color:var(--ink)}
 html.ordi .otools .filters button.on{background:var(--surface);color:var(--ink)}
-html.ordi .ohead,html.ordi .order{display:grid;grid-template-columns:92px 150px minmax(150px,1.1fr) minmax(200px,2fr) 120px 140px 120px;column-gap:14px;align-items:center;padding:0 16px}
+html.ordi .ohead,html.ordi .order{display:grid;grid-template-columns:84px 132px minmax(130px,1.1fr) minmax(150px,2fr) minmax(70px,.6fr) 124px 112px;column-gap:12px;align-items:center;padding:0 16px}
 html.ordi .ohead{height:38px;background:var(--surface);font-size:12.5px;font-weight:600;color:var(--soft);border-bottom:1px solid var(--pcline)}
 html.ordi .ohead span:last-child,html.ordi .oct{text-align:right}
 html.ordi .order{min-height:52px;border-bottom:1px solid var(--pcline);cursor:pointer;contain-intrinsic-size:auto 52px}
@@ -1124,6 +1124,19 @@ html.ordi .prow .ptx b{font-size:14px}html.ordi .prow .ptx small{font-size:12.5p
 html.ordi .psec h3{font-size:13.5px;margin:20px 8px 4px}
 /* Produits */
 html.ordi #pl{background:var(--pccard);border:1px solid var(--pcline);border-radius:12px;padding:4px 16px;box-shadow:0 1px 0 rgba(0,0,0,.05)}
+/* Alignements */
+.mtitre{display:none}
+html.ordi .mtitre{display:block;margin:28px 32px 18px;font-size:20px;font-weight:650;letter-spacing:-.01em}
+html.ordi .menu{margin:0 32px 18px;max-width:720px}
+html.ordi .mgear{margin:0 32px 60px;display:flex}
+html.ordi .prhead{align-items:flex-start}html.ordi .prhead>span{margin-top:-6px}
+.ab .row button.a-wa{background:#25D366;color:#fff}
+.mgear{position:static;transform:none;margin:20px auto calc(112px + env(safe-area-inset-bottom));width:max-content}
+html.ordi .ab{background:var(--pccard);border:1px solid var(--pcline);border-radius:12px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 0 rgba(0,0,0,.05)}
+html.ordi .ab .row{max-width:520px;margin-top:10px}
+html.ordi .ab .row a,html.ordi .ab .row button{flex:1;height:36px;padding:0 12px;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:13.5px;font-weight:600;border:1px solid var(--pcline);background:var(--pccard);color:var(--ink)}
+html.ordi .ab .row .a-wa{background:#25D366;border-color:#25D366;color:#fff}
+html.ordi .ab .row .a-call{background:var(--ink);border-color:var(--ink);color:#fff}
 </style>
 </head>
 <body>
@@ -4943,11 +4956,11 @@ function nettoyerHtml(h){
     chevron: '<path d="M9 6l6 6-6 6"/>', retour: '<path d="M15 18l-6-6 6-6"/>', loupe: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '120';
+  const VERSION_APP = '122';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
-    app.innerHTML = `<div class="menu">
+    app.innerHTML = `<h1 class="mtitre">Réglages</h1><div class="menu">
       ${m('home', 'accueil', 'Accueil')}${m('orders', 'commandes', 'Commandes')}${m('abandons', 'relances', 'Relances (paniers abandonnés)')}${m('products', 'produits', 'Produits')}
       ${m('direct', 'direct', 'Vue en direct')}${m('tiktok', 'tiktok', 'Promotions TikTok')}${m('pubs', 'pubs', 'Analyse publicitaire')}${m('point', 'point', 'Point du jour et de la semaine')}
       <h3 class="mhd">Canaux de vente</h3>
