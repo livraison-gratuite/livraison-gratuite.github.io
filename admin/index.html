@@ -861,6 +861,14 @@ html.ordi .apstage.ordi .apframe{height:calc(100vh - 230px)}
 
 /* Point : boutons + colonnes */
 .ptacts{display:flex;flex-direction:column;gap:8px;margin:6px 0 14px}
+/* Journée non tournée */
+.offm{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.offo{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;font-weight:600;cursor:pointer}
+.offo.on{border-color:var(--blue,#1736A6);box-shadow:0 0 0 1px var(--blue,#1736A6) inset}
+.offo input{width:18px;height:18px;margin:0;accent-color:var(--blue,#1736A6)}
+.pth.ptoff{opacity:.6}.pth.ptoff b{color:var(--soft)}
+.ptk.ptmoy{grid-template-columns:1fr 1fr;margin:10px 0 4px}
+.ptk b.n{color:var(--err)}
 .ptcolB>.ptper:first-child{margin-top:16px}
 /* ===== Ordinateur : fenêtres centrées, larges et aérées ===== */
 html.ordi .overlay{align-items:center;padding:32px;background:rgba(10,22,70,.55);backdrop-filter:blur(2px)}
@@ -2014,13 +2022,16 @@ function nettoyerHtml(h){
     // Point sur plusieurs jours (« du 20 au 22 ») : ses montants sont répartis sur ses jours de travail (lundi → samedi)
     const joursTravail = (a, b) => { const r = [], x = isoJ2(a), f = isoJ2(b || a); while (x <= f && r.length < 62){ if (x.getDay() !== 0) r.push(isoJ(x)); x.setDate(x.getDate() + 1); } return r.length ? r : [a]; };
     const etaler = L => { const o = []; (L || []).forEach(j => { if (!j.fin){ o.push(j); return; } const js = joursTravail(j.date, j.fin), k = 1 / js.length;
-      js.forEach(d => o.push({date: d, ca: j.ca * k, livres: j.livres * k, achat: j.achat * k, pub: j.pub * k, abonnements: (j.abonnements || 0) * k, benefice: j.benefice * k, periode: j.date})); }); return o; };
+      js.forEach(d => o.push({date: d, ca: j.ca * k, livres: j.livres * k, achat: j.achat * k, pub: j.pub * k, abonnements: (j.abonnements || 0) * k, benefice: j.benefice * k, periode: j.date, off: j.off || ''})); }); return o; };
+    // Journées non tournées (pas de pub, pas de stock…) : enregistrées, mais hors des moyennes, graphiques et statistiques
+    const MOTIFS = ['Pas de pub', 'Pas de stock', 'Pas de pub ni de stock'];
+    const tourne = L => (L || []).filter(x => !x.off);
     const libPer = x => x.fin ? 'du ' + libJour(x.date) + ' au ' + libJour(x.fin) : libJour(x.date);
     const contient = (x, d) => x.date === d || (x.fin && x.date <= d && d <= x.fin);
     // Semaines (lundi → samedi) : calculées toutes seules avec les points du jour ; sinon le point saisi à la main
     const fusion = () => {
       const m = {};
-      etaler(J).forEach(j => { const w = isoJ(lundi(isoJ2(j.date))); const x = m[w] = m[w] || {semaine: w, ca: 0, pub: 0, achat: 0, abonnements: 0, livres: 0, nbJours: 0, auto: true};
+      etaler(tourne(J)).forEach(j => { const w = isoJ(lundi(isoJ2(j.date))); const x = m[w] = m[w] || {semaine: w, ca: 0, pub: 0, achat: 0, abonnements: 0, livres: 0, nbJours: 0, auto: true};
         x.ca += j.ca; x.pub += j.pub; x.achat += j.achat; x.livres += j.livres; x.abonnements += j.abonnements || 0; x.nbJours++; });
       Object.values(m).forEach(x => { if (x.auto) x.livres = Math.round(x.livres); });
       (P || []).filter(p => /^\d{4}-\d{2}-\d{2}$/.test(p.semaine)).forEach(p => { if (m[p.semaine]) { if (!m[p.semaine].abonnements) m[p.semaine].abonnements = p.abonnements || 0; } else m[p.semaine] = Object.assign({livres: null, auto: false}, p); });
@@ -2096,7 +2107,52 @@ function nettoyerHtml(h){
     // Ouvre le point d'un jour : si ce jour fait partie d'un point « du … au … », c'est ce point-là qui s'ouvre
     const ouvrirJour = (d, mode) => { vue = 'jour'; msg = ''; jsel = d || hier(); jfin = null; jedit = null; jmode = mode || 'jour';
       const p = (J || []).find(x => contient(x, jsel)); if (p){ jedit = p.date; jsel = p.date; jfin = p.fin || null; jmode = p.fin ? 'periode' : 'jour'; }
+      if (p && p.off){ ouvrirOff(p); return; }
       dess(); };
+
+    // ---------- Journée non tournée ----------
+    let oDate = null, oFin = null, oMode = 'jour', oMotif = MOTIFS[0], oAutre = '', oEdit = null;
+    const ouvrirOff = p => { vue = 'off'; msg = '';
+      if (p){ oEdit = p.date; oDate = p.date; oFin = p.fin || null; oMode = p.fin ? 'periode' : 'jour'; oMotif = MOTIFS.includes(p.off) ? p.off : 'autre'; oAutre = MOTIFS.includes(p.off) ? '' : p.off; }
+      else { oEdit = null; oDate = hier(); oFin = null; oMode = 'jour'; oMotif = MOTIFS[0]; oAutre = ''; }
+      dess(); };
+    const dessOff = () => {
+      const per = oMode === 'periode', auj = isoJ(new Date());
+      if (per && !oFin){ const x = isoJ2(oDate); x.setDate(x.getDate() + 2); oFin = isoJ(x) > auj ? auj : isoJ(x); }
+      const nbJ = per ? joursTravail(oDate, oFin).length : 1;
+      ov.innerHTML = `<div class="detail bqsheet" role="dialog" aria-modal="true" aria-label="Journée non tournée"><div class="grab"></div>
+        <button class="lnk ptback" id="ptDash">← Tableau de bord</button>
+        <h2>${oEdit ? '✏️ Journée non tournée' : '⏸ Journée non tournée'}</h2><p class="sub">${esc(nomB)} · ces jours ne comptent pas dans tes moyennes ni tes statistiques</p>
+        ${errBloc()}
+        <div class="seg ptmode" role="radiogroup" aria-label="Durée"><button class="${per ? '' : 'on'}" data-om="jour">Un seul jour</button><button class="${per ? 'on' : ''}" data-om="periode">Plusieurs jours</button></div>
+        ${per ? `<div class="g2 ptdates"><label class="lbl">Du<input class="field" type="date" id="po_date" value="${esc(oDate)}" max="${esc(auj)}"></label><label class="lbl">Au<input class="field" type="date" id="po_fin" value="${esc(oFin)}" min="${esc(oDate)}" max="${esc(auj)}"></label></div>
+          <p class="sub" style="margin:6px 0 0">${esc(libPer({date: oDate, fin: oFin}))} · <b>${nbJ} jour${nbJ > 1 ? 's' : ''}</b> (sans les dimanches)</p>`
+        : `<label class="lbl" for="po_date">Date</label><input class="field" type="date" id="po_date" value="${esc(oDate)}" max="${esc(auj)}">
+          <p class="sub" style="margin:6px 0 0">${esc(libJour(oDate))}</p>`}
+        <label class="lbl" style="margin-top:14px">Pourquoi ?</label>
+        <div class="offm" role="radiogroup">${MOTIFS.concat(['autre']).map(m => `<label class="offo ${oMotif === m ? 'on' : ''}"><input type="radio" name="pomot" value="${esc(m)}" ${oMotif === m ? 'checked' : ''}><span>${m === 'autre' ? 'Autre raison' : esc(m)}</span></label>`).join('')}</div>
+        ${oMotif === 'autre' ? `<input class="field" id="po_autre" maxlength="60" placeholder="Ex : voyage, agence fermée…" value="${esc(oAutre)}" style="margin-top:8px">` : ''}
+        <button class="btn blue" id="poSave" style="margin-top:14px">${oEdit ? 'Enregistrer les modifications' : 'Enregistrer'}</button>
+        ${oEdit ? '<button class="btn ghost" id="poDel" style="margin-top:8px">Effacer (redevient un jour à saisir)</button>' : ''}
+        <button class="btn ghost" id="ptX" style="margin-top:12px">Fermer</button></div>`;
+      const lireAutre = () => { const a = ov.querySelector('#po_autre'); if (a) oAutre = a.value; };
+      ov.querySelector('#ptX').onclick = () => ov.remove();
+      ov.querySelector('#ptDash').onclick = () => { vue = 'dash'; msg = ''; dess(); };
+      ov.querySelectorAll('[data-om]').forEach(b => b.onclick = () => { lireAutre(); oMode = b.dataset.om; oFin = null; dess(); });
+      ov.querySelectorAll('[name=pomot]').forEach(r => r.onchange = () => { lireAutre(); oMotif = r.value; dess(); });
+      ov.querySelector('#po_date').onchange = e => { if (!e.target.value) return; lireAutre(); oDate = e.target.value; if (per && oFin && oFin < oDate) oFin = oDate; dess(); };
+      const fi = ov.querySelector('#po_fin'); if (fi) fi.onchange = e => { if (!e.target.value) return; lireAutre(); oFin = e.target.value < oDate ? oDate : e.target.value; dess(); };
+      ov.querySelector('#poSave').onclick = async e => {
+        lireAutre(); const motif = oMotif === 'autre' ? oAutre.trim() : oMotif;
+        if (!motif) return alert('Écris la raison.');
+        if (per && oFin <= oDate) return alert('Choisis une date « Au » après la date « Du » (sinon, prends « Un seul jour »).');
+        const b = e.currentTarget; b.disabled = true; b.textContent = 'Enregistrement…';
+        try { await appel({action: 'jourSauver', date: oDate, fin: per ? oFin : '', ancien: oEdit || '', off: motif});
+          msg = '⏸ ' + esc(per ? libPer({date: oDate, fin: oFin}) : libJour(oDate)) + ' : non tourné' + (per ? 's' : '') + ' · ne compte pas dans tes statistiques'; vue = 'dash'; oEdit = null; dess(); try { refresh(); } catch(x){} }
+        catch(x){ b.disabled = false; b.textContent = 'Enregistrer'; alert(/inconnu|introuvable/i.test(x.message) ? 'Mets à jour le code Apps Script (Code.gs).' : x.message); }
+      };
+      const del = ov.querySelector('#poDel'); if (del) del.onclick = async () => { if (!(await confirmer({titre: 'Effacer ?', texte: esc(libPer({date: oEdit, fin: oFin})) + ' redeviendra un jour à saisir.', ok: 'Effacer'}))) return; try { await appel({action: 'jourSupprimer', date: oEdit}); msg = 'Effacé.'; vue = 'dash'; oEdit = null; dess(); } catch(e){ alert(e.message); } };
+    };
 
     // ---------- Point de la semaine saisi à la main (abonnements, ou semaine sans points du jour) ----------
     const champs = [['ca', 'Chiffre d’affaires réel', 'Ce que l’agence te verse, tout retiré'], ['pub', 'Dépenses pub', 'Toutes tes pubs de la semaine'], ['abonnements', 'Abonnements', 'Vendoo, applis, internet…'], ['achat', 'Achat des produits vendus', 'Ce qu’ont coûté les produits vendus']];
@@ -2169,24 +2225,30 @@ function nettoyerHtml(h){
       const totParts = parts.reduce((t, p) => t + p[2], 0) || 1;
       const sel = (choix && L.find(x => x.semaine === choix)) || L[L.length - 1];
       // Jours : les 12 derniers jours saisis (du plus ancien au plus récent)
-      const JL = (J || []).slice(0, 12).reverse(), js = (jchoix && JL.find(x => x.date === jchoix)) || JL[JL.length - 1];
-      const semC = isoJ(lundi(new Date())), jSemE = etaler(J).filter(x => isoJ(lundi(isoJ2(x.date))) === semC);
-      const jSem = jSemE.map(x => Object.assign({}, x)); const nbSem = jSemE.length, livSem = Math.round(som(jSemE, 'livres'));
+      const JL = tourne(J).slice(0, 12).reverse(), js = (jchoix && JL.find(x => x.date === jchoix)) || JL[JL.length - 1];
+      const semC = isoJ(lundi(new Date())), deSem = x => isoJ(lundi(isoJ2(x.date))) === semC, jSemE = etaler(tourne(J)).filter(deSem);
+      const jSem = jSemE.map(x => Object.assign({}, x)); const nbSem = jSemE.length, livSem = Math.round(som(jSemE, 'livres')), offSem = etaler((J || []).filter(x => x.off)).filter(deSem).length;
+      // Moyenne par jour tourné (30 derniers jours saisis, sans les journées non tournées)
+      const JT = etaler(tourne(J)), lim30 = (() => { const x = new Date(); x.setDate(x.getDate() - 30); return isoJ(x); })(), J30 = JT.filter(x => x.date >= lim30), nOff30 = etaler((J || []).filter(x => x.off)).filter(x => x.date >= lim30).length;
+      const moyJ = J30.length ? som(J30, 'benefice') / J30.length : 0, livJ = J30.length ? som(J30, 'livres') / J30.length : 0;
       ov.innerHTML = `<div class="detail bqsheet ptwide" role="dialog" aria-modal="true" aria-label="Point hebdomadaire"><div class="grab"></div>
         <h2>💰 Point hebdomadaire</h2><p class="sub">${esc(nomB)} · en ${esc(dev)} · semaine du lundi au samedi</p>
         ${msg ? `<div class="okmsg">${msg}</div>` : ''}${errBloc()}
         <div class="ptacts"><button class="btn blue" id="pjFaire">🗓️ Faire le point du jour</button>
         <button class="btn blue2" id="pjPer">📅 Point sur plusieurs jours (du … au …)</button>
+        <button class="btn blue2" id="poOuv">⏸ Journée non tournée</button>
         <button class="btn blue2" id="stOuv">📦 Mes stocks${STK && STK.filter(x => x.statut === 'vente').length ? ' (' + STK.filter(x => x.statut === 'vente').length + ' en vente)' : ''}</button>
         <button class="btn ghost" id="ptFaire">📝 Point de la semaine (saisie à la main)</button></div>
         ${!P ? (err ? '' : '<div class="empty">Chargement…</div>') : `<div class="ptcols"><div class="ptcolA">
         <div class="ptcard" style="margin-top:0"><h3>🗓️ Revenus réels par jour</h3>
-          ${JL.length ? `<p class="sub">Cette semaine : <b>${nbSem}</b> jour${nbSem > 1 ? 's' : ''} sur 6 · CA ${esc(fmt(som(jSem, 'ca'), dev))} · ${livSem} livré${livSem > 1 ? 's' : ''} · bénéfice <b class="${som(jSem, 'benefice') < 0 ? 'n' : 'p'}">${esc(fmt(som(jSem, 'benefice'), dev))}</b></p>
+          ${(J || []).length ? `<p class="sub">Cette semaine : <b>${nbSem}</b> jour${nbSem > 1 ? 's' : ''} tourné${nbSem > 1 ? 's' : ''}${offSem ? ' (' + offSem + ' non tourné' + (offSem > 1 ? 's' : '') + ')' : ' sur 6'} · CA ${esc(fmt(som(jSem, 'ca'), dev))} · ${livSem} livré${livSem > 1 ? 's' : ''} · bénéfice <b class="${som(jSem, 'benefice') < 0 ? 'n' : 'p'}">${esc(fmt(som(jSem, 'benefice'), dev))}</b></p>
+          ${J30.length ? `<div class="ptk ptmoy"><div><small>Bénéfice moyen / jour tourné</small><b class="${moyJ < 0 ? 'n' : ''}">${esc(fmt(Math.round(moyJ), dev))}</b></div><div><small>Livrés / jour tourné</small><b>${Math.round(livJ * 10) / 10}</b></div></div>
+          <p class="sub" style="margin:0 0 6px">30 derniers jours : ${J30.length} jour${J30.length > 1 ? 's' : ''} tourné${J30.length > 1 ? 's' : ''}${nOff30 ? ', ' + nOff30 + ' non tourné' + (nOff30 > 1 ? 's' : '') + ' exclu' + (nOff30 > 1 ? 's' : '') : ''}</p>` : ''}
           ${js ? `<div class="pttip"><b>${esc(libPer(js))}</b> : <span class="${js.benefice < 0 ? 'n' : 'p'}">${esc(fmt(js.benefice, dev))}</span><small>CA ${esc(fmt(js.ca, dev))} · ${js.livres} livré${js.livres > 1 ? 's' : ''} − achats ${esc(fmt(js.achat, dev))} − pub ${esc(fmt(js.pub, dev))} − abonnements ${esc(fmt(js.abonnements || 0, dev))}</small><button class="lnk ptedit" data-oj="${js.date}">✏️ Modifier ce ${js.fin ? 'point' : 'jour'}</button></div>` : ''}
           ${barres(JL, 'benefice', js && js.date, 'date')}
           <div class="ptax">${JL.map(x => `<span>${isoJ2(x.date).getDate()}${x.fin ? '–' + isoJ2(x.fin).getDate() : ''}/${isoJ2(x.fin || x.date).getMonth() + 1}</span>`).join('')}</div>
           <p class="sub" style="margin-top:6px">Touche une barre pour voir le détail.</p>
-          <div class="pthist" style="margin-top:10px"><h3>Mes points</h3>${(J || []).slice(0, 30).map(x => `<button class="pth" data-oj="${x.date}"><span>${esc(libPer(x))} <em class="ptmod">✏️ Modifier</em><small>CA ${esc(fmt(x.ca, dev))} · ${x.livres} livré${x.livres > 1 ? 's' : ''} · pub ${esc(fmt(x.pub, dev))}</small></span><b class="${x.benefice < 0 ? 'n' : 'p'}">${esc(fmt(x.benefice, dev))}</b></button>`).join('')}</div>`
+          <div class="pthist" style="margin-top:10px"><h3>Mes points</h3>${(J || []).slice(0, 30).map(x => x.off ? `<button class="pth ptoff" data-oj="${x.date}"><span>${esc(libPer(x))} <em class="ptmod">✏️ Modifier</em><small>⏸ Non tourné · ${esc(x.off)}</small></span><b>–</b></button>` : `<button class="pth" data-oj="${x.date}"><span>${esc(libPer(x))} <em class="ptmod">✏️ Modifier</em><small>CA ${esc(fmt(x.ca, dev))} · ${x.livres} livré${x.livres > 1 ? 's' : ''} · pub ${esc(fmt(x.pub, dev))}</small></span><b class="${x.benefice < 0 ? 'n' : 'p'}">${esc(fmt(x.benefice, dev))}</b></button>`).join('')}</div>`
           : '<div class="empty">Aucun point du jour pour le moment.<br>Dès que ton agence t’envoie son point, appuie sur « 🗓️ Faire le point du jour ».</div>'}</div>
         </div><div class="ptcolB">
         ${!tous.length ? '<div class="empty">Tes semaines apparaîtront ici.</div>' : `
@@ -2210,6 +2272,7 @@ function nettoyerHtml(h){
       ov.querySelector('#ptX').onclick = () => ov.remove();
       const ouvrirForm = w => { vue = 'form'; msg = ''; sem = w; aide = null; dess(); charger(); };
       ov.querySelector('#pjFaire').onclick = () => ouvrirJour();
+      ov.querySelector('#poOuv').onclick = () => ouvrirOff();
       ov.querySelector('#stOuv').onclick = () => { vue = 'stocks'; msg = ''; sfocus = null; dess(); };
       ov.querySelector('#pjPer').onclick = () => { const x = new Date(); x.setDate(x.getDate() - 3); ouvrirJour(isoJ(x), 'periode'); };
       ov.querySelector('#ptFaire').onclick = () => ouvrirForm(semaines[new Date().getDay() === 1 ? 1 : 0]);
@@ -2304,7 +2367,7 @@ function nettoyerHtml(h){
       };
       if (!PRD) call({type: 'produits'}).then(j => { PRD = {produits: j.produits || [], pays: j.pays || []}; if (ov.isConnected && vue === 'stockForm'){ const g = {}; ['sk_prod', 'sk_cd', 'sk_qc', 'sk_mt', 'sk_fr', 'sk_ad', 'sk_qr', 'sk_note'].forEach(k => g[k] = ov.querySelector('#' + k).value); dess(); Object.keys(g).forEach(k => ov.querySelector('#' + k).value = g[k]); ov.querySelector('#sk_qc').dispatchEvent(new Event('input')); } }).catch(() => {});
     };
-    const dess = () => vue === 'dash' ? dessDash() : vue === 'jour' ? dessJour() : vue === 'stocks' ? dessStocks() : vue === 'stockForm' ? dessStockForm() : dessForm();
+    const dess = () => vue === 'dash' ? dessDash() : vue === 'jour' ? dessJour() : vue === 'off' ? dessOff() : vue === 'stocks' ? dessStocks() : vue === 'stockForm' ? dessStockForm() : dessForm();
     ov.onclick = e => { if (e.target === ov) ov.remove(); };
     document.body.appendChild(ov); dess();
 
@@ -4956,7 +5019,7 @@ function nettoyerHtml(h){
     chevron: '<path d="M9 6l6 6-6 6"/>', retour: '<path d="M15 18l-6-6 6-6"/>', loupe: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '122';
+  const VERSION_APP = '123';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
