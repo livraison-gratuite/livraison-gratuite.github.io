@@ -1865,6 +1865,29 @@ function nettoyerHtml(h){
       f.remove(); toast(ok === choix.length ? `Aussi « ${ETATS_P[etat][0]} » dans ${ok} boutique${ok > 1 ? 's' : ''}` : `Fait dans ${ok} boutique(s) sur ${choix.length} : réessaie pour les autres`);
     };
   }
+  /* ---------- Agences de livraison par produit (ex. test à vide : les commandes restent seulement chez toi) ---------- */
+  const sansAg = id => (PR && PR.sansAgence && PR.sansAgence[id]) || [];
+  const libAgences = id => { const s = sansAg(id); return !s.length ? 'toutes' : s.indexOf('*') >= 0 ? 'aucune (test)' : 'sauf ' + s.join(', '); };
+  async function choisirAgences(P){
+    const f = feuille(`<h2>Agences de livraison</h2><p class="sub">Choisis les agences qui reçoivent les commandes et les relances de <b>${esc(P.nom)}</b>.</p><div id="agL" class="rgch" style="margin:10px 0"><p class="sub">Chargement…</p></div>`);
+    let j; try { j = await call({type: 'produits', action: 'agencesListe', id: P.id}); } catch(e){ f.querySelector('#agL').innerHTML = `<p class="sub">Impossible de charger : ${esc(e.message)}</p>`; return; }
+    const L = j.pays || [], sans = j.sans || [], tout = sans.indexOf('*') >= 0;
+    if (!L.length){ f.querySelector('#agL').innerHTML = '<p class="sub">Aucune agence de livraison n’est encore ajoutée dans tes boutiques.</p>'; return; }
+    f.querySelector('#agL').outerHTML = `<div class="rgch" id="agL" style="margin:6px 0 4px">${L.map(x => `<label><input type="checkbox" value="${esc(x.code)}" ${!tout && sans.indexOf(x.code) < 0 ? 'checked' : ''}> <span>${esc(x.nom)} <small>${esc(x.agences.join(', '))}</small></span></label>`).join('')}</div>
+      <p class="sub" style="margin:6px 0 12px">Décoche un pays quand tu testes ce produit sans stock là-bas : ses commandes et relances restent seulement chez toi, dans ton application.</p>
+      <button class="btn ghost" id="agVide">Test à vide : aucune agence</button>
+      <button class="btn blue" id="agOk" style="margin-top:8px">Enregistrer</button>`;
+    f.querySelector('#agVide').onclick = () => f.querySelectorAll('#agL input').forEach(i => i.checked = false);
+    f.querySelector('#agOk').onclick = async e => {
+      const bt = e.currentTarget, coches = [...f.querySelectorAll('#agL input')].filter(i => i.checked).map(i => i.value);
+      const nouv = !coches.length ? ['*'] : L.map(x => x.code).filter(c => coches.indexOf(c) < 0);
+      bt.disabled = true; bt.textContent = 'Enregistrement…';
+      try { await call({type: 'produits', action: 'agences', id: P.id, sans: nouv});
+        PR.sansAgence = PR.sansAgence || {}; if (nouv.length) PR.sansAgence[P.id] = nouv; else delete PR.sansAgence[P.id]; memoPR();
+        f.remove(); toast(!nouv.length ? 'Toutes les agences reçoivent ce produit' : nouv[0] === '*' ? 'Test à vide : aucune agence ne reçoit ce produit' : 'Enregistré : pas d’envoi vers ' + nouv.join(', '));
+      } catch(x){ bt.disabled = false; bt.textContent = 'Enregistrer'; alert('Enregistrement impossible : ' + x.message); }
+    };
+  }
   /* ---------- Vendoo : panneau du propriétaire (paiements MoMo, abonnés, codes promo) ---------- */
   async function vendooAdmin(){
     const ov = document.createElement('div'); ov.className = 'overlay';
@@ -3676,6 +3699,7 @@ function nettoyerHtml(h){
       <button data-o="lien">🔗 Copier le lien</button>
       <a href="${esc(url)}" target="_blank" rel="noopener">👁 Voir sur le site</a>
       ${PR ? `<button data-o="etat">◐ État : ${ETATS_P[etatP(id)][0]}</button>` : ''}
+      ${PR ? `<button data-o="agences">🚚 Agences : ${esc(libAgences(id))}</button>` : ''}
       ${PR && etatP(id) !== 'off' ? `<button data-o="statut">${p.enLigne ? '⏸ Passer en brouillon' : '● Mettre en ligne'}</button>` : ''}
       <button data-o="sel">☑️ Sélectionner</button>
       <button data-o="suppr" class="danger">🗑 Supprimer</button>
@@ -3695,6 +3719,7 @@ function nettoyerHtml(h){
       if (o === 'voix') voixOff(P);
       if (o === 'sel'){ prSel = new Set([id]); drawProducts(); }
       if (o === 'etat') choisirEtat([id]);
+      if (o === 'agences') choisirAgences(P);
       if (o === 'statut'){ P.enLigne = !P.enLigne; memoPR(); enfiler({action: 'sauver', produit: P, ancienId: P.id}); toast(P.enLigne ? '● En ligne' : 'Passé en brouillon'); drawProducts(); }
       if (o === 'suppr'){
         if (!(await confirmer({titre: 'Supprimer ce produit ?', texte: `<b>« ${esc(P.nom)} »</b> va disparaître du site et du Google Sheets, avec ses photos, ses prix et ses avis.<br><br><b>Irréversible :</b> son lien ne marchera plus.`, ok: 'Oui, supprimer'}))) return;
@@ -4917,7 +4942,7 @@ function nettoyerHtml(h){
     chevron: '<path d="M9 6l6 6-6 6"/>', retour: '<path d="M15 18l-6-6 6-6"/>', loupe: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '118';
+  const VERSION_APP = '119';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
