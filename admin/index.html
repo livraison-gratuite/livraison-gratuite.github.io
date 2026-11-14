@@ -19,10 +19,10 @@
 <meta name="apple-mobile-web-app-title" content="ABROMARKET">
 <title>ABROMARKET Gestion</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="favicon.ico?v=6" sizes="any">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=6">
-<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png?v=6">
-<link rel="apple-touch-icon" href="logo-v7-192.png">
+<link rel="icon" href="favicon.ico?v=7" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=7">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png?v=7">
+<link rel="apple-touch-icon" href="logo-v8-apple-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
@@ -786,7 +786,7 @@ textarea.ttl{font-weight:800;font-size:18px}
 html.ordi body{background:var(--surface)}
 html.ordi .app{max-width:none;margin:0 0 0 236px;min-height:100vh}
 html.ordi .nav{left:0;top:0;bottom:0;transform:none;width:236px;flex-direction:column;align-items:stretch;border-radius:0;padding:22px 12px 120px;gap:4px;box-shadow:none;border-right:1px solid var(--line);overflow-y:auto}
-html.ordi .nav::before{content:"ABROMARKET";background:url(icon-192.png) left center/34px no-repeat;padding-left:56px!important;line-height:34px;font:800 19px "Bricolage Grotesque",sans-serif;color:var(--deep);padding:2px 12px 20px}
+html.ordi .nav::before{content:"ABROMARKET";background:url(logo-v8-192.png) left center/34px no-repeat;padding-left:56px!important;line-height:34px;font:800 19px "Bricolage Grotesque",sans-serif;color:var(--deep);padding:2px 12px 20px}
 html.ordi .nav button{width:100%;height:46px;border-radius:12px;display:flex;align-items:center;gap:12px;padding:0 12px;justify-content:flex-start}
 html.ordi .nav button:hover{background:var(--surface)}
 html.ordi .nav .nl{display:inline;font-weight:600;font-size:15px}
@@ -1128,7 +1128,7 @@ html.ordi #pl{background:var(--pccard);border:1px solid var(--pcline);border-rad
 </head>
 <body>
 <!-- Écran de démarrage : logo seul au centre, fond blanc (comme Shopify) -->
-<div id="demarrage" style="position:fixed;inset:0;z-index:999;background:#fff;display:flex;align-items:center;justify-content:center;transition:opacity .15s"><img src="logo-v3-192.png" alt="" width="132" height="132" id="demLogo"></div>
+<div id="demarrage" style="position:fixed;inset:0;z-index:999;background:#fff;display:flex;align-items:center;justify-content:center;transition:opacity .15s"><img src="logo-v8-192.png" alt="" width="132" height="132" id="demLogo"></div>
 <script>if (VENDOO) document.getElementById('demLogo').src = '../vendoo/icon-192.png';</script>
 <div class="ptr" id="ptr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 3a9 9 0 1 1-9 9"/></svg></div>
 <div class="vband hidden" id="vband" role="status"></div>
@@ -1325,7 +1325,7 @@ function nettoyerHtml(h){
       if ('Notification' in window && Notification.permission === 'granted'){
         const reg = await navigator.serviceWorker?.getRegistration();
         if (document.visibilityState !== 'visible'){
-          const opts = { body: `${fmt(o.total, o.devise)} · ${o.produit} · ${o.pays}`, icon: 'icon-commande.png', badge: 'icon-192.png', tag: 'cmd-' + o.numero, vibrate: [70, 80, 200] };
+          const opts = { body: `${fmt(o.total, o.devise)} · ${o.produit} · ${o.pays}`, icon: 'icon-commande.png', badge: 'badge-v3-96.png', tag: 'cmd-' + o.numero, vibrate: [70, 80, 200] };
           if (reg) reg.showNotification('🛒 Nouvelle commande n°' + o.numero, opts); else new Notification('🛒 Nouvelle commande n°' + o.numero, opts);
         }
       }
@@ -2489,7 +2489,7 @@ function nettoyerHtml(h){
   function login(msg){
     nav.classList.add('hidden');
     app.innerHTML = `<form class="login" id="lf">
-      <div class="logo"><img src="${VENDOO ? '../vendoo/icon-192.png' : 'icon-192.png'}" alt=""></div>
+      <div class="logo"><img src="${VENDOO ? '../vendoo/icon-192.png' : 'logo-v8-192.png'}" alt=""></div>
       <h1>Ta boutique, en direct.</h1>
       <p>Entre le mot de passe de l'application. Tu le trouves dans ton Google Sheets, onglet « Réglages ».</p>
       <div class="pw"><input id="pw" type="password" inputmode="numeric" autocomplete="current-password" placeholder="Mot de passe" aria-label="Mot de passe"><button type="button" class="pwb" id="pwOeil" aria-label="Afficher le mot de passe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 12S6 5 12 5s9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
@@ -4917,7 +4917,7 @@ function nettoyerHtml(h){
     chevron: '<path d="M9 6l6 6-6 6"/>', retour: '<path d="M15 18l-6-6 6-6"/>', loupe: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '116';
+  const VERSION_APP = '117';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
