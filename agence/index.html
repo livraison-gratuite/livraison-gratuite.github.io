@@ -2,6 +2,15 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<script>
+/* Déménagement depuis l'ancienne adresse : tes réglages (connexion, boutique choisie…) arrivent avec toi, une seule fois */
+(function(){ var m = location.hash.match(/^#migr=([^&]*)(?:&ancre=(.*))?$/); if (!m) return;
+  try { var d = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1])))));
+    Object.keys(d).forEach(function(k){ if (localStorage.getItem(k) === null) localStorage.setItem(k, d[k]); }); } catch(e){}
+  try { history.replaceState(null, '', location.pathname + location.search + (m[2] ? '#' + decodeURIComponent(m[2]) : '')); } catch(e){}
+})();
+</script>
+
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Rappels de commandes</title>
 <meta name="robots" content="noindex">
@@ -77,7 +86,7 @@ const API = "https://script.google.com/macros/s/AKfycbwgdtcXlXB9niD3hactnz4SLIrp
       if (!D.onesignal){ osErr = 'Notifications pas encore configurées par la boutique.'; ok(false); return; }
       window.OneSignalDeferred.push(async OneSignal => {
         try {
-          await OneSignal.init({ appId: D.onesignal, serviceWorkerPath: 'abromarket1/agence/OneSignalSDKWorker.js', serviceWorkerParam: { scope: '/abromarket1/agence/' }, notifyButton: { enable: false },
+          await OneSignal.init({ appId: D.onesignal, serviceWorkerPath: 'agence/OneSignalSDKWorker.js', serviceWorkerParam: { scope: '/agence/' }, notifyButton: { enable: false },
             welcomeNotification: { title: 'Rappels activés ✅', message: 'Tu seras prévenu pour les clients à rappeler et les statuts à changer.' } });
           osOk = !!(OneSignal.Notifications.permission && OneSignal.User.PushSubscription.optedIn);
           if (osOk){ try { await OneSignal.User.addTags({vendoo: 'ag', agence: k}); } catch(x){} if (!D.actif) try { await appel({action: 'abonne'}); D.actif = true; } catch(x){} }

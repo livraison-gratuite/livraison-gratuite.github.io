@@ -2,6 +2,15 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<script>
+/* Déménagement depuis l'ancienne adresse : tes réglages (connexion, boutique choisie…) arrivent avec toi, une seule fois */
+(function(){ var m = location.hash.match(/^#migr=([^&]*)(?:&ancre=(.*))?$/); if (!m) return;
+  try { var d = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1])))));
+    Object.keys(d).forEach(function(k){ if (localStorage.getItem(k) === null) localStorage.setItem(k, d[k]); }); } catch(e){}
+  try { history.replaceState(null, '', location.pathname + location.search + (m[2] ? '#' + decodeURIComponent(m[2]) : '')); } catch(e){}
+})();
+</script>
+
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Vendoo – Ta boutique en ligne, paiement à la livraison</title>
 <meta name="description" content="Crée jusqu’à 30 boutiques en ligne avec paiement à la livraison, commandes sur WhatsApp et application de gestion.">

@@ -2,6 +2,15 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<script>
+/* Déménagement depuis l'ancienne adresse : tes réglages (connexion, boutique choisie…) arrivent avec toi, une seule fois */
+(function(){ var m = location.hash.match(/^#migr=([^&]*)(?:&ancre=(.*))?$/); if (!m) return;
+  try { var d = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1])))));
+    Object.keys(d).forEach(function(k){ if (localStorage.getItem(k) === null) localStorage.setItem(k, d[k]); }); } catch(e){}
+  try { history.replaceState(null, '', location.pathname + location.search + (m[2] ? '#' + decodeURIComponent(m[2]) : '')); } catch(e){}
+})();
+</script>
+
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#FFFFFF" id="couleurBarre">
@@ -2324,7 +2333,7 @@ function nettoyerHtml(h){
     return j;
   }
   /* ---------- Abonnement Vendoo : alerte avant la fin, écran de coupure ---------- */
-  const PAYER = 'https://abraham596-stak.github.io/abromarket1/vendoo/#compte';
+  const PAYER = 'https://livraison-gratuite.github.io/vendoo/#compte';
   function vendooBandeau(L){
     const el = document.getElementById('vband'); if (!el) return;
     const t = L.statut === 'essai' ? `🎁 Essai gratuit Vendoo : ${L.jours} jour${L.jours > 1 ? 's' : ''} restant${L.jours > 1 ? 's' : ''}.`
@@ -3346,8 +3355,8 @@ function nettoyerHtml(h){
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async OneSignal => {
       try {
-        await OneSignal.init({ appId: D.onesignal, serviceWorkerPath: 'abromarket1/admin/OneSignalSDKWorker.js',
-          serviceWorkerParam: { scope: '/abromarket1/admin/' }, notifyButton: { enable: false },
+        await OneSignal.init({ appId: D.onesignal, serviceWorkerPath: 'admin/OneSignalSDKWorker.js',
+          serviceWorkerParam: { scope: '/admin/' }, notifyButton: { enable: false },
           welcomeNotification: { title: VENDOO ? 'Vendoo' : 'ABROMARKET', message: 'Notifications activées ✅ Tu seras prévenu à chaque nouvelle commande.' } });
         // Permission déjà donnée mais abonnement perdu (nettoyage du téléphone, mise à jour…) : on se réabonne tout seul
         if ('Notification' in window && Notification.permission === 'granted' && !OneSignal.User.PushSubscription.optedIn){
@@ -3376,7 +3385,7 @@ function nettoyerHtml(h){
       try { if (VENDOO) OneSignal.User.addTag('vendoo', VID); } catch(x){}
     } catch(e){ alert("Erreur : " + ((e && e.message) || e)); }
     pushOn = !!(OneSignal.Notifications.permission && OneSignal.User.PushSubscription.optedIn);
-    if (!pushOn && 'Notification' in window && Notification.permission === 'denied') alert("Les notifications sont bloquées pour ce site. Dans Chrome : ⋮ → Paramètres → Paramètres des sites → Notifications → autorise abraham596-stak.github.io.");
+    if (!pushOn && 'Notification' in window && Notification.permission === 'denied') alert("Les notifications sont bloquées pour ce site. Dans Chrome : ⋮ → Paramètres → Paramètres des sites → Notifications → autorise " + location.host + ".");
     render();
   }
   function pushBanner(){
@@ -4908,7 +4917,7 @@ function nettoyerHtml(h){
     chevron: '<path d="M9 6l6 6-6 6"/>', retour: '<path d="M15 18l-6-6 6-6"/>', loupe: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '113';
+  const VERSION_APP = '115';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
