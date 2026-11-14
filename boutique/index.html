@@ -415,6 +415,16 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
 .pricetag .off b{font-size:22px}
 .pricetag .off small{opacity:1;color:#B42318;font-size:9px}
 .intro .psub{color:var(--ink);font-weight:600;font-size:15.5px;margin-top:6px;line-height:1.35}
+/* Photos de nos clients */
+.pcsub{color:var(--soft);font-size:14px;margin:-6px 0 12px}
+.pcrow{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px}
+.pcrow::-webkit-scrollbar{display:none}
+.pcph{flex:0 0 42%;max-width:220px;aspect-ratio:3/4;border:0;padding:0;border-radius:14px;overflow:hidden;background:var(--surface);scroll-snap-align:start;cursor:zoom-in}
+.pcph img{width:100%;height:100%;object-fit:cover;display:block}
+.pcbox{position:fixed;inset:0;z-index:80;background:rgba(10,14,28,.92);display:flex;align-items:center;justify-content:center;touch-action:none}
+.pcbox img{max-width:94vw;max-height:84vh;border-radius:12px;object-fit:contain;-webkit-user-drag:none;user-select:none;pointer-events:none}
+.pcbox .pcx{position:absolute;top:calc(14px + env(safe-area-inset-top));right:14px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:28px;line-height:1;cursor:pointer}
+.pcbox .pcn{position:absolute;bottom:calc(18px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;color:#fff;font-size:13px;opacity:.8}
 </style>
 </head>
 <body>
@@ -870,6 +880,7 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
         ${P.boite.length ? `<div class="box"><h3>Dans la boîte</h3><ul>${P.boite.map(a=>`<li>${esc(a)}</li>`).join('')}</ul></div>` : ''}</section>` : ''}
       ${nAvis ? `<section><h2>Ils l'ont déjà reçu</h2><div class="reviews" id="revs" tabindex="0" aria-label="Avis des clients">${P.avis.map(a=>`<div class="review"><div class="rhead">${a.avatar?`<img class="rav" src="${esc(img(a.avatar))}" alt="" loading="lazy">`:`<span class="rav rini">${esc((a.nom||'C').trim().charAt(0).toUpperCase())}</span>`}<div><div class="who">${esc(a.nom)}${a.age?`<span class="rage">, ${esc(/an/i.test(a.age)?a.age:a.age+' ans')}</span>`:''}</div><div class="rs">${'★'.repeat(a.note)}${'☆'.repeat(5-a.note)}${a.verifie?' <span class="rok">' + ico('coche') + 'Achat vérifié</span>':''}</div></div></div>${a.texte?`<p>${esc(a.texte)}</p>`:''}${a.photo?`<img src="${esc(img(a.photo))}" alt="" loading="lazy">`:''}${a.audio?audioAvis(a.audio):''}${a.video?video(a.video):''}</div>`).join('')}</div>
         ${nAvis > 1 ? `<div class="rdots" id="rdots">${P.avis.map((_,i)=>`<span class="${i?'':'on'}"></span>`).join('')}</div>` : ''}</section>` : ''}
+      ${photosClients(P)}
       ${P.faq.length ? `<section><h2>Questions fréquentes</h2>${P.faq.map(f=>`<details><summary>${esc(f.q)}</summary><p>${esc(f.r)}</p></details>`).join('')}</section>` : ''}
       ${trust()}
       </div>
@@ -887,6 +898,21 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
     if (px){ bindForm(P, pays, px); stkPeindre(); stkDemarrer(); }
   }
 
+  // Vraies photos envoyées par des clients après la livraison (boutiques ABROMARKET, pas les abonnés ni les lunettes)
+  const PHOTOS_CLIENTS = [7, 6, 1, 5, 4, 2, 3].map(n => 'clients/client-' + n + '.webp');
+  function photosClients(P){
+    if (VID || /lunette/i.test(P.id + ' ' + P.nom)) return '';
+    return `<section class="pcli"><h2>Photos de nos clients</h2><p class="pcsub">Envoyées par des clients après avoir reçu leur colis.</p>
+      <div class="pcrow" tabindex="0" aria-label="Photos envoyées par nos clients">${PHOTOS_CLIENTS.map((s, i) => `<button type="button" class="pcph" data-pc="${i}" aria-label="Agrandir la photo ${i + 1}"><img src="${s}" alt="Colis reçu par un client" loading="lazy" decoding="async"></button>`).join('')}</div></section>`;
+  }
+  document.addEventListener('click', e => {
+    const b = e.target.closest && e.target.closest('[data-pc]'); if (!b) return;
+    let i = +b.dataset.pc; const o = document.createElement('div'); o.className = 'pcbox'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-label', 'Photo de client');
+    const peindre = () => { o.innerHTML = `<img src="${PHOTOS_CLIENTS[i]}" alt="Colis reçu par un client" draggable="false"><button type="button" class="pcx" aria-label="Fermer">×</button><span class="pcn">${i + 1} / ${PHOTOS_CLIENTS.length}</span>`; };
+    peindre(); document.body.appendChild(o);
+    let x0 = null; o.addEventListener('pointerdown', ev => { x0 = ev.clientX; });
+    o.addEventListener('pointerup', ev => { if (x0 !== null && Math.abs(ev.clientX - x0) > 50){ i = (i + (ev.clientX < x0 ? 1 : -1) + PHOTOS_CLIENTS.length) % PHOTOS_CLIENTS.length; peindre(); } else if (ev.target === o || ev.target.classList.contains('pcx')) o.remove(); x0 = null; });
+  });
   function slider(el, dots, auto){
     if (!el) return;
     const n = el.children.length;
