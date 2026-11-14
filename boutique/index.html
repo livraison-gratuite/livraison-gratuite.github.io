@@ -659,7 +659,7 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
   };
   const ico = (n, cls) => `<svg viewBox="0 0 24 24" aria-hidden="true"${cls ? ` class="${cls}"` : ''}>${ICO[n] || ''}</svg>`;
   // L'icône d'une garantie est choisie selon son titre (l'emoji du Sheet reste en secours)
-  const icoGarantie = t => /livr|exp[ée]di|colis/i.test(t) ? 'camion' : /paie|pay|cash|esp[eè]ce/i.test(t) ? 'billet' : /rembours|[ée]change|retour/i.test(t) ? 'rembourse'
+  const icoGarantie = t => /paie|pay|cash|esp[eè]ce|r[eè]glement/i.test(t) ? 'billet' : /livr|exp[ée]di|colis/i.test(t) ? 'camion' : /rembours|[ée]change|retour/i.test(t) ? 'rembourse'
     : /service|client|assist|whats|appel|24/i.test(t) ? 'casque' : /garant|qualit|origin|authent|s[ée]cur/i.test(t) ? 'bouclier' : '';
   // Les 3 engagements, visibles dès le haut de la page
   // Nom long « A + B + C » : le titre garde A, le reste passe en sous-titre
