@@ -45,7 +45,7 @@ const VENDOO = !!VID;
   window.addEventListener('error', e => { if (e && e.message) noter(e.message, e.filename, e.lineno); });
   window.addEventListener('unhandledrejection', e => { const r = e && e.reason; noter('Promesse : ' + (r && r.message || r), r && r.stack && (String(r.stack).match(/https?:\/\/[^\s)]+/) || [''])[0]); });
 })();
-const SITE = "https://abraham596-stak.github.io/abromarket1/boutique/";
+const SITE = "https://livraison-gratuite.github.io/boutique/";
 if (VENDOO){
   document.title = 'Vendoo';
   document.querySelector('link[rel=manifest]').href = '../vendoo/manifest.webmanifest';
