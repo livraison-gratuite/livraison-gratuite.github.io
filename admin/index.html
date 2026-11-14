@@ -1874,7 +1874,7 @@ function nettoyerHtml(h){
     const L = j.pays || [], sans = j.sans || [], tout = sans.indexOf('*') >= 0;
     if (!L.length){ f.querySelector('#agL').innerHTML = '<p class="sub">Aucune agence de livraison n’est encore ajoutée dans tes boutiques.</p>'; return; }
     f.querySelector('#agL').outerHTML = `<div class="rgch" id="agL" style="margin:6px 0 4px">${L.map(x => `<label><input type="checkbox" value="${esc(x.code)}" ${!tout && sans.indexOf(x.code) < 0 ? 'checked' : ''}> <span>${esc(x.nom)} <small>${esc(x.agences.join(', '))}</small></span></label>`).join('')}</div>
-      <p class="sub" style="margin:6px 0 12px">Décoche un pays quand tu testes ce produit sans stock là-bas : ses commandes et relances restent seulement chez toi, dans ton application.</p>
+      <p class="sub" style="margin:6px 0 12px">Décoche un pays quand tu testes ce produit sans stock là-bas : ses commandes et relances restent seulement chez toi. Quand tu le recoches, les commandes du test encore en cours partent aussi chez son agence.</p>
       <button class="btn ghost" id="agVide">Test à vide : aucune agence</button>
       <button class="btn blue" id="agOk" style="margin-top:8px">Enregistrer</button>`;
     f.querySelector('#agVide').onclick = () => f.querySelectorAll('#agL input').forEach(i => i.checked = false);
@@ -1882,9 +1882,10 @@ function nettoyerHtml(h){
       const bt = e.currentTarget, coches = [...f.querySelectorAll('#agL input')].filter(i => i.checked).map(i => i.value);
       const nouv = !coches.length ? ['*'] : L.map(x => x.code).filter(c => coches.indexOf(c) < 0);
       bt.disabled = true; bt.textContent = 'Enregistrement…';
-      try { await call({type: 'produits', action: 'agences', id: P.id, sans: nouv});
+      try { const rj = await call({type: 'produits', action: 'agences', id: P.id, sans: nouv});
         PR.sansAgence = PR.sansAgence || {}; if (nouv.length) PR.sansAgence[P.id] = nouv; else delete PR.sansAgence[P.id]; memoPR();
         f.remove(); toast(!nouv.length ? 'Toutes les agences reçoivent ce produit' : nouv[0] === '*' ? 'Test à vide : aucune agence ne reçoit ce produit' : 'Enregistré : pas d’envoi vers ' + nouv.join(', '));
+        if (rj && rj.envoyees) setTimeout(() => toast(rj.envoyees + ' commande' + (rj.envoyees > 1 ? 's' : '') + ' du test envoyée' + (rj.envoyees > 1 ? 's' : '') + ' à l’agence'), 2600);
       } catch(x){ bt.disabled = false; bt.textContent = 'Enregistrer'; alert('Enregistrement impossible : ' + x.message); }
     };
   }
@@ -4942,7 +4943,7 @@ function nettoyerHtml(h){
     chevron: '<path d="M9 6l6 6-6 6"/>', retour: '<path d="M15 18l-6-6 6-6"/>', loupe: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '119';
+  const VERSION_APP = '120';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
