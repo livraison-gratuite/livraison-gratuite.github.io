@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /agence/
+Sitemap: https://livraison-gratuite.github.io/sitemap.xml
