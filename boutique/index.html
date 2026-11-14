@@ -11,10 +11,10 @@
 <meta property="og:image" content="https://livraison-gratuite.github.io/boutique/partage.jpg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="favicon.ico?v=6" sizes="any">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=2">
-<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png?v=2">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="favicon.ico?v=7" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=3">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png?v=3">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <meta name="theme-color" content="#1736A6">
 <link rel="preconnect" href="https://script.google.com">
 <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
@@ -56,25 +56,27 @@ if (VID) document.querySelectorAll('link[rel=icon]').forEach(l => l.remove());
 :root{--main:#1736A6;--sun:#FFC93C;--ink:#141A2E;--soft:#5A6178;--line:#E3E6EF;--bg:#FFFFFF;--surface:#F3F5FB;--ok:#128C4A;--err:#C62828}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);line-height:1.55;font-size:16px}
+body{font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);line-height:1.55;font-size:16px}
 body.has-sticky{padding-bottom:84px}
-h1,h2,h3{font-family:"Bricolage Grotesque","Figtree",system-ui,sans-serif;line-height:1.12;letter-spacing:-.01em}
+h1,h2,h3{font-family:"Inter",system-ui,sans-serif;line-height:1.12;letter-spacing:-.01em}
 img{max-width:100%;display:block}
 a{color:inherit}
 .wrap{max-width:560px;margin:0 auto;background:var(--bg);min-height:100vh}
 .home .wrap{max-width:960px}
-.topbar{background:var(--main);color:#fff;font-size:14px;font-weight:600;padding:9px 0;overflow:hidden;white-space:nowrap}
+.topbar{background:var(--ink);color:#fff;font-size:13px;font-weight:600;padding:9px 16px;text-align:center;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar .pt{opacity:.55;margin:0 8px}
 .defile{display:inline-flex;animation:defile 22s linear infinite;will-change:transform}
 .defile span{padding:0 28px}
 .defile .promo{color:#FFD54A;font-weight:800}
 @keyframes defile{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 header{display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:15;box-shadow:0 2px 14px rgba(18,48,143,.06)}
-.brand{display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;font:800 clamp(16px,5vw,21px) "Bricolage Grotesque",sans-serif;letter-spacing:.03em;color:var(--main);min-width:0}
+.brand{display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;font:800 clamp(16px,5vw,21px) "Inter",sans-serif;letter-spacing:.03em;color:var(--main);min-width:0}
 .brand img{height:36px;width:auto}
-.brand span{background:linear-gradient(90deg,#12308F,#2350D8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand span{color:var(--ink);text-transform:uppercase;letter-spacing:.14em;font-weight:800;font-size:16px}
+.brand .mono{display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--main);color:#fff;font:800 16px/1 "Inter",sans-serif;font-style:normal;letter-spacing:0;flex:0 0 30px}
 .brand span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .country{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--soft)}
-.country select{border:2px solid var(--line);border-radius:10px;padding:7px 8px;font:600 14px "Figtree",sans-serif;background:#fff;color:var(--ink);max-width:150px}
+.country select{border:2px solid var(--line);border-radius:10px;padding:7px 8px;font:600 14px "Inter",sans-serif;background:#fff;color:var(--ink);max-width:150px}
 
 /* Accueil */
 .hero{padding:26px 16px 6px}
@@ -87,7 +89,7 @@ header{display:flex;align-items:center;justify-content:center;gap:10px;padding:1
 .card img{aspect-ratio:1/1;object-fit:contain;width:100%;background:#fff}
 .card .ci{padding:10px 12px 14px;display:flex;flex-direction:column;gap:4px;flex:1}
 .card .cn{font-weight:700;font-size:15px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.card .cp{font:800 18px "Bricolage Grotesque",sans-serif;color:var(--main);margin-top:auto}
+.card .cp{font:800 18px "Inter",sans-serif;color:var(--main);margin-top:auto}
 .card .co{color:var(--soft);text-decoration:line-through;font-size:13px}
 .card .badge{align-self:flex-start;background:var(--sun);border-radius:999px;font-size:12px;font-weight:700;padding:2px 8px}
 .empty{padding:40px 20px;text-align:center;color:var(--soft)}
@@ -109,7 +111,7 @@ header{display:flex;align-items:center;justify-content:center;gap:10px;padding:1
 .stars{color:#E9A300;font-size:15px;margin-top:8px}
 .stars small{color:var(--soft);margin-left:6px}
 .pricetag{margin:16px 18px 0;background:var(--sun);border-radius:18px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative}
-.pricetag .now{font-family:"Bricolage Grotesque",sans-serif;font-size:32px;font-weight:800;line-height:1}
+.pricetag .now{font-family:"Inter",sans-serif;font-size:32px;font-weight:800;line-height:1}
 .pricetag .old{text-decoration:line-through;color:#574814;font-size:15px;margin-top:4px}
 .pricetag .now{white-space:nowrap}
 .pricetag .off{flex:0 0 auto;background:var(--ink);color:#fff;border-radius:14px;padding:9px 13px 8px;white-space:nowrap;text-align:center;display:flex;flex-direction:column;align-items:center;box-shadow:0 6px 16px rgba(20,26,46,.22)}
@@ -118,8 +120,8 @@ header{display:flex;align-items:center;justify-content:center;gap:10px;padding:1
 .stock{margin:12px 18px 0;font-size:15px;color:var(--err);font-weight:600}
 .stk{margin:12px 18px 0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
 .stk .sl{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:15px;font-weight:700;color:var(--ink)}
-.stk .st{background:var(--sun);color:var(--ink);border-radius:999px;padding:3px 10px;font-size:12.5px;font-weight:800;white-space:nowrap}
-.stk .sn b{font:800 20px "Bricolage Grotesque",sans-serif;color:var(--main)}
+.stk .st{background:#FDECEC;color:#B42318;border-radius:999px;padding:3px 10px;font-size:12.5px;font-weight:800;white-space:nowrap}
+.stk .sn b{font:800 20px "Inter",sans-serif;color:var(--main)}
 .stk .bar{height:7px;background:var(--line);border-radius:999px;margin-top:9px;overflow:hidden}
 .stk .bar i{display:block;height:100%;border-radius:999px;background:var(--main);transition:width .7s ease}
 .stk small{display:block;margin-top:7px;color:var(--soft);font-size:12.5px}
@@ -127,7 +129,9 @@ header{display:flex;align-items:center;justify-content:center;gap:10px;padding:1
 .urg{position:fixed;left:50%;top:12px;z-index:60;width:min(440px,calc(100vw - 20px));transform:translate(-50%,-150%);transition:transform .4s ease;display:flex;align-items:center;gap:12px;background:#fff;color:var(--ink);border:1px solid var(--line);border-left:5px solid var(--main);border-radius:14px;padding:12px 12px 12px 14px;box-shadow:0 10px 30px rgba(20,26,46,.18)}
 .urg.on{transform:translate(-50%,0)}
 .urg{transition:transform .4s ease,opacity .3s ease;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
-.urg .ui{width:38px;height:38px;flex:0 0 38px;border-radius:10px;background:var(--sun);display:grid;place-items:center;font-size:19px}
+.urg .ui{width:38px;height:38px;flex:0 0 38px;border-radius:10px;background:#EEF2FD;color:var(--main);display:grid;place-items:center}.urg .ui svg{width:21px;height:21px}
+.bigic{width:56px;height:56px;display:inline-block}
+.raud small{display:inline-flex;align-items:center;gap:6px}.raud small svg{width:15px;height:15px}
 .urg .ut{flex:1;min-width:0;line-height:1.3}
 .urg .ut b{display:block;font-size:15px;font-weight:800}
 .urg .ut span{font-size:13px;color:var(--soft)}
@@ -174,7 +178,7 @@ body.has-sticky:has(.sticky.brou){padding-bottom:116px}
 .nbz{border-top:0;padding-top:8px}
 .nbc{border:1px solid var(--line);border-top:4px solid var(--main);border-radius:16px;padding:20px 18px 18px;background:#fff}
 .nbh{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.nbt{background:var(--main);color:#fff;font:800 18px "Bricolage Grotesque",sans-serif;border-radius:8px;padding:5px 11px;letter-spacing:.04em}
+.nbt{background:var(--main);color:#fff;font:800 18px "Inter",sans-serif;border-radius:8px;padding:5px 11px;letter-spacing:.04em}
 .nbh h2{font-size:22px;font-weight:800;margin:0;color:var(--ink)}
 .nbi{display:flex;gap:12px;align-items:flex-start;padding:13px 0;border-top:1px solid var(--line)}
 .nbe{flex:0 0 40px;height:40px;border-radius:10px;background:#EEF2FD;color:var(--main);display:grid;place-items:center;font-size:19px}.nbe svg{width:21px;height:21px}
@@ -186,9 +190,9 @@ body.has-sticky:has(.sticky.brou){padding-bottom:116px}
 .nbcas{margin-top:10px;background:var(--surface);border-radius:10px;padding:11px 13px}
 .nbcas b{font-size:15px!important}
 .nbcas p{margin-top:3px!important}
-.nbw{margin-top:10px;background:var(--surface);border-left:4px solid var(--sun);border-radius:10px;padding:13px 14px}
+.nbw{margin-top:10px;background:var(--surface);border-left:3px solid var(--main);border-radius:10px;padding:13px 14px}
 .nbw b{display:block;font-size:15.5px;line-height:1.4;color:var(--ink)}
-.nbw span{display:block;margin-top:6px;font-weight:700;font-size:14.5px;color:var(--soft)}
+.nbw span{display:block;margin-top:6px;font-weight:500;font-size:14.5px;line-height:1.45;color:var(--soft)}
 @media (min-width:1000px){.nbc{padding:26px 30px 22px}.nbh h2{font-size:25px}.nbi b{font-size:17.5px}}
 .unavail{margin:16px 18px;background:var(--surface);border-radius:14px;padding:16px;font-weight:600}
 section{padding:26px 18px;border-top:1px solid var(--line)}
@@ -233,7 +237,7 @@ details p{color:var(--soft);margin-top:8px}
 .review .rav{flex:0 0 44px;width:44px;height:44px;border-radius:50%;object-fit:cover;margin:0;max-height:none;background:#ddd}
 .review .rini{display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;background:var(--accent,#0B6E4F)}
 .review .rage{font-weight:500;opacity:.75}
-.review .rok{font-size:11px;color:#1a7f37;font-weight:700;margin-left:4px}
+.review .rok{font-size:11px;color:#1a7f37;font-weight:700;margin-left:4px;display:inline-flex;align-items:center;gap:3px}.review .rok svg{width:12px;height:12px;stroke-width:2.6}
 .review .raud{margin-top:10px;background:#fff;border-radius:12px;padding:8px}
 .review .raud audio{width:100%;display:block}
 .review .raud iframe{width:100%;height:60px;border:0;display:block}
@@ -248,7 +252,7 @@ details p{color:var(--soft);margin-top:8px}
 .trust>div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 14px;text-align:center}
 .trust .e{font-size:30px;line-height:1}
 .trust .e.ic{display:inline-flex;width:46px;height:46px;border-radius:50%;background:#EEF2FD;color:var(--main);align-items:center;justify-content:center}
-.ic svg,.assur svg,.secu svg,.nbe svg,.fbadges svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ic svg,.assur svg,.secu svg,.nbe svg,.fbadges svg,.bigic,.urg .ui svg,.call svg,.rok svg,.raud small svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .trust .e.ic svg{width:24px;height:24px}
 
 /* Engagements (sous le prix et sur l'accueil) : livraison gratuite, paiement à la livraison, satisfait ou remboursé */
@@ -266,7 +270,7 @@ details p{color:var(--soft);margin-top:8px}
 .secu-h svg{width:20px;height:20px;flex:0 0 20px}
 .secu ol{list-style:none;margin:12px 0 0;display:grid;gap:9px}
 .secu li{display:flex;align-items:center;gap:11px;font-size:14.5px;line-height:1.3;color:var(--ink)}
-.secu li i{flex:0 0 24px;height:24px;border-radius:50%;background:#EEF2FD;color:var(--main);font:800 12.5px/24px "Figtree",sans-serif;text-align:center;font-style:normal}
+.secu li i{flex:0 0 24px;height:24px;border-radius:50%;background:#EEF2FD;color:var(--main);font:800 12.5px/24px "Inter",sans-serif;text-align:center;font-style:normal}
 .ticket .row .gratuit{color:#0B6B37;font-weight:800}
 .fbadges{display:flex;justify-content:center;flex-wrap:wrap;gap:8px 18px;margin:0 0 14px;font-size:12.5px;font-weight:700;color:var(--ink)}
 .fbadges span{display:inline-flex;align-items:center;gap:6px}
@@ -280,7 +284,7 @@ details p{color:var(--soft);margin-top:8px}
 #commande .sub{color:var(--soft);margin-bottom:18px}
 .field{margin-bottom:18px}
 .field>label,.legend{display:block;font-weight:700;margin-bottom:8px}
-input[type=tel],input[type=text],textarea,select.in{width:100%;border:2px solid var(--line);border-radius:12px;padding:14px;font:500 17px "Figtree",sans-serif;background:#fff;color:var(--ink)}
+input[type=tel],input[type=text],textarea,select.in{width:100%;border:2px solid var(--line);border-radius:12px;padding:14px;font:500 17px "Inter",sans-serif;background:#fff;color:var(--ink)}
 textarea{min-height:84px;resize:vertical}
 input:focus,textarea:focus,select:focus{border-color:var(--main);outline:none}
 .phone{display:flex;align-items:stretch;border:2px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}
@@ -293,7 +297,7 @@ input:focus,textarea:focus,select:focus{border-color:var(--main);outline:none}
 .choice label{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fff;border:2px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer;font-weight:600}
 .choice label small{display:block;font-weight:500;color:#0B6B37;font-size:14px}
 .choice label .p{text-align:right;white-space:nowrap}
-.choice label .p b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:19px}
+.choice label .p b{display:block;font-family:"Inter",sans-serif;font-weight:800;font-size:19px}
 .choice label .p s{color:var(--soft);font-size:13px;font-weight:500}
 .choice input:checked+label{border-color:var(--main);box-shadow:inset 0 0 0 1px var(--main)}
 .choice input:focus-visible+label,.cta:focus-visible,button:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
@@ -309,8 +313,8 @@ input:focus,textarea:focus,select:focus{border-color:var(--main);outline:none}
 .ticket .row span:first-child{color:var(--soft)}
 .ticket .row span:last-child{text-align:right;font-weight:600}
 .ticket .total{border-top:1px solid var(--line);margin-top:8px;padding-top:12px;align-items:center}
-.ticket .total span:last-child{font-family:"Bricolage Grotesque",sans-serif;font-size:24px;font-weight:800;color:var(--main)}
-.cta{display:block;width:100%;background:var(--main);color:#fff;border:0;border-radius:14px;padding:18px;font:700 19px "Figtree",sans-serif;text-align:center;text-decoration:none;cursor:pointer}
+.ticket .total span:last-child{font-family:"Inter",sans-serif;font-size:24px;font-weight:800;color:var(--main)}
+.cta{display:block;width:100%;background:var(--main);color:#fff;border:0;border-radius:14px;padding:18px;font:700 19px "Inter",sans-serif;text-align:center;text-decoration:none;cursor:pointer}
 .cta[disabled]{opacity:.7;cursor:wait}
 .reassure{text-align:center;color:var(--soft);font-size:14px;margin-top:10px}
 .senderr{display:none;background:#FDECEC;color:var(--err);border-radius:12px;padding:12px;margin-top:12px;font-weight:600;text-align:center}
@@ -331,7 +335,7 @@ footer .legal{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 18px;ma
 .preuve small{display:block;color:var(--soft);font-size:12px;margin-top:1px}
 .preuve .ok{color:#128C4A;font-weight:700}
 @media (min-width:1000px){.preuve{top:16px}}
-.sticky .sp{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;white-space:nowrap}
+.sticky .sp{font-family:"Inter",sans-serif;font-weight:800;font-size:20px;white-space:nowrap}
 .sticky .cta{flex:1;padding:14px;font-size:17px}
 .attn{position:relative;overflow:hidden;animation:attn 2s ease-in-out infinite;transform-origin:center}
 @keyframes attn{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(23,54,166,.45)}45%{transform:scale(1.035);box-shadow:0 0 0 10px rgba(23,54,166,0)}70%{transform:scale(1)}}
@@ -340,21 +344,21 @@ footer .legal{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 18px;ma
 .overlay{position:fixed;inset:0;background:rgba(20,26,46,.6);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
 .overlay.show{display:flex}
 .modal{background:#fff;border-radius:18px;padding:24px 20px;max-width:400px;width:100%;text-align:center}
-.modal .big{font-size:44px}
+.modal .big{font-size:44px;color:var(--ok)}
 .modal h3{font-size:22px;margin:8px 0}
 .modal p{color:var(--soft);margin-bottom:16px}
 .wa{display:block;background:#25D366;color:#fff;text-decoration:none;border-radius:12px;padding:16px;font-weight:700;font-size:17px}
 .done{background:#fff;border-radius:16px;padding:22px 18px;text-align:center}
-.done .big{font-size:42px}
+.done .big{font-size:42px;color:var(--main)}
 .done h3{font-size:20px;margin:8px 0}
 .done p{color:var(--soft);margin-bottom:16px}
 .thanks{padding:30px 18px 26px;text-align:center}
-.thanks .big{font-size:54px;line-height:1}
+.thanks .big{font-size:54px;line-height:1;color:var(--ok)}
 .thanks h1{font-size:30px;margin:12px 0 6px}
 .thanks .lead{font-size:18px;margin-bottom:6px}
 .thanks .num{color:var(--soft);font-weight:600;margin-bottom:18px}
 .thanks .ticket{text-align:left}
-.thanks .call{background:var(--sun);border-radius:14px;padding:14px;font-weight:600;margin:4px 0 18px}
+.thanks .call{background:#EEF2FD;border-radius:14px;padding:14px;font-weight:600;margin:4px 0 18px;display:flex;gap:10px;align-items:flex-start;text-align:left}.thanks .call svg{width:22px;height:22px;flex:0 0 22px;color:var(--main);margin-top:1px}
 .hidden{display:none!important}
 .loading{padding:60px 20px;text-align:center;color:var(--soft)}
 .spin{width:34px;height:34px;border:4px solid var(--line);border-top-color:var(--main);border-radius:50%;margin:0 auto 14px;animation:s 1s linear infinite}
@@ -367,7 +371,7 @@ footer .legal{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 18px;ma
   body{background:var(--surface)}
   .wrap,.home .wrap{max-width:1200px;box-shadow:0 0 0 1px var(--line)}
   header{padding:16px 32px}
-  .brand{font-size:24px}.brand img{height:42px}
+  .brand span{font-size:18px}.brand img{height:42px}
   .hero{padding:40px 32px 10px}.hero h1{font-size:40px}
   .grid{grid-template-columns:repeat(4,1fr);gap:22px;padding:24px 32px 32px}
   .card .cn{font-size:16px}
@@ -400,9 +404,17 @@ footer .legal{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 18px;ma
 body,button,input,select,textarea,h1,h2,h3,.brand,.card .cp,.pricetag .now,.stk .sn b,.nbt,.country select,input[type=tel],input[type=text],textarea,select.in{font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 body{-webkit-font-smoothing:antialiased}
 h1,h2,h3{font-weight:700;letter-spacing:-.02em}
-.brand{font-weight:700;letter-spacing:-.01em}
+.brand{font-weight:800}
 .card .cp,.pricetag .now,.stk .sn b,.nbt{font-weight:700;letter-spacing:-.02em}
 input[type=tel],input[type=text],textarea,select.in,.country select{border-width:1px}
+/* Bloc prix sobre */
+.pricetag{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:0 4px 18px rgba(18,48,143,.06)}
+.pricetag .now{color:var(--ink);font-size:30px;font-weight:800}
+.pricetag .old{color:var(--soft);font-size:15px}
+.pricetag .off{background:#FDECEC;color:#B42318;box-shadow:none;border-radius:12px;padding:8px 12px 7px}
+.pricetag .off b{font-size:22px}
+.pricetag .off small{opacity:1;color:#B42318;font-size:9px}
+.intro .psub{color:var(--ink);font-weight:600;font-size:15.5px;margin-top:6px;line-height:1.35}
 </style>
 </head>
 <body>
@@ -410,7 +422,7 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
 
 <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="mTitle">
   <div class="modal">
-    <div class="big">✅</div>
+    <div class="big"><svg viewBox="0 0 24 24" aria-hidden="true" class="bigic"><circle cx="12" cy="12" r="10"/><path d="M7.5 12.4l3 3 6-6.4"/></svg></div>
     <h3 id="mTitle">Commande n°<span id="mNum"></span> enregistrée</h3>
     <p>WhatsApp va s'ouvrir. Appuyez sur <b>Envoyer</b> pour nous transmettre votre commande.</p>
     <a class="wa" id="waLink" href="#">Envoyer ma commande sur WhatsApp</a>
@@ -513,7 +525,7 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
   // Vidéo : YouTube, TikTok, Google Drive ou fichier .mp4
   function audioAvis(u){
     u = String(u||'').trim(); let m;
-    const t = '<small>🎤 Note vocale du client</small>';
+    const t = '<small>' + ico('micro') + 'Note vocale du client</small>';
     if ((m = u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]{20,})/))) return `<div class="raud">${t}<iframe src="https://drive.google.com/file/d/${m[1]}/preview" loading="lazy"></iframe></div>`;
     if (/^https?:\/\//.test(u)) return `<div class="raud">${t}<audio controls preload="none" src="${esc(u)}"></audio></div>`;
     return '';
@@ -570,7 +582,12 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
   // Nom affiché : celui de la boutique du pays du client (pub multi-pays sur la boutique principale)
   let T_FORM = Date.now();   // anti-robot : un humain met plus de 3 secondes à remplir le formulaire
   const LEGAL = () => { const q = PV + 'n=' + encodeURIComponent(NOM()); return `<div class="fbadges"><span>${ico('camion')}Livraison gratuite</span><span>${ico('billet')}Paiement à la livraison</span><span>${ico('cadenas')}Aucun paiement en ligne</span></div><nav class="legal"><a href="conditions.html?${q}">Conditions de vente</a><a href="confidentialite.html?${q}">Confidentialité et cookies</a></nav>`; };
-  const NOM = () => { const p = D && country && (D.pays || []).find(x => x.code === country); return (p && p.nomBoutique) || R('Nom de la boutique') || 'Boutique'; };
+  // Nom affiché sans le pays (« ABROMARKET Bénin » → « ABROMARKET »)
+  const PAYS_NOMS = ["Bénin", "Benin", "Togo", "Côte d'Ivoire", "Cote d'Ivoire", "Côte d’Ivoire", "Sénégal", "Senegal", "Burkina Faso", "Burkina", "Mali", "Niger", "Guinée", "Guinee", "Cameroun", "Gabon", "Congo", "RDC", "Nigeria", "Ghana", "Tchad", "Centrafrique", "Mauritanie", "Madagascar"];
+  const sansPays = n => { let s = String(n || '').trim(); const noms = (D && D.pays || []).map(x => x.nom).concat(PAYS_NOMS).filter(Boolean).sort((a, b) => b.length - a.length);
+    for (const x of noms){ const t = s.replace(new RegExp('\\s*[-–—|·]?\\s*' + x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*$', 'i'), ''); if (t !== s){ s = t; break; } }
+    return s.trim() || String(n || '').trim(); };
+  const NOM = () => { const p = D && country && (D.pays || []).find(x => x.code === country); return sansPays((p && p.nomBoutique) || R('Nom de la boutique') || 'Boutique'); };
   // Le jour et l'heure de livraison sont fixés avec le client au téléphone
   const LIVRAISON = 'Fixée avec vous au téléphone';
 
@@ -615,16 +632,15 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
   }
   function countrySelect(list){
     if (!list.length) return '';
-    return `<label class="country">🌍 <select id="cSel" aria-label="Votre pays">${list.map(p => `<option value="${esc(p.code)}" ${p.code===country?'selected':''}>${esc(p.nom)}</option>`).join('')}</select></label>`;
+    return `<label class="country"><select id="cSel" aria-label="Votre pays">${list.map(p => `<option value="${esc(p.code)}" ${p.code===country?'selected':''}>${esc(p.nom)}</option>`).join('')}</select></label>`;
   }
   function header(list){
     const logo = R('Logo (lien image, optionnel)');
     const name = NOM();
-    // Bandeau qui défile tout seul : message du Sheet + offre du jour
-    const msgs = [R('Bandeau du haut'), "🔥 Offre -40% aujourd'hui seulement"].filter(Boolean);
-    const tour = msgs.map((m, i) => `<span class="${/offre/i.test(m) ? 'promo' : ''}">${esc(m)}</span>`).join('');
-    return `<div class="topbar" role="marquee" aria-label="${esc(msgs.join(' – '))}"><div class="defile" aria-hidden="true">${tour + tour + tour + tour}</div></div>
-      <header><a class="brand" href="${ACCUEIL}">${logo || !VID ? `<img src="${esc(logo ? img(logo) : 'logo.png')}" alt="">` : ''}<span>${esc(name)}</span></a></header>`;
+    // Bandeau fixe et sobre ; logo : l'image choisie dans les Réglages, sinon un monogramme (initiale) + le nom
+    const mono = `<i class="mono" aria-hidden="true">${esc((name.match(/[A-Za-zÀ-ÿ0-9]/) || ['B'])[0].toUpperCase())}</i>`;
+    return `<div class="topbar">Livraison gratuite<span class="pt">·</span>Paiement à la livraison</div>
+      <header><a class="brand" href="${ACCUEIL}" aria-label="${esc(name)} – accueil">${logo ? `<img src="${esc(img(logo))}" alt="">` : mono}<span>${esc(name)}</span></a></header>`;
   }
   // Icônes au trait (plus sérieuses que les emojis)
   const ICO = {
@@ -635,13 +651,20 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
     casque: '<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><path d="M20 15v2a2 2 0 0 1-2 2h-2v-6h4zM4 15v2a2 2 0 0 0 2 2h2v-6H4z"/><path d="M16 19c0 1.5-1.5 2.5-4 2.5"/>',
     cadenas: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
     calendrier: '<rect x="3" y="4.5" width="18" height="17" rx="2"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/>',
-    bulle: '<path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.2A8.4 8.4 0 1 1 21 11.5z"/>'
+    bulle: '<path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.6-5.2A8.4 8.4 0 1 1 21 11.5z"/>',
+    micro: '<rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.5"/>',
+    colis: '<path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+    telephone: '<path d="M21 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 1.1 4.2 2 2 0 0 1 3.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L7.1 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.8 2z"/>',
+    coche: '<path d="M5 12.5l4.5 4.5L19 7.5"/>'
   };
   const ico = (n, cls) => `<svg viewBox="0 0 24 24" aria-hidden="true"${cls ? ` class="${cls}"` : ''}>${ICO[n] || ''}</svg>`;
   // L'icône d'une garantie est choisie selon son titre (l'emoji du Sheet reste en secours)
   const icoGarantie = t => /livr|exp[ée]di|colis/i.test(t) ? 'camion' : /paie|pay|cash|esp[eè]ce/i.test(t) ? 'billet' : /rembours|[ée]change|retour/i.test(t) ? 'rembourse'
     : /service|client|assist|whats|appel|24/i.test(t) ? 'casque' : /garant|qualit|origin|authent|s[ée]cur/i.test(t) ? 'bouclier' : '';
   // Les 3 engagements, visibles dès le haut de la page
+  // Nom long « A + B + C » : le titre garde A, le reste passe en sous-titre
+  const titre = nom => { const s = String(nom || '').trim(), i = s.indexOf(' + ');
+    return s.length > 28 && i > 6 ? {t: s.slice(0, i).trim(), s: s.slice(i + 3).trim()} : {t: s, s: ''}; };
   function engagements(){
     const rb = [1, 2, 3, 4].map(i => R(`Garantie ${i} – titre`)).find(t => /rembours/i.test(t || ''));
     return `<ul class="assur" aria-label="Nos engagements">
@@ -654,7 +677,7 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
     let h = '';
     for (let i = 1; i <= 4; i++){
       const t = R(`Garantie ${i} – titre`); if (!t) continue;
-      const n = icoGarantie(t);
+      const n = icoGarantie(t) || 'bouclier';
       h += `<div>${n ? `<div class="e ic">${ico(n)}</div>` : `<div class="e">${esc(R(`Garantie ${i} – emoji`))}</div>`}<b>${esc(t)}</b><small>${esc(R(`Garantie ${i} – texte`))}</small></div>`;
     }
     return (h ? `<section><h2>Nos garanties</h2><div class="trust">${h}</div></section>` : '') + nb();
@@ -674,7 +697,7 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
       <div class="nbi"><span class="nbe">${ico('camion')}</span><div><b>La livraison est gratuite pour tout le monde.</b>
         <div class="nbcas"><b>Vous êtes dans une grande ville&nbsp;?</b><p>Vous payez <b>seulement quand le livreur vous donne le colis</b>. Vous n'envoyez rien avant.</p></div>
         <div class="nbcas"><b>Vous êtes dans une autre ville du pays&nbsp;?</b><p>Nous vous envoyons le colis par expédition. <b>Avant l'envoi, vous devez payer les frais d'envoi et les frais de paiement.</b> Nous vous disons le montant au téléphone.</p></div>
-        <div class="nbw"><b>⚠️ Si vous êtes dans une autre ville et que vous ne voulez pas payer ces frais avant l'envoi, merci de ne pas nous contacter. Il n'y a pas d'autre solution.</b><span>Merci pour votre compréhension 🙏</span></div>
+        <div class="nbw"><b>Bon à savoir</b><span>L'envoi vers une autre ville se fait uniquement après le règlement des frais d'envoi et de paiement. Si cette option ne vous convient pas, nous ne pourrons malheureusement pas vous livrer pour le moment. Merci de votre compréhension.</span></div>
       </div></div>
     </div></section>`;
   }
@@ -696,11 +719,11 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
         const off = o.ancien > o.prix ? Math.round((1 - o.prix/o.ancien)*100) : 0;
         return `<a class="card" href="${QS}p=${encodeURIComponent(x.id)}">
           <img src="${esc(imgM(x.photos[0] || ''))}" alt="${esc(x.nom)}" loading="lazy">
-          <div class="ci">${off?`<span class="badge">−${off} %</span>`:''}<div class="cn">${esc(x.nom)}</div>
+          <div class="ci">${off?`<span class="badge">−${off} %</span>`:''}<div class="cn">${esc(titre(x.nom).t)}</div>
           ${o.ancien > o.prix ? `<div class="co">${money(o.ancien, x.prix[country].devise || pays.devise)}</div>` : ''}
           <div class="cp">${money(o.prix, x.prix[country].devise || pays.devise)}</div></div></a>`;
       }).join('')}</div>` : (autres.length ? `<div class="grid">${autres.map(x => { const c = Object.keys(x.prix)[0], pp = D.pays.find(p => p.code === c) || {}, o = x.prix[c].offres[0];
-          return `<a class="card" href="${QS}p=${encodeURIComponent(x.id)}"><img src="${esc(imgM(x.photos[0] || ''))}" alt="${esc(x.nom)}" loading="lazy"><div class="ci"><div class="cn">${esc(x.nom)}</div><div class="cp">${money(o.prix, pp.devise)}</div></div></a>`; }).join('')}</div>` : `<div class="empty">Aucun produit disponible pour le moment.</div>`)}
+          return `<a class="card" href="${QS}p=${encodeURIComponent(x.id)}"><img src="${esc(imgM(x.photos[0] || ''))}" alt="${esc(x.nom)}" loading="lazy"><div class="ci"><div class="cn">${esc(titre(x.nom).t)}</div><div class="cp">${money(o.prix, pp.devise)}</div></div></a>`; }).join('')}</div>` : `<div class="empty">Aucun produit disponible pour le moment.</div>`)}
       ${trust()}
       <footer>${LEGAL()}© ${new Date().getFullYear()} ${esc(NOM())}</footer></div>`;
     bindCountry();
@@ -745,7 +768,7 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
     const ae = document.activeElement; if (ae && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)) return;   // jamais pendant la saisie
     STK.alerte = Date.now();
     let u = document.querySelector('.urg'); if (!u){ u = document.createElement('div'); u.className = 'urg'; u.setAttribute('role', 'alert'); document.body.appendChild(u); }
-    u.innerHTML = `<div class="ui">⚡</div><div class="ut"><b>Plus qu'UNE seule pièce en stock !</b><span>Commandez maintenant ou vous risquez de le regretter.</span></div><a href="#commande" class="ub">Je la prends</a><button type="button" class="ux" aria-label="Fermer">×</button>`;
+    u.innerHTML = `<div class="ui">${ico('colis')}</div><div class="ut"><b>Plus qu'UNE seule pièce en stock !</b><span>Commandez maintenant ou vous risquez de le regretter.</span></div><a href="#commande" class="ub">Je la prends</a><button type="button" class="ux" aria-label="Fermer">×</button>`;
     u.querySelector('.ux').onclick = () => u.classList.remove('on');
     u.querySelector('.ub').onclick = () => u.classList.remove('on');
     const cacherU = () => { clearTimeout(STK.tu); u.classList.remove('on'); };
@@ -771,7 +794,7 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
     if (!country || !avail.some(p => p.code === country)) country = pickCountry(avail);
     const pays = D.pays.find(p => p.code === country);
     const px = pays && P.prix[country];
-    document.title = P.nom + ' | ' + NOM(); T_FORM = Date.now();
+    document.title = titre(P.nom).t + ' | ' + NOM(); T_FORM = Date.now();
     const photos = P.photos.length ? P.photos : [''];
     const o1 = px ? px.offres[0] : null;
     const dev = (px && px.devise) || (pays ? pays.devise : '');
@@ -780,7 +803,7 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
     if (px){
       const off = o1.ancien > o1.prix ? Math.round((1 - o1.prix/o1.ancien)*100) : 0;
       priceBlock = `<div class="pricetag"><div><div class="now">${money(o1.prix, dev)}</div>${off?`<div class="old">${money(o1.ancien, dev)}</div>`:''}</div>${off?`<div class="off"><b>−${off} %</b><small>Aujourd’hui<br>seulement</small></div>`:''}</div>
-        ${P.stock === 'non' ? '' : `<div class="stk" id="stk" aria-live="polite"><div class="sl"><span class="st">🔥 Forte demande</span><span class="sn"><span id="stkTxt">Plus que <b id="stkN">${STK.n}</b> en stock</span></span></div><div class="bar"><i id="stkBar" style="width:${STK.n / 3 * 100}%"></i></div><small id="stkSub">Stock très limité : ${esc(P.nom.length > 40 ? P.nom.slice(0, 38).trim() + '…' : P.nom)} part très vite.</small></div>`}`;
+        ${P.stock === 'non' ? '' : `<div class="stk" id="stk" aria-live="polite"><div class="sl"><span class="st">Forte demande</span><span class="sn"><span id="stkTxt">Plus que <b id="stkN">${STK.n}</b> en stock</span></span></div><div class="bar"><i id="stkBar" style="width:${STK.n / 3 * 100}%"></i></div><small id="stkSub">Stock très limité : ${esc(P.nom.length > 40 ? P.nom.slice(0, 38).trim() + '…' : P.nom)} part très vite.</small></div>`}`;
       priceBlock += engagements();
       const promo = Number(px.promoJour) || 0;
       form = `<section id="commande"><h2>Passer ma commande</h2><p class="sub">Remplissez ce formulaire, ça prend moins d'une minute.</p>
@@ -837,7 +860,7 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
       ${photos.length > 1 ? `<div class="dots" id="dots">${photos.map((_,i)=>`<span class="${i?'':'on'}"></span>`).join('')}</div>
         <div class="thumbs" id="thumbs">${photos.map((s,i)=>`<button type="button" data-i="${i}" class="${i?'':'on'}" aria-label="Photo ${i+1}"><img src="${esc(imgM(s))}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}
       </div><div class="pinfo">
-      <div class="intro"><h1>${esc(P.nom)}</h1>${P.accroche?`<p>${esc(P.accroche)}</p>`:''}
+      <div class="intro"><h1>${esc(titre(P.nom).t)}</h1>${titre(P.nom).s ? `<p class="psub">Avec ${esc(titre(P.nom).s)}</p>` : ''}${P.accroche?`<p>${esc(P.accroche)}</p>`:''}
         <div class="stars">★★★★★<small>(4.5/5 basé sur 1120 avis)</small></div>
         ${P.avantages.length ? `<ul class="perks top">${P.avantages.map(a=>`<li>${esc(a)}</li>`).join('')}</ul>` : ''}</div>
       ${priceBlock}
@@ -845,13 +868,13 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
       </div></div><div class="pbelow">
       ${desc ? `<section><h2>Description</h2><div class="rich">${rich(P.description)}</div>
         ${P.boite.length ? `<div class="box"><h3>Dans la boîte</h3><ul>${P.boite.map(a=>`<li>${esc(a)}</li>`).join('')}</ul></div>` : ''}</section>` : ''}
-      ${nAvis ? `<section><h2>Ils l'ont déjà reçu</h2><div class="reviews" id="revs" tabindex="0" aria-label="Avis des clients">${P.avis.map(a=>`<div class="review"><div class="rhead">${a.avatar?`<img class="rav" src="${esc(img(a.avatar))}" alt="" loading="lazy">`:`<span class="rav rini">${esc((a.nom||'C').trim().charAt(0).toUpperCase())}</span>`}<div><div class="who">${esc(a.nom)}${a.age?`<span class="rage">, ${esc(/an/i.test(a.age)?a.age:a.age+' ans')}</span>`:''}</div><div class="rs">${'★'.repeat(a.note)}${'☆'.repeat(5-a.note)}${a.verifie?' <span class="rok">✔ Achat vérifié</span>':''}</div></div></div>${a.texte?`<p>${esc(a.texte)}</p>`:''}${a.photo?`<img src="${esc(img(a.photo))}" alt="" loading="lazy">`:''}${a.audio?audioAvis(a.audio):''}${a.video?video(a.video):''}</div>`).join('')}</div>
+      ${nAvis ? `<section><h2>Ils l'ont déjà reçu</h2><div class="reviews" id="revs" tabindex="0" aria-label="Avis des clients">${P.avis.map(a=>`<div class="review"><div class="rhead">${a.avatar?`<img class="rav" src="${esc(img(a.avatar))}" alt="" loading="lazy">`:`<span class="rav rini">${esc((a.nom||'C').trim().charAt(0).toUpperCase())}</span>`}<div><div class="who">${esc(a.nom)}${a.age?`<span class="rage">, ${esc(/an/i.test(a.age)?a.age:a.age+' ans')}</span>`:''}</div><div class="rs">${'★'.repeat(a.note)}${'☆'.repeat(5-a.note)}${a.verifie?' <span class="rok">' + ico('coche') + 'Achat vérifié</span>':''}</div></div></div>${a.texte?`<p>${esc(a.texte)}</p>`:''}${a.photo?`<img src="${esc(img(a.photo))}" alt="" loading="lazy">`:''}${a.audio?audioAvis(a.audio):''}${a.video?video(a.video):''}</div>`).join('')}</div>
         ${nAvis > 1 ? `<div class="rdots" id="rdots">${P.avis.map((_,i)=>`<span class="${i?'':'on'}"></span>`).join('')}</div>` : ''}</section>` : ''}
       ${P.faq.length ? `<section><h2>Questions fréquentes</h2>${P.faq.map(f=>`<details><summary>${esc(f.q)}</summary><p>${esc(f.r)}</p></details>`).join('')}</section>` : ''}
       ${trust()}
       </div>
       <footer><a href="${ACCUEIL}">← Voir tous nos produits</a><br>${LEGAL()}© ${new Date().getFullYear()} ${esc(NOM())}</footer></div>
-      ${px ? `<div class="sticky" id="sticky"><div class="nv" id="nv">⏳ N'oubliez pas de valider votre commande</div><div class="sp">${money(o1.prix, dev)}</div><a href="#commande" class="cta attn" id="stCta">Je commande</a></div>` : ''}`;
+      ${px ? `<div class="sticky" id="sticky"><div class="nv" id="nv">N'oubliez pas de valider votre commande</div><div class="sp">${money(o1.prix, dev)}</div><a href="#commande" class="cta attn" id="stCta">Je commande</a></div>` : ''}`;
 
     bindCountry();
     slider($('slides'), $('dots'), false);
@@ -968,7 +991,7 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
         if (b && b.f && Date.now() - b.t < 7 * 864e5 && !$('nom').value && !$('tel').value){
           restoreForm(b.f); update();
           const bn = document.createElement('div'); bn.className = 'retour';
-          bn.innerHTML = `<b>👋 Vous n'avez pas terminé votre commande.</b><span>Vos informations sont gardées : il ne reste qu'à la valider.</span><a href="#commande">Valider ma commande →</a>`;
+          bn.innerHTML = `<b>Vous n'avez pas terminé votre commande.</b><span>Vos informations sont gardées : il ne reste qu'à la valider.</span><a href="#commande">Valider ma commande →</a>`;
           const pt = document.querySelector('.ptop'); if (pt) pt.parentNode.insertBefore(bn, pt);
         }
       } catch(x){}
@@ -1089,7 +1112,7 @@ Heure de la livraison : ${r.livraison}`;
     document.body.classList.remove('has-sticky');
     const prenom = String(r.nom || '').split(/\s+/)[0];
     app.innerHTML = `<div class="wrap">${header([])}
-      <div class="thanks"><div class="big">✅</div>
+      <div class="thanks"><div class="big"><svg viewBox="0 0 24 24" aria-hidden="true" class="bigic"><circle cx="12" cy="12" r="10"/><path d="M7.5 12.4l3 3 6-6.4"/></svg></div>
         <h1>Merci${prenom ? ' ' + esc(prenom) : ''} !</h1>
         <p class="lead">Votre commande de <b>${esc(r.produit)}</b> a bien été envoyée.</p>
         <p class="num">Commande n°<span id="numCmd">${r.numero ? esc(r.numero) : '…'}</span></p>
@@ -1100,7 +1123,7 @@ Heure de la livraison : ${r.livraison}`;
           <div class="row"><span>Adresse</span><span>${esc(r.adresse)}</span></div>
           <div class="row total"><span>À payer à la livraison</span><span>${money(r.total, r.devise)}</span></div>
         </div>
-        <div class="call">📞 Notre équipe va vous appeler <b>dans les 24h</b> au <b>${esc(r.tel)}</b> pour la livraison. Gardez votre téléphone près de vous.</div>
+        <div class="call">${ico('telephone')}<span>Notre équipe va vous appeler <b>dans les 24h</b> au <b>${esc(r.tel)}</b> pour la livraison. Gardez votre téléphone près de vous.</span></div>
         <a class="cta" href="./?c=${esc(country || '')}">Voir nos autres produits</a>
       </div>
       ${trust()}
@@ -1113,7 +1136,7 @@ Heure de la livraison : ${r.livraison}`;
   function dejaPour(id){ try { return !!(JSON.parse(store.get(K_CMD) || '{}') || {})[id]; } catch(e){ return false; } }
   function dejaCommande(num, wa){
     const msg = `Bonjour, j'ai déjà passé la commande n°${num}. `;
-    $('form').innerHTML = `<div class="done"><div class="big">📦</div><h3>Vous avez déjà une commande (n°${esc(num)})</h3>
+    $('form').innerHTML = `<div class="done"><div class="big">${ico('colis', 'bigic')}</div><h3>Vous avez déjà une commande (n°${esc(num)})</h3>
       <p>Vous avez déjà commandé ce produit. Notre équipe va vous appeler pour la confirmer : gardez votre téléphone près de vous.</p>
       <a class="wa" href="https://wa.me/${esc(wa)}?text=${encodeURIComponent(msg)}">Une question ? Écrivez-nous</a></div>`;
     $('commande').scrollIntoView({behavior:'smooth', block:'start'});
@@ -1292,8 +1315,8 @@ Heure de la livraison : ${r.livraison}`;
     const infos = () => {
       if (!pid || /^non$/i.test(String(R('Notifications de ventes sur le site (OUI/NON)')).trim())) return [];
       const P = (D.produits || []).find(x => x.id === pid), ph = P && P.photos[0] ? `<img src="${esc(imgM(P.photos[0]))}" alt="">` : '', m = [];
-      if (VUES >= 1) m.push(`${ph}<div><b>👀 ${VUES === 1 ? '1 autre personne regarde' : VUES + ' autres personnes regardent'}</b> ce produit en ce moment</div>`);
-      m.push(`${ph}<div><b>🚚 Livraison gratuite partout</b><small>Paiement à la livraison</small></div>`);
+      if (VUES >= 1) m.push(`${ph}<div>${''}<b>${VUES === 1 ? '1 autre personne regarde' : VUES + ' autres personnes regardent'}</b> ce produit en ce moment</div>`);
+      m.push(`${ph}<div><b>Livraison gratuite partout</b><small>Paiement à la livraison</small></div>`);
       return m;
     };
     // Arrive par le haut, repart toute seule après 3 s ; le client peut la balayer à gauche, à droite ou vers le haut
