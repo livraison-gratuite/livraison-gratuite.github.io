@@ -4172,7 +4172,7 @@ function nettoyerHtml(h){
       dessiner();
     }
     // ---------- ✨ Assistant : ChatGPT (son propre compte) ou assistant intégré (sa clé Gemini gratuite) ----------
-    const IA_REGLES = 'Tu aides un vendeur en ligne (paiement à la livraison, clients d’Afrique francophone). Écris en français très simple, avec des phrases courtes, qu’un enfant de 10 ans comprend. Parle au client avec « vous ». Ne cite aucun pays ni aucune ville. N’invente rien sur le produit et ne promets pas de guérison. Réponds seulement avec le contenu demandé, sans introduction.';
+    const IA_REGLES = 'Tu aides un vendeur en ligne (paiement à la livraison, clients d’Afrique francophone). Écris en français très simple, avec des phrases courtes, qu’un enfant de 10 ans comprend. Vouvoiement obligatoire : parle toujours au client avec « vous », « votre », « vos » ; jamais « tu », « ton », « ta », « tes ». Ne cite aucun pays ni aucune ville. N’invente rien sur le produit et ne promets pas de guérison. Réponds seulement avec le contenu demandé, sans introduction.';
     const IA_T = {
       note: {lib: 'Un client achèterait-il ?', type: 'note', photo: 0, consigne: 'Imagine que tu es un client qui arrive sur cette page produit après avoir vu une publicité. Sois honnête et exigeant.\n1. Donne une note sur 10.\n2. Dis clairement « J’achèterais » ou « Je n’achèterais pas », et pourquoi, en 2 phrases.\n3. Donne les 5 améliorations les plus importantes, de la plus urgente à la moins urgente. Pour chacune : ce qui ne va pas, puis exactement quoi écrire ou changer.\nRéponds en texte simple avec des tirets.'},
       titre: {lib: 'Titre', type: 'liste', consigne: 'Propose 6 titres courts et accrocheurs pour ce produit (60 caractères maximum). Un titre par ligne, sans numéro.', mettre: v => P.nom = v},
@@ -4917,7 +4917,7 @@ function nettoyerHtml(h){
     chevron: '<path d="M9 6l6 6-6 6"/>', retour: '<path d="M15 18l-6-6 6-6"/>', loupe: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '115';
+  const VERSION_APP = '116';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
