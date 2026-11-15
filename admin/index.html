@@ -101,7 +101,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .pxg{display:grid;grid-template-columns:auto 1fr 1fr;gap:8px 10px;align-items:center;margin-top:6px}
 .ofsp{margin-top:14px;border:1px solid var(--line);border-radius:14px;padding:14px}
 .ofsph{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-bottom:6px}.ofsph b{font-size:16px}
-.ofrow{display:grid;grid-template-columns:22px 1fr 1fr 1.25fr 34px;gap:8px;align-items:end;padding:10px 0;border-top:1px solid var(--line)}
+.pxg4{grid-template-columns:auto 1fr 1fr 34px}.pxsite{text-align:center}
+.pxcb,.pxtj{display:grid;place-items:center;height:44px}.pxtj{color:var(--soft);font-weight:700}
+.pxcb input,.ofvis input{width:20px;height:20px;margin:0;accent-color:var(--main,#1736A6);cursor:pointer}
+.pxg .pxoff,.ofrow.ofoff .field{opacity:.45}
+.ofvis{align-items:center}.ofvis input{height:44px}
+.ofrow{display:grid;grid-template-columns:30px 1fr 1fr 1.25fr 34px;gap:8px;align-items:end;padding:10px 0;border-top:1px solid var(--line)}
 .ofrow:first-of-type{border-top:0}
 .ofrow label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--soft);min-width:0}
 .ofrow .field{margin:0;min-width:0;padding-left:10px;padding-right:8px}
@@ -4141,9 +4146,10 @@ function nettoyerHtml(h){
     // Offres cadeau (plusieurs possibles) : rangées en « 2;3 » / « 1;2 » / « 32500;49500 » dans la ligne de prix
     const coupe = v => String(v == null ? '' : v).split(/[;|]/).map(s => s.trim());
     let OFS = [];
-    if (M){ const A = coupe(M.oa), O = coupe(M.oo), Q = coupe(M.op); OFS = A.map((a, i) => ({a, o: O[i] || '', p: Q[i] || ''})).filter(x => x.a || x.o || x.p); }
+    if (M){ const A = coupe(M.oa), O = coupe(M.oo), Q = coupe(M.op); OFS = A.map((a, i) => ({a: a.replace(/^!\s*/, ''), v: !/^!/.test(a), o: O[i] || '', p: Q[i] || ''})).filter(x => x.a || x.o || x.p); }
+    const sansMarque = v => String(v || '').replace(/^\s*!\s*/, ''), visible = v => !/^\s*!/.test(String(v || ''));
     const offresM = () => OFS;
-    const ecrireOffresM = L => { OFS = L; M.oa = L.map(x => x.a).join(';'); M.oo = L.map(x => x.o).join(';'); M.op = L.map(x => x.p).join(';'); };
+    const ecrireOffresM = L => { OFS = L; M.oa = L.map(x => (x.v === false && x.a ? '!' : '') + x.a).join(';'); M.oo = L.map(x => x.o).join(';'); M.op = L.map(x => x.p).join(';'); };
     let sale = false, base = null, sigCourante = null;
     const ed = document.createElement('div'); ed.className = 'editor'; ed.setAttribute('role', 'dialog'); ed.setAttribute('aria-modal', 'true');
     document.body.appendChild(ed); document.body.style.overflow = 'hidden';
@@ -4191,13 +4197,12 @@ function nettoyerHtml(h){
           </div></div>
 
         ${M ? `<div class="card"><h3>Prix</h3><p class="tag">Le prix de ce produit dans cette boutique (${esc(PB.devise)}). Pour le vendre dans une autre boutique : copie-le, colle-le là-bas et change le prix.</p>
-            <div class="pxg"><span></span><b>Prix</b><b>Prix barré</b>
-              <span>Unité</span><input class="field" inputmode="numeric" data-pm="p1" value="${esc(M.p1 || '')}" placeholder="ex : 15500"><input class="field" inputmode="numeric" data-pm="ancien" value="${esc(M.ancien || '')}" placeholder="facultatif">
-              <span>Deux</span><input class="field" data-pm="p2" value="${esc(M.p2 || '')}" placeholder="ex : 27000"><output class="pxauto" data-pb="2"></output>
-              <span>Trois</span><input class="field" data-pm="p3" value="${esc(M.p3 || '')}" placeholder="ex : 36000"><output class="pxauto" data-pb="3"></output></div>
-            <p class="tag" style="margin-top:8px">Le prix barré de 2 et 3 pièces est calculé tout seul (prix barré de l’unité × quantité). Tu peux aussi écrire un pourcentage (ex : 10%). Laisse « Deux » ou « Trois » vide pour ne pas proposer l’offre.</p>
+            <div class="pxg pxg4"><span></span><b>Prix</b><b>Prix barré</b><b class="pxsite">Site</b>
+              <span>Unité</span><input class="field" inputmode="numeric" data-pm="p1" value="${esc(M.p1 || '')}" placeholder="ex : 15500"><input class="field" inputmode="numeric" data-pm="ancien" value="${esc(M.ancien || '')}" placeholder="facultatif"><span class="pxtj" title="Toujours affiché">✓</span>
+              ${[2, 3].map(q => `<span>${q === 2 ? 'Deux' : 'Trois'}</span><input class="field ${visible(M['p' + q]) ? '' : 'pxoff'}" data-pm="p${q}" value="${esc(sansMarque(M['p' + q]))}" placeholder="ex : ${q === 2 ? 27000 : 36000}"><output class="pxauto ${visible(M['p' + q]) ? '' : 'pxoff'}" data-pb="${q}"></output><label class="pxcb"><input type="checkbox" data-pv="p${q}" ${visible(M['p' + q]) ? 'checked' : ''} aria-label="Afficher ${q} pièces sur le site"></label>`).join('')}</div>
+            <p class="tag" style="margin-top:8px">Le prix barré de 2 et 3 pièces est calculé tout seul (prix barré de l’unité × quantité). Tu peux aussi écrire un pourcentage (ex : 10%). Décoche « Site » pour cacher une offre sans perdre son prix.</p>
             <div class="ofsp"><div class="ofsph"><b>Offres cadeau</b><span class="tag">facultatif · ex : 2 achetés + 1 offert</span></div>
-            ${offresM().map((x, i) => `<div class="ofrow"><span class="ofn">${i + 1}</span>
+            ${offresM().map((x, i) => `<div class="ofrow ${x.v === false ? 'ofoff' : ''}"><label class="ofvis">Site<input type="checkbox" data-ofv="${i}" ${x.v === false ? '' : 'checked'} aria-label="Afficher l’offre ${i + 1} sur le site"></label>
               <label>Achetés<input class="field" inputmode="numeric" data-ofa="${i}" value="${esc(x.a)}" placeholder="ex : 2"></label>
               <label>Offerts<input class="field" inputmode="numeric" data-ofo="${i}" value="${esc(x.o)}" placeholder="ex : 1"></label>
               <label>Prix<input class="field" inputmode="numeric" data-ofp="${i}" value="${esc(x.p)}" placeholder="auto"></label>
@@ -4255,7 +4260,8 @@ function nettoyerHtml(h){
       ed.querySelectorAll('[data-aver]').forEach(t => P.avis[t.dataset.aver].verifie = t.checked);
       ed.querySelectorAll('[data-ano]').forEach(t => P.avis[t.dataset.ano].note = Number(t.value));
       ed.querySelectorAll('[data-pm]').forEach(t => { M[t.dataset.pm] = t.value.trim(); });
-      if (M && ed.querySelector('.ofsp')){ const L = [...ed.querySelectorAll('[data-ofa]')].map(t => { const i = t.dataset.ofa, g = a => (ed.querySelector(`[data-${a}="${i}"]`) || {}).value || ''; return {a: g('ofa').trim(), o: g('ofo').trim(), p: g('ofp').trim()}; }); ecrireOffresM(L); }
+      if (M && ed.querySelector('.ofsp')){ const L = [...ed.querySelectorAll('[data-ofa]')].map(t => { const i = t.dataset.ofa, g = a => (ed.querySelector(`[data-${a}="${i}"]`) || {}).value || ''; const cb = ed.querySelector(`[data-ofv="${i}"]`); return {a: g('ofa').trim(), o: g('ofo').trim(), p: g('ofp').trim(), v: !cb || cb.checked}; }); ecrireOffresM(L); }
+      ['p2', 'p3'].forEach(k => { const cb = M && ed.querySelector(`[data-pv="${k}"]`); if (cb && !cb.checked && M[k]) M[k] = '!' + M[k]; });
       ed.querySelectorAll('[data-px]').forEach(t => {
         const [pays, champ] = t.dataset.px.split('|');
         let x = prixDe(pays); if (!x){ if (!t.value.trim()) return; x = {pays}; P.prix.push(x); }
@@ -4506,7 +4512,8 @@ function nettoyerHtml(h){
       const pxAuto = () => { const n = v => Number(String(v || '').replace(/[^\d.]/g, '')) || 0, g = q => ed.querySelector(`[data-pm="${q}"]`), p1 = n(g('p1') && g('p1').value), an = n(g('ancien') && g('ancien').value), b = an > p1 ? an : p1;
         ed.querySelectorAll('[data-pb]').forEach(o => { const q = +o.dataset.pb, v = g('p' + q) && g('p' + q).value.trim(); o.textContent = b && v ? fmt(b * q) : '—'; }); };
       ed.querySelectorAll('[data-pm]').forEach(t => t.addEventListener('input', pxAuto)); pxAuto();
-      const ofA = ed.querySelector('#ofAdd'); if (ofA) ofA.onclick = maj(() => { ecrireOffresM(OFS.concat([{a: '', o: '', p: ''}])); setTimeout(() => { const l = ed.querySelectorAll('[data-ofa]'); if (l.length) l[l.length - 1].focus(); }, 0); });
+      const ofA = ed.querySelector('#ofAdd'); if (ofA) ofA.onclick = maj(() => { ecrireOffresM(OFS.concat([{a: '', o: '', p: '', v: true}])); setTimeout(() => { const l = ed.querySelectorAll('[data-ofa]'); if (l.length) l[l.length - 1].focus(); }, 0); });
+      ed.querySelectorAll('[data-pv],[data-ofv]').forEach(c => c.onchange = maj(() => {}));
       ed.querySelectorAll('[data-ofdel]').forEach(b => b.onclick = maj(() => { const L = OFS.slice(); L.splice(+b.dataset.ofdel, 1); ecrireOffresM(L); }));
       ed.querySelectorAll('[data-cp]').forEach(b => b.onclick = maj(() => {
         const srcP = prixDe(b.dataset.cp); if (!srcP) return;
@@ -5043,7 +5050,7 @@ function nettoyerHtml(h){
     chevron: '<path d="M9 6l6 6-6 6"/>', retour: '<path d="M15 18l-6-6 6-6"/>', loupe: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '124';
+  const VERSION_APP = '125';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
