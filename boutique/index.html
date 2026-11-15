@@ -533,9 +533,18 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
     const ck = n => { const m = document.cookie.match('(?:^|; )' + n + '=([^;]*)'); return m ? decodeURIComponent(m[1]) : ''; };
     a.fbp = ck('_fbp'); a.fbc = ck('_fbc') || (a.fbclid ? 'fb.1.' + (a.t || Date.now()) + '.' + a.fbclid : '');
     a.ttp = ck('_ttp'); a.ua = navigator.userAgent.slice(0, 300);
+    if (ipClient) a.ip = ipClient;
     delete a.t;
     return a;
   }
+  // Adresse IP du visiteur (demandée en arrière-plan, sans jamais ralentir la page) :
+  // Meta en a besoin, avec le navigateur, pour relier l'achat envoyé par le serveur à la bonne personne.
+  let ipClient = '';
+  try {
+    const ac = window.AbortController ? new AbortController() : null; if (ac) setTimeout(() => ac.abort(), 4000);
+    fetch('https://api64.ipify.org?format=json', ac ? {signal: ac.signal, cache: 'no-store'} : {cache: 'no-store'})
+      .then(r => r.json()).then(j => { if (j && /^[0-9a-f:.]{7,45}$/i.test(j.ip || '')) ipClient = j.ip; }).catch(() => {});
+  } catch(e){}
 
   /* ---------- Outils ---------- */
   function money(n, dev){
