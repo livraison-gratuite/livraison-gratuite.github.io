@@ -66,17 +66,17 @@ const API = "https://script.google.com/macros/s/AKfycbwgdtcXlXB9niD3hactnz4SLIrp
   const tel = t => 'tel:' + String(t || '').replace(/[^\d+]/g, '');
   function dessiner(msg){
     const A = D.aFaire || {rappeler: [], statut: []};
-    const liste = (L, vide) => L.length ? L.map(x => `<div class="item"><div><b>${esc(x.nom || 'Sans nom')}${x.relance ? '<span class="tag">Relance</span>' : ''}</b><small>n°${esc(x.numero)} · ${esc(x.produit)}${x.statut ? ' · ' + esc(x.statut) : ''}</small></div>${x.tel ? `<a href="${esc(tel(x.tel))}">📞 Appeler</a>` : ''}</div>`).join('') : `<p class="vide">${vide}</p>`;
+    const liste = (L, vide) => L.length ? L.map(x => `<div class="item"><div><b>${esc(x.nom || 'Sans nom')}${x.relance ? '<span class="tag">Relance</span>' : ''}</b><small>n°${esc(x.numero)} · ${esc(x.produit)}${x.statut ? ' · ' + esc(x.statut) : ''}</small></div>${x.tel ? `<a href="${esc(tel(x.tel))}">Appeler</a>` : ''}</div>`).join('') : `<p class="vide">${vide}</p>`;
     const peut = 'Notification' in window && 'serviceWorker' in navigator;
     app.innerHTML = `<div class="top"><img src="icon-192.png" alt=""><div><h1>Rappels de commandes</h1><p class="sub">${esc(D.boutique)} · ${esc(D.pays)}</p></div></div>
-      ${D.actif && osOk ? `<div class="etat ok"><span>✅</span><div><b>Rappels activés sur ce téléphone</b><span class="sub">Toutes les 30 min : statuts à changer. Chaque heure : clients à rappeler (de 7 h à 21 h).</span></div></div>`
-        : `<div class="etat"><span>🔔</span><div><b>Active les rappels (une seule fois)</b><span class="sub">Tu recevras sur ce téléphone, même verrouillé : toutes les 30 min les commandes dont tu dois changer le statut, et chaque heure les clients à rappeler.</span></div></div>
+      ${D.actif && osOk ? `<div class="etat ok"><span><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><b>Rappels activés sur ce téléphone</b><span class="sub">Toutes les 30 min : statuts à changer. Chaque heure : clients à rappeler (de 7 h à 21 h).</span></div></div>`
+        : `<div class="etat"><span><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></span><div><b>Active les rappels (une seule fois)</b><span class="sub">Tu recevras sur ce téléphone, même verrouillé : toutes les 30 min les commandes dont tu dois changer le statut, et chaque heure les clients à rappeler.</span></div></div>
         ${ios && !installe ? `<div class="ios"><b>Sur iPhone, d’abord :</b><ol><li>Touche le bouton <b>Partager</b> (carré avec une flèche) en bas de Safari.</li><li>Choisis <b>« Sur l’écran d’accueil »</b>, puis <b>Ajouter</b>.</li><li>Ouvre <b>Rappels</b> depuis ton écran d’accueil et touche « Activer les rappels ».</li></ol></div>` : ''}
-        ${peut ? `<button class="btn bleu" id="act">🔔 Activer les rappels</button>` : `<div class="err">Ce navigateur ne peut pas recevoir de notifications. Ouvre ce lien avec Chrome (Android) ou Safari (iPhone).</div>`}`}
+        ${peut ? `<button class="btn bleu" id="act">Activer les rappels</button>` : `<div class="err">Ce navigateur ne peut pas recevoir de notifications. Ouvre ce lien avec Chrome (Android) ou Safari (iPhone).</div>`}`}
       ${msg ? `<div class="err">${esc(msg)}</div>` : ''}
-      <div class="card"><h2>✍️ Statut à changer (${A.statut.length})</h2><p class="sub" style="margin-bottom:6px">Encore « Nouvelle » depuis plus de 30 min : mets le statut et ce que le client a dit.</p>${liste(A.statut, 'Rien à changer pour le moment 👍')}</div>
-      <div class="card"><h2>📞 Clients à rappeler (${A.rappeler.length})</h2><p class="sub" style="margin-bottom:6px">Ils n’ont pas annulé : à rappeler, demain, WhatsApp, ne décroche pas…</p>${liste(A.rappeler, 'Personne à rappeler pour le moment 👍')}</div>
-      ${D.fichier ? `<a class="btn bleu" href="${esc(D.fichier)}" target="_blank" rel="noopener">📄 Ouvrir ma feuille des commandes</a>` : ''}
+      <div class="card"><h2>Statut à changer (${A.statut.length})</h2><p class="sub" style="margin-bottom:6px">Encore « Nouvelle » depuis plus de 30 min : mets le statut et ce que le client a dit.</p>${liste(A.statut, 'Rien à changer pour le moment.')}</div>
+      <div class="card"><h2>Clients à rappeler (${A.rappeler.length})</h2><p class="sub" style="margin-bottom:6px">Ils n’ont pas annulé : à rappeler, demain, WhatsApp, ne décroche pas…</p>${liste(A.rappeler, 'Personne à rappeler pour le moment.')}</div>
+      ${D.fichier ? `<a class="btn bleu" href="${esc(D.fichier)}" target="_blank" rel="noopener">Ouvrir ma feuille des commandes</a>` : ''}
       <button class="btn gris" id="maj">↻ Actualiser</button>`;
     const a = document.getElementById('act'); if (a) a.onclick = activer;
     document.getElementById('maj').onclick = () => charger();
@@ -87,7 +87,7 @@ const API = "https://script.google.com/macros/s/AKfycbwgdtcXlXB9niD3hactnz4SLIrp
       window.OneSignalDeferred.push(async OneSignal => {
         try {
           await OneSignal.init({ appId: D.onesignal, serviceWorkerPath: 'agence/OneSignalSDKWorker.js', serviceWorkerParam: { scope: '/agence/' }, notifyButton: { enable: false },
-            welcomeNotification: { title: 'Rappels activés ✅', message: 'Tu seras prévenu pour les clients à rappeler et les statuts à changer.' } });
+            welcomeNotification: { title: 'Rappels activés', message: 'Tu seras prévenu pour les clients à rappeler et les statuts à changer.' } });
           osOk = !!(OneSignal.Notifications.permission && OneSignal.User.PushSubscription.optedIn);
           if (osOk){ try { await OneSignal.User.addTags({vendoo: 'ag', agence: k}); } catch(x){} if (!D.actif) try { await appel({action: 'abonne'}); D.actif = true; } catch(x){} }
           ok(true);
@@ -103,7 +103,7 @@ const API = "https://script.google.com/macros/s/AKfycbwgdtcXlXB9niD3hactnz4SLIrp
         try { await OneSignal.Notifications.requestPermission(); await OneSignal.User.PushSubscription.optIn(); await OneSignal.User.addTags({vendoo: 'ag', agence: k}); ok(); } catch(x){ ko(x); } }));
       if (!(window.OneSignal && OneSignal.Notifications.permission)) throw new Error('Tu as refusé les notifications. Autorise-les dans les réglages du navigateur pour ce site, puis réessaie.');
       await appel({action: 'abonne'}); D.actif = true; osOk = true; dessiner();
-    } catch(x){ b.disabled = false; b.textContent = '🔔 Activer les rappels'; dessiner(x.message || 'Activation impossible. Réessaie.'); }
+    } catch(x){ b.disabled = false; b.textContent = 'Activer les rappels'; dessiner(x.message || 'Activation impossible. Réessaie.'); }
   }
   async function charger(){
     if (!k){ app.innerHTML = '<div class="err">Lien incomplet. Ouvre le lien reçu par e-mail (« Active tes rappels de commandes »).</div>'; return; }

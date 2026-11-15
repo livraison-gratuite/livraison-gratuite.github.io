@@ -508,6 +508,7 @@ html.ordi .overlay.plein{padding:0}
 .iabtn svg{width:26px;height:26px}
 .nav.hidden ~ .iabtn{display:none}
 html.ordi .iabtn{bottom:24px;right:24px}
+.iabtn{display:none!important}   /* l'aide s'ouvre depuis Paramètres → Aide */
 .iapan{position:fixed;inset:0;z-index:950;background:#fff;display:flex;flex-direction:column}
 html.ordi .iapan{inset:auto 24px 24px auto;width:420px;height:min(680px,calc(100vh - 48px));border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden}
 .iahd{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 14px 12px;border-bottom:1px solid var(--line)}
@@ -737,9 +738,9 @@ body.v-settings{background:var(--bg)}
 .pmsheet>button.petat.cur{background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--main)}
 .editor{position:fixed;inset:0;z-index:50;background:var(--surface);overflow-y:auto;-webkit-overflow-scrolling:touch}
 .edbar{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;padding:calc(env(safe-area-inset-top) + 10px) 12px 10px;border-bottom:1px solid var(--line)}
-.edbar b{font-size:17px;flex:1;text-align:center;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.edbar b{font-size:17px;flex:1;text-align:left;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .edacts{display:flex;gap:8px;align-items:center}
-.edacts.off{visibility:hidden;pointer-events:none}
+.edacts.off{visibility:hidden;pointer-events:none}.edbar .edacts.off{display:none}
 .edacts.edbas{margin-top:6px}.edacts.edbas .btn{flex:1}
 .edacts.edbas.off{display:none}
 @media (max-width:520px){.edbar.chg b{display:none}.edbar.chg .edacts{flex:1;justify-content:flex-end}}
@@ -1160,6 +1161,30 @@ html.ordi .ab .row{max-width:520px;margin-top:10px}
 html.ordi .ab .row a,html.ordi .ab .row button{flex:1;height:36px;padding:0 12px;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:13.5px;font-weight:600;border:1px solid var(--pcline);background:var(--pccard);color:var(--ink)}
 html.ordi .ab .row .a-wa{background:#25D366;border-color:#25D366;color:#fff}
 html.ordi .ab .row .a-call{background:var(--ink);border-color:var(--ink);color:#fff}
+
+/* ---------- Pages plein écran (au lieu des fenêtres qui montent du bas) ---------- */
+.overlay.page{align-items:stretch;justify-content:stretch;background:var(--bg,#fff);padding:0;animation:pgfd .14s ease-out}
+.detail.page{max-width:none;width:100%;height:100%;max-height:none;border-radius:0;box-shadow:none;padding:0 16px calc(28px + env(safe-area-inset-bottom));animation:none;overflow-y:auto;overscroll-behavior:contain}
+.detail.page>.grab,.detail.page .pgh,.detail.page .pgfermer{display:none}
+.detail.page .nfhead{display:none}
+@keyframes pgfd{from{opacity:0}}
+.pgbar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:4px;margin:0 -16px 12px;padding:calc(env(safe-area-inset-top) + 6px) 8px 6px;min-height:56px;background:var(--card,#fff);border-bottom:1px solid var(--line)}
+.pgback{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:none;border:0;color:var(--ink);cursor:pointer;flex:0 0 auto}
+.pgback:active,.pgback:hover{background:var(--surface,#f3f4f6)}
+.pgback svg{width:24px;height:24px}
+.pgtit{flex:1;min-width:0;font-size:17px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pgsp{display:flex;align-items:center;flex:0 0 auto;min-width:44px;justify-content:flex-end}
+.pgsp .iconbtn2{width:44px;height:44px;background:none}
+html.ordi .overlay.page{left:236px;background:var(--pcbg,var(--bg));padding:0;align-items:stretch;backdrop-filter:none}
+html.ordi .detail.page{max-width:none;max-height:none;border-radius:0;box-shadow:none;background:transparent;padding:0 0 48px}
+html.ordi .detail.page>*:not(.pgbar){max-width:980px;margin-left:auto;margin-right:auto;padding-left:32px;padding-right:32px;box-sizing:border-box}
+html.ordi .detail.page>.pgbar{margin:0 0 18px;padding:10px 24px;background:var(--pccard,var(--card));border-bottom:1px solid var(--pcline,var(--line))}
+html.ordi .detail.page>.pgh+*{margin-top:0}
+.icn{width:20px;height:20px;display:inline-block;vertical-align:middle;flex:0 0 auto}
+.almsg{margin:4px 0 0;font-size:16px;line-height:1.5;white-space:pre-line;text-align:left;color:var(--ink)}
+.spin-s{width:16px;height:16px;border-width:2px;vertical-align:-3px}
+.charge{display:flex;justify-content:center;align-items:center;padding:36px 0}
+.charge .spin{width:26px;height:26px}
 </style>
 </head>
 <body>
@@ -1215,16 +1240,132 @@ html.ordi .ab .row .a-call{background:var(--ink);border-color:var(--ink);color:#
   mq.addEventListener ? mq.addEventListener('change', () => location.reload()) : mq.addListener(() => location.reload());
 })();
 
-/* Interface sobre : on retire l'emoji placé au début des titres, boutons et menus (le texte reste) */
+/* ---------- Icônes de l'interface (traits fins, comme les applications pro) ---------- */
+window.ICN = (function(){
+  const s = p => '<svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>';
+  return {
+    panier: s('<circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 3.5h2.6l2.3 11.2a1.6 1.6 0 0 0 1.6 1.3h8.6a1.6 1.6 0 0 0 1.6-1.2L21 8H6"/>'),
+    horloge: s('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
+    argent: s('<rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/>'),
+    sac: s('<path d="M5 8h14l-1 12.2a1 1 0 0 1-1 .8H7a1 1 0 0 1-1-.8z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>'),
+    lien: s('<path d="M10 13.5a4.5 4.5 0 0 0 6.4.4l2.6-2.6a4.5 4.5 0 0 0-6.4-6.4l-1.4 1.4"/><path d="M14 10.5a4.5 4.5 0 0 0-6.4-.4L5 12.7a4.5 4.5 0 0 0 6.4 6.4l1.4-1.4"/>'),
+    image: s('<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="m21 16-5-5-9 9"/>'),
+    poubelle: s('<path d="M4 7h16M10 11v6M14 11v6M6 7l1 12.2a1 1 0 0 0 1 .8h8a1 1 0 0 0 1-.8L18 7M9 7V4.5h6V7"/>'),
+    change: s('<path d="M4 8h13l-3-3M20 16H7l3 3"/>'),
+    bulle: s('<path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4.2A8 8 0 1 1 20 12z"/>'),
+    envoyer: s('<path d="M4 12h15M13 6l6 6-6 6"/>'),
+    retour: s('<path d="M15 5l-7 7 7 7"/>'),
+    loupe: s('<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/>')
+  };
+})();
+
+/* ---------- Finitions de l'interface : sans emoji, pages plein écran, bouton retour du téléphone ---------- */
 (function(){
-  const SEL = 'h1,h2,h3,h4,summary,button,a,.chip,.set b,.nfit b,.lbl,.kpi small,.tile small,.okmsg,.iaerr,.ptile b,.ianote b,label';
-  let EMO; try { EMO = new RegExp('^(\\s*)(?:\\p{Extended_Pictographic}|\\p{Regional_Indicator}|[\\u2190-\\u21FF\\u2300-\\u23FF\\u25A0-\\u25FF\\u2600-\\u27BF\\u2980-\\u29FF\\u2B00-\\u2BFF])(?:\\uFE0F|\\u200D|\\p{Extended_Pictographic}|\\p{Emoji_Modifier})*\\s+(?=\\S)', 'u'); } catch(e){ return; }
-  const net = el => { const t = el.firstChild; if (t && t.nodeType === 3 && EMO.test(t.nodeValue)) t.nodeValue = t.nodeValue.replace(EMO, '$1'); };
+  // 1) Emojis : retirés de tous les textes affichés (les symboles d'interface ✓ ✕ ⋮ ← → restent)
+  let EMO; try { EMO = new RegExp('(?:\\p{Extended_Pictographic}|\\p{Regional_Indicator})(?:\\uFE0F|\\u200D|\\p{Extended_Pictographic}|\\p{Emoji_Modifier})*\\s?', 'gu'); } catch(e){}
+  const GARDE = /^[✓✕×★☆←→↔↶↷⇤⇥≡⋮›‹▾▸▴▶◀©®™]$/;
+  const nettoyerTexte = t => EMO ? t.replace(EMO, m => GARDE.test(m.trim()) ? m : '') : t;
+  const HORS = 'input,textarea,[contenteditable],.rtezone,script,style,.nfbody-libre';
+  function nettoyer(racine){
+    if (!EMO || !racine) return;
+    if (racine.nodeType === 3){ const p = racine.parentElement; if (p && !p.closest(HORS)){ const v = nettoyerTexte(racine.nodeValue); if (v !== racine.nodeValue) racine.nodeValue = v; } return; }
+    if (racine.nodeType !== 1 || racine.closest && racine.closest(HORS)) return;
+    const w = document.createTreeWalker(racine, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement && n.parentElement.closest(HORS) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+    let n; while ((n = w.nextNode())){ const v = nettoyerTexte(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v; }
+    racine.querySelectorAll && racine.querySelectorAll('[placeholder],[aria-label],[title]').forEach(e => ['placeholder', 'aria-label', 'title'].forEach(a => { const v = e.getAttribute(a); if (v){ const x = nettoyerTexte(v).trim(); if (x !== v) e.setAttribute(a, x); } }));
+  }
+  window.sansEmoji = nettoyerTexte;
+
+  // 2) Pages : chaque fenêtre (notifications, réglages, point…) s'ouvre en plein écran, avec une barre « ← Titre » en haut.
+  //    Les petits menus ⋮ et les confirmations restent des fenêtres courtes.
+  const estPage = ov => ov.classList.contains('overlay') && !ov.classList.contains('plein') && ov.querySelector(':scope > .detail') && !ov.querySelector(':scope > .detail.pmsheet, :scope > .detail.court');
+  const pile = []; let ignorer = 0;
+  const boutonFermer = d => d.querySelector('[data-x], #ptX, #edX') || [...d.querySelectorAll('button')].reverse().find(b => /^(Fermer|Terminé|OK)$/i.test(b.textContent.trim()));
+  function fermerPage(ov){
+    const d = ov.querySelector(':scope > .detail'); const b = d && boutonFermer(d);
+    if (b) b.click(); else ov.remove();
+  }
+  function habiller(ov){
+    const d = ov.querySelector(':scope > .detail'); if (!d) return;
+    ov.classList.add('page'); d.classList.add('page');
+    let bar = d.querySelector(':scope > .pgbar');
+    const h = [...d.querySelectorAll('h2')].find(x => !x.closest('.pgbar'));
+    const titre = h ? h.textContent.trim() : '';
+    if (h) h.classList.add('pgh');
+    if (!bar){
+      bar = document.createElement('div'); bar.className = 'pgbar';
+      bar.innerHTML = '<button type="button" class="pgback" aria-label="Retour">' + ICN.retour + '</button><b class="pgtit"></b><span class="pgsp"></span>';
+      d.insertBefore(bar, d.firstChild);
+      bar.querySelector('.pgback').onclick = () => fermerPage(ov);
+    }
+    bar.querySelector('.pgtit').textContent = titre;
+    // Le menu ⋮ éventuel de l'en-tête passe dans la barre
+    const menu = d.querySelector('.nfhead .iconbtn2'); const sp = bar.querySelector('.pgsp');
+    if (menu && !sp.contains(menu)) sp.appendChild(menu);
+    const f = boutonFermer(d); if (f && /^Fermer$/i.test(f.textContent.trim())) f.classList.add('pgfermer');
+  }
+  function suivre(ov){
+    if (pile.includes(ov)) return;
+    pile.push(ov);
+    try { history.pushState({vpage: pile.length}, ''); } catch(e){}
+  }
+  addEventListener('popstate', () => {
+    if (ignorer > 0){ ignorer--; return; }
+    // Le bouton retour du téléphone ferme la page ouverte au lieu de quitter l'application
+    let top = null; while (pile.length && !top){ const x = pile.pop(); if (x.isConnected) top = x; }
+    if (!top) return;
+    if (top.classList.contains('editor') || top.classList.contains('pgp')){ const b = top.querySelector(top.classList.contains('pgp') ? '#pgBack' : '#edX'); if (b) b.click(); setTimeout(() => { if (top.isConnected && !top.classList.contains('sort')) suivre(top); }, 400); return; }
+    fermerPage(top);
+    setTimeout(() => { if (top.isConnected) suivre(top); }, 400);
+  });
+  function retirer(ov){
+    const i = pile.indexOf(ov); if (i < 0) return;
+    pile.splice(i, 1); ignorer++; try { history.back(); } catch(e){ ignorer--; }
+  }
+  // Fermer tout (menu de navigation) : les pages ouvertes et la fiche produit sans modification en cours
+  window.fermerPages = function(){
+    const ed = document.querySelector('.editor');
+    if (ed && ed.querySelector('.edacts:not(.off)')){ const b = ed.querySelector('#edX'); if (b) b.click(); return false; }
+    document.querySelectorAll('body > .overlay, body > .pgp').forEach(o => o.remove());
+    if (ed){ const b = ed.querySelector('#edX'); if (b) b.click(); }
+    document.body.style.overflow = '';
+    return true;
+  };
+
   let file = new Set(), prevu = false;
-  const passe = () => { prevu = false; file.forEach(n => { if (!n.isConnected) return; if (n.matches && n.matches(SEL)) net(n); if (n.querySelectorAll) n.querySelectorAll(SEL).forEach(net); }); file = new Set(); };
-  const obs = new MutationObserver(m => { m.forEach(x => x.addedNodes.forEach(n => { if (n.nodeType === 1) file.add(n); else if (n.parentElement) file.add(n.parentElement); })); if (!prevu){ prevu = true; requestAnimationFrame(passe); } });
-  const go = () => { obs.observe(document.body, {childList: true, subtree: true}); file.add(document.body); passe(); };
+  const passe = () => {
+    prevu = false;
+    file.forEach(n => {
+      if (!n.isConnected) return;
+      nettoyer(n);
+      const ov = n.nodeType === 1 ? (n.matches('body > .overlay, body > .editor, body > .pgp') ? n : n.closest && n.closest('body > .overlay')) : null;
+      if (ov && ov.classList.contains('overlay') && estPage(ov)){ habiller(ov); suivre(ov); }
+      if (ov && (ov.classList.contains('editor') || ov.classList.contains('pgp'))) suivre(ov);
+      if (ov && ov.classList.contains('overlay') && ov.classList.contains('plein')) suivre(ov);
+    });
+    file = new Set();
+  };
+  const obs = new MutationObserver(m => {
+    m.forEach(x => {
+      x.addedNodes.forEach(n => { if (n.nodeType === 1 || n.nodeType === 3) file.add(n.nodeType === 3 ? n : n); });
+      if (x.type === 'characterData') file.add(x.target);
+      x.removedNodes.forEach(n => { if (n.nodeType === 1 && pile.includes(n)) retirer(n); });
+    });
+    if (!prevu){ prevu = true; (window.queueMicrotask || setTimeout)(passe); }
+  });
+  const go = () => { obs.observe(document.body, {childList: true, subtree: true, characterData: true}); file.add(document.body); passe(); };
   if (document.body) go(); else document.addEventListener('DOMContentLoaded', go);
+
+  // 3) Messages : une fenêtre de l'application au lieu de la boîte grise du navigateur
+  window.alert = function(msg){
+    const t = nettoyerTexte(String(msg == null ? '' : msg)).trim();
+    const o = document.createElement('div'); o.className = 'cfov'; o.style.zIndex = 1000;
+    o.innerHTML = '<div class="cfbox" role="alertdialog" aria-modal="true"><p class="almsg"></p><div class="cfbtns"><button class="btn blue" data-r="1">OK</button></div></div>';
+    o.querySelector('.almsg').textContent = t;
+    const fin = () => o.remove();
+    o.querySelector('[data-r]').onclick = fin; o.onclick = e => { if (e.target === o) fin(); };
+    document.body.appendChild(o); setTimeout(() => { const b = o.querySelector('[data-r]'); b && b.focus(); }, 30);
+  };
 })();
 
 (function(){
@@ -1279,6 +1420,7 @@ function nettoyerHtml(h){
     const _al = window.alert.bind(window); window.alert = m => _al(frErr(m));
   } catch(e){}
   const CAL = '<svg class="cal" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>';
+  const nomSource = v => { const x = String(v || '').trim(), m = {facebook: 'Facebook', fb: 'Facebook', instagram: 'Instagram', ig: 'Instagram', tiktok: 'TikTok', google: 'Google', whatsapp: 'WhatsApp', direct: 'Direct'}; return m[x.toLowerCase()] || x; };
   const fmt = (n, d) => (Number(n)||0).toLocaleString('fr-FR', {maximumFractionDigits: 2}).replace(/[  ]/g, ' ') + (d ? ' ' + d : '');
   // Comme Shopify : à partir d'un million, « 3,26 M FCFA » (3 chiffres utiles)
   const fmtM = (n, d) => { n = Number(n) || 0; const a = Math.abs(n);
@@ -1354,7 +1496,7 @@ function nettoyerHtml(h){
   async function notifyNew(o){
     chime();
     const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role','status');
-    t.innerHTML = `<div class="e">🛒</div><div><b>Nouvelle commande n°${esc(o.numero)}</b>${esc(fmt(o.total, o.devise))} · ${esc(o.pays)}</div>`;
+    t.innerHTML = `<div class="e">${ICN.panier}</div><div><b>Nouvelle commande n°${esc(o.numero)}</b>${esc(fmt(o.total, o.devise))} · ${esc(o.pays)}</div>`;
     t.onclick = () => { t.remove(); go('orders'); if (D && D.commandes && D.commandes.some(x => x.numero === o.numero)) detail(o.numero); };
     document.body.appendChild(t); setTimeout(() => t.remove(), 7000);
     try {
@@ -1385,7 +1527,7 @@ function nettoyerHtml(h){
       relVus[k] = now; change = true;
       chime('relance');
       const t = document.createElement('div'); t.className = 'toast relance'; t.setAttribute('role', 'status');
-      t.innerHTML = `<div class="e">⏰</div><div><b>À relancer : ${esc(a.nom || 'Sans nom')}</b>${esc(a.produit)} · ${esc(a.prix)} · ${esc(a.pays)}</div>`;
+      t.innerHTML = `<div class="e">${ICN.horloge}</div><div><b>À relancer : ${esc(a.nom || 'Sans nom')}</b>${esc(a.produit)} · ${esc(a.prix)} · ${esc(a.pays)}</div>`;
       t.onclick = () => { t.remove(); if (a.lien) open(lienRelance(a.lien), '_blank'); else go('abandons'); };
       document.body.appendChild(t); setTimeout(() => t.remove(), 9000);
       try {
@@ -1409,7 +1551,7 @@ function nettoyerHtml(h){
         <h2>Mes boutiques</h2><p class="sub">Boutique principale + ${n} / ${max} boutiques · Une boutique = une agence (ses commandes ne se mélangent pas). Une pub sur plusieurs pays peut utiliser la principale : chaque commande part toute seule dans la boutique de son pays.</p>
         ${msg ? `<div class="okmsg">${msg}</div>` : ''}
         ${presse ? `<div class="bqclip">📋 ${presse.ids.length} produit${presse.ids.length > 1 ? 's' : ''} copié${presse.ids.length > 1 ? 's' : ''} de « ${esc(presse.nom)} » · ouvre l’autre boutique, puis ≡ → Paramètres → « Produits entre boutiques ».</div>` : ''}
-        ${!BQS ? '<div class="empty">Chargement…</div>' : l.map(b => `<div class="bqrow ${(b.code || '') === BQ ? 'on' : ''}">
+        ${!BQS ? '<div class="charge"><span class="spin"></span></div>' : l.map(b => `<div class="bqrow ${(b.code || '') === BQ ? 'on' : ''}">
           <div class="bqi"><b>${esc(b.nom)}</b><small>${b.principale ? 'Boutique principale' + (b.pays ? ' · ' + esc(nomsPaysBq(b.pays)) : '') + ' · pubs multi-pays' : esc(nomsPaysBq(b.pays))}${b.agence ? ' · agence : ' + esc(b.agence) : ''}${!b.active ? ' · <span style="color:var(--err)">désactivée</span>' : ''}${(b.code || '') === BQ ? ' · <span class="bqcur">Ouverte</span>' : ''}</small></div>
           <span class="bqgo" data-bm="${esc(b.code || '')}" aria-hidden="true">›</span></div>`).join('')}
         ${BQS && n < max ? '<button class="btn blue" id="bqNew" style="margin-top:14px">＋ Créer une nouvelle boutique</button>' : ''}
@@ -1512,7 +1654,7 @@ function nettoyerHtml(h){
   // Assistant IA : la clé Gemini gratuite de CE compte (toi ou ton abonné), gardée dans son Google Sheets
   async function brancherIA(testerTout){
     const K = 'IA – clé Gemini (gratuite sur aistudio.google.com)';
-    const o = feuille(`<h2>🤖 Assistant IA</h2><div id="iaB"><div class="empty">Chargement…</div></div>`);
+    const o = feuille(`<h2>🤖 Assistant IA</h2><div id="iaB"><div class="charge"><span class="spin"></span></div></div>`);
     let R; try { R = await bqAppel({action: 'reglages', code: ''}); } catch(e){ o.remove(); return alert('Impossible de charger : ' + e.message); }
     if (!o.isConnected) return;
     const ok = !!(R.valeurs || {})[K], KG = 'IA – clé Groq (gratuite sur console.groq.com)', okG = !!(R.valeurs || {})[KG];
@@ -1647,7 +1789,7 @@ function nettoyerHtml(h){
   // Pays de vente d'une boutique existante : agrandir ou réduire
   async function paysBq(b, retour){
     const code = b.code || '';
-    const att = feuille('<h2>Pays de vente</h2><div class="empty">Chargement…</div>');
+    const att = feuille('<h2>Pays de vente</h2><div class="charge"><span class="spin"></span></div>');
     let j; try { j = await bqAppel({action: 'pays', code}); } catch(e){ att.remove(); return alert('Impossible de charger les pays : ' + e.message); }
     att.remove();
     const c = await choisirPays(j.pays.map(p => ({nom: p.nom, code: p.code})), j.pays.filter(p => p.actif).map(p => p.code));
@@ -1662,7 +1804,7 @@ function nettoyerHtml(h){
   // Copier les produits : tous cochés, on décoche ceux qu'on ne veut pas
   async function copierBq(b, retour){
     const code = b.code || '';
-    const o = feuille(`<h2>📋 Copier les produits</h2><p class="sub">De « ${esc(b.nom)} ». Décoche ceux que tu ne veux pas copier.</p><div id="cpP"><div class="empty">Chargement…</div></div>`);
+    const o = feuille(`<h2>📋 Copier les produits</h2><p class="sub">De « ${esc(b.nom)} ». Décoche ceux que tu ne veux pas copier.</p><div id="cpP"><div class="charge"><span class="spin"></span></div></div>`);
     let j; try { j = await bqAppel({action: 'produitsListe', code}); } catch(e){ o.remove(); return alert('Impossible de charger les produits : ' + e.message); }
     if (!o.isConnected) return;
     const P = j.produits, sel = new Set(P.map(p => p.id)), box = o.querySelector('#cpP');
@@ -1700,7 +1842,7 @@ function nettoyerHtml(h){
   // Réglages d'une boutique depuis l'application (le Google Sheets reste à jour)
   async function reglagesBq(b){
     const code = b.code || '';
-    const o = feuille(`<h2>⚙️ Réglages</h2><p class="sub">« ${esc(b.nom)} » · aussi modifiables dans son Google Sheets, onglet Réglages.</p><div id="rgB"><div class="empty">Chargement…</div></div>`);
+    const o = feuille(`<h2>⚙️ Réglages</h2><p class="sub">« ${esc(b.nom)} » · aussi modifiables dans son Google Sheets, onglet Réglages.</p><div id="rgB"><div class="charge"><span class="spin"></span></div></div>`);
     let R, PX = null; try { R = await bqAppel({action: 'reglages', code}); } catch(e){ o.remove(); return alert('Impossible de charger les réglages : ' + e.message); }
     if (!o.isConnected) return;
     const V = Object.assign({}, R.valeurs), H = R.herite || {}, sub = !R.principale;
@@ -1789,7 +1931,7 @@ function nettoyerHtml(h){
   const PX_ETAT = {'Actif': ['on', 'Actif', 'Reçoit les visites et les achats'], 'En pause': ['pause', 'En pause', 'Ne reçoit plus rien pour le moment, tu peux le réactiver'], 'Désactivé': ['off', 'Désactivé', 'Coupé (pixel abandonné ou compte publicitaire fermé)']};
   async function pixelsMeta(b){
     const code = b ? (b.code || '') : (BQ || ''), nomB = b ? b.nom : ((D && D.boutique) || 'Ma boutique');
-    const o = feuille(`<h2>Pixels Meta</h2><p class="sub">« ${esc(nomB)} »</p><div id="pxB"><div class="empty">Chargement…</div></div>`);
+    const o = feuille(`<h2>Pixels Meta</h2><p class="sub">« ${esc(nomB)} »</p><div id="pxB"><div class="charge"><span class="spin"></span></div></div>`);
     let R = null;
     const appel = async x => { R = await call(Object.assign({type: 'pixels', b: code}, x)); return R; };
     const nomPays = l => { const L = (BQS && BQS.paysListe) || []; return l.map(c => (L.find(p => p.code === c) || {nom: c}).nom).join(', '); };
@@ -1905,7 +2047,7 @@ function nettoyerHtml(h){
   const sansAg = id => (PR && PR.sansAgence && PR.sansAgence[id]) || [];
   const libAgences = id => { const s = sansAg(id); return !s.length ? 'toutes' : s.indexOf('*') >= 0 ? 'aucune (test)' : 'sauf ' + s.join(', '); };
   async function choisirAgences(P){
-    const f = feuille(`<h2>Agences de livraison</h2><p class="sub">Choisis les agences qui reçoivent les commandes et les relances de <b>${esc(P.nom)}</b>.</p><div id="agL" class="rgch" style="margin:10px 0"><p class="sub">Chargement…</p></div>`);
+    const f = feuille(`<h2>Agences de livraison</h2><p class="sub">Choisis les agences qui reçoivent les commandes et les relances de <b>${esc(P.nom)}</b>.</p><div id="agL" class="rgch" style="margin:10px 0"><div class="charge"><span class="spin"></span></div></div>`);
     let j; try { j = await call({type: 'produits', action: 'agencesListe', id: P.id}); } catch(e){ f.querySelector('#agL').innerHTML = `<p class="sub">Impossible de charger : ${esc(e.message)}</p>`; return; }
     const L = j.pays || [], sans = j.sans || [], tout = sans.indexOf('*') >= 0;
     if (!L.length){ f.querySelector('#agL').innerHTML = '<p class="sub">Aucune agence de livraison n’est encore ajoutée dans tes boutiques.</p>'; return; }
@@ -1936,7 +2078,7 @@ function nettoyerHtml(h){
       ov.innerHTML = `<div class="detail bqsheet" role="dialog" aria-modal="true" aria-label="Vendoo"><div class="grab"></div>
         <h2>Vendoo</h2>
         ${msg ? `<div class="okmsg">${msg}</div>` : ''}
-        ${!V ? '<div class="empty">Chargement…</div>' : `
+        ${!V ? '<div class="charge"><span class="spin"></span></div>' : `
         <div class="vstat"><div><b>${V.stats.actifs}</b><small>abonnés actifs</small></div><div><b>${V.stats.essais || 0}</b><small>en essai</small></div><div><b>${V.stats.aValider}</b><small>à valider</small></div><div><b>${short(V.stats.encaisse30)}</b><small>F sur 30 j</small></div></div>
         <div class="seg" style="display:flex;margin:6px 0 4px">${[['payer', 'Paiements' + (av.length ? ' (' + av.length + ')' : '')], ['abos', 'Abonnés (' + V.comptes.length + ')'], ['codes', 'Codes promo']].map(([k, l]) => `<button data-vo="${k}" class="${onglet === k ? 'on' : ''}" style="flex:1">${l}</button>`).join('')}</div>
         ${onglet === 'payer' ? (V.paiements.length ? V.paiements.map(p => `<div class="vpay ${/valider/i.test(p.statut) ? 'av' : ''}">
@@ -1959,7 +2101,7 @@ function nettoyerHtml(h){
         <button class="btn ghost" id="vX" style="margin-top:10px">Fermer</button></div>`;
       ov.querySelector('#vX').onclick = () => ov.remove();
       ov.querySelectorAll('[data-vo]').forEach(b => b.onclick = () => { onglet = b.dataset.vo; dessiner(); });
-      const act = async (b, o, ok) => { b.disabled = true; const t = b.textContent; b.textContent = '…'; try { await appel(o); dessiner(ok); } catch(e){ b.disabled = false; b.textContent = t; alert(e.message); } };
+      const act = async (b, o, ok) => { b.disabled = true; const t = b.textContent; b.innerHTML = '<span class="spin spin-s"></span>'; try { await appel(o); dessiner(ok); } catch(e){ b.disabled = false; b.textContent = t; alert(e.message); } };
       ov.querySelectorAll('[data-vv]').forEach(b => b.onclick = async () => {
         if (!(await confirmer({titre: 'Valider ce paiement ?', texte: 'Vérifie d’abord dans tes SMS MoMo que tu as bien reçu l’argent avec cet ID de transaction.', ok: 'Oui, valider', danger: false, icone: '💳'}))) return;
         act(b, {op: 'valider', ligne: b.dataset.vv}, '✅ Paiement validé : abonnement activé et e-mail envoyé.'); });
@@ -1982,14 +2124,14 @@ function nettoyerHtml(h){
       ov.innerHTML = `<div class="detail bqsheet" role="dialog" aria-modal="true" aria-label="Agences"><div class="grab"></div>
         <h2>🚚 Agences – ${esc(nom)}</h2><p class="sub">Facultatif. Tu peux mettre <b>une ou plusieurs agences par pays</b> (ex. l’agence et son collaborateur) : elles reçoivent toutes les commandes de ce pays dans le même fichier. Une agence retirée perd l’accès à toutes les commandes.</p><p class="sub">🔔 <b>Rien à installer pour elles :</b> chaque agence reçoit un e-mail pour <b>chaque nouvelle commande</b> et <b>chaque client à relancer</b> (notification de l’appli Gmail, même téléphone verrouillé, iPhone compris). Les relances sont aussi dans l’onglet « Abandons » de leur fichier, juste après « Commandes ». Elles n’ont accès qu’à ce fichier, jamais à ton Google Sheets.</p>
         ${msg ? `<div class="okmsg">${msg}</div>` : ''}
-        ${!L ? '<div class="empty">Chargement…</div>' : !L.length ? '<div class="empty">Aucun pays actif dans cette boutique.</div>' : L.map(p => { const A = p.agences || (p.agence ? p.agence.split(/\s*,\s*/) : []); return `<div class="bqrow agbloc" style="grid-template-columns:1fr">
+        ${!L ? '<div class="charge"><span class="spin"></span></div>' : !L.length ? '<div class="empty">Aucun pays actif dans cette boutique.</div>' : L.map(p => { const A = p.agences || (p.agence ? p.agence.split(/\s*,\s*/) : []); return `<div class="bqrow agbloc" style="grid-template-columns:1fr">
           <div class="bqi"><b>${esc(p.nom)}</b><small>${A.length ? A.length + ' agence' + (A.length > 1 ? 's' : '') + ' reçoi' + (A.length > 1 ? 'vent' : 't') + ' les commandes' : 'Pas d’agence (tu livres toi-même)'}${p.fichier ? ` · <a href="${esc(p.fichier)}" target="_blank" rel="noopener">📄 Fichier des commandes</a>` : ''}</small></div>
           ${A.map(e => { const rp = (p.rappels || []).find(r => r.email.toLowerCase() === e.toLowerCase()); return `<div class="agrow"><span>📧 ${esc(e)}${rp ? `<small class="agrap ${rp.actif ? 'on' : ''}">${rp.actif ? '🔔 Rappels activés' : '🔕 Rappels pas encore activés'}</small>` : ''}</span>${rp ? `<button class="bqdel aglien" data-agl="${esc(rp.lien)}" data-age="${esc(e)}">🔔 Lien</button>` : ''}<button class="bqdel" data-agx="${esc(p.code)}" data-agn="${esc(e)}">Retirer</button></div>`; }).join('')}
           <div class="agadd"><input class="field" data-agm="${esc(p.code)}" type="email" placeholder="E-mail Google de l’agence à ajouter"><button data-ags="${esc(p.code)}">➕ Ajouter</button></div></div>`; }).join('')}
         <button class="btn ghost" id="agR" style="margin-top:12px">← Retour</button></div>`;
       ov.querySelector('#agR').onclick = () => retour();
       const liste = code => { const p = L.find(x => x.code === code); return p.agences || (p.agence ? p.agence.split(/\s*,\s*/).filter(Boolean) : []); };
-      const go = async (b, pays, emails, ok) => { b.disabled = true; b.textContent = '…'; try { await appel({action: 'agence', pays, email: emails.join(', ')}); BQS = null; try { localStorage.removeItem(K_BQS); } catch(x){} dess(ok); } catch(e){ alert(e.message); dess(); } };
+      const go = async (b, pays, emails, ok) => { b.disabled = true; b.innerHTML = '<span class="spin spin-s"></span>'; try { await appel({action: 'agence', pays, email: emails.join(', ')}); BQS = null; try { localStorage.removeItem(K_BQS); } catch(x){} dess(ok); } catch(e){ alert(e.message); dess(); } };
       ov.querySelectorAll('[data-ags]').forEach(b => b.onclick = () => {
         const code = b.dataset.ags, email = ov.querySelector(`[data-agm="${code}"]`).value.trim(), A = liste(code);
         if (!/^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(email)) return alert('Écris une adresse e-mail valide (ex. agence@gmail.com).');
@@ -2027,7 +2169,10 @@ function nettoyerHtml(h){
     let STK = null, sedit = null, sfocus = (opts && opts.stock) || null, PRD = null;
     if (sfocus) vue = 'stocks';
     const ov = document.createElement('div'); ov.className = 'overlay';
-    const appel = async o => { const j = await call(Object.assign({type: 'point', semaine: sem}, o)); P = j.points; J = j.jours || []; STK = j.stocks || []; aide = j.aide; err = ''; return j; };
+    // Dernier point connu affiché tout de suite (puis mis à jour)
+    const K_PT = 'adm_ptcache_' + (VID ? 'v' + VID + '_' : '') + (BQ || 'p');
+    try { const c = JSON.parse(S.get(K_PT) || 'null'); if (c){ P = c.points; J = c.jours || []; STK = c.stocks || []; } } catch(x){}
+    const appel = async o => { const j = await call(Object.assign({type: 'point', semaine: sem}, o)); P = j.points; J = j.jours || []; STK = j.stocks || []; aide = j.aide; err = ''; try { S.set(K_PT, JSON.stringify({points: P, jours: J, stocks: STK})); } catch(x){} return j; };
     const charger = async () => { err = ''; try { await appel({}); } catch(e){ err = esc(/inconnu|introuvable/i.test(e.message) ? 'Mets à jour le code Apps Script (Code.gs).' : e.message); } if (ov.isConnected) dess(); };
     const errBloc = () => err ? `<div class="pterr" style="margin-bottom:10px">Impossible de charger : ${err}<button class="btn ghost" id="ptRe" style="margin-top:8px">↻ Réessayer</button></div>` : '';
     const brancherRe = () => { const b = ov.querySelector('#ptRe'); if (b) b.onclick = () => { err = ''; dess(); charger(); }; };
@@ -2181,7 +2326,7 @@ function nettoyerHtml(h){
         <div class="ptsem">${semaines.map(w => `<button data-sem="${w}" class="${w === sem ? 'on' : ''} ${fait.has(w) ? 'fait' : ''}">${w === semaines[0] ? 'Cette semaine' : w === semaines[1] ? 'Semaine dernière' : libSem(w)}</button>`).join('')}</div>
         <p class="sub" style="margin:-4px 0 8px">Du ${libSem(sem)} (lundi → samedi)</p>
         ${auto ? `<div class="ptaide">🗓️ Cette semaine est calculée toute seule avec tes <b>${auto.nbJours} point${auto.nbJours > 1 ? 's' : ''} du jour</b> : CA ${esc(fmt(auto.ca, dev))} · ${auto.livres} livré${auto.livres > 1 ? 's' : ''} · pub ${esc(fmt(auto.pub, dev))} · achats ${esc(fmt(auto.achat, dev))}.${auto.abonnements ? ` · abonnements ${esc(fmt(auto.abonnements, dev))} (saisis par jour)` : '<br>Tu n’as pas mis d’abonnements dans tes points du jour : ajoute ceux de la semaine ici.'}</div>`
-          : aide ? `<div class="ptaide">D’après l’application : <b>${aide.commandes}</b> commande${aide.commandes > 1 ? 's' : ''} (${esc(fmt(aide.commande, dev))}), dont <b>${aide.livrees}</b> livrée${aide.livrees > 1 ? 's' : ''} (${esc(fmt(aide.livre, dev))}).</div>` : !P && !err ? '<div class="ptaide">Chargement…</div>' : ''}
+          : aide ? `<div class="ptaide">D’après l’application : <b>${aide.commandes}</b> commande${aide.commandes > 1 ? 's' : ''} (${esc(fmt(aide.commande, dev))}), dont <b>${aide.livrees}</b> livrée${aide.livrees > 1 ? 's' : ''} (${esc(fmt(aide.livre, dev))}).</div>` : !P && !err ? '<div class="charge"><span class="spin"></span></div>' : ''}
         ${(auto ? (auto.abonnements ? [] : champs.filter(c => c[0] === 'abonnements')) : champs).map(([k, l, a]) => `<div class="ptin"><label for="pt_${k}">${l}<small>${a}</small></label><input class="field" id="pt_${k}" inputmode="numeric" placeholder="0" value="${pt[k] ? esc(String(pt[k])) : ''}"></div>`).join('')}
         <input class="field" id="pt_note" placeholder="Note (facultatif)" value="${esc(pt.note || '')}" style="margin-top:10px">
         <div class="ptres" id="ptRes"><small>Bénéfice net de la semaine</small><b id="ptBen">0</b></div>
@@ -2254,7 +2399,7 @@ function nettoyerHtml(h){
         <button class="btn blue2" id="poOuv">⏸ Journée non tournée</button>
         <button class="btn blue2" id="stOuv">📦 Mes stocks${STK && STK.filter(x => x.statut === 'vente').length ? ' (' + STK.filter(x => x.statut === 'vente').length + ' en vente)' : ''}</button>
         <button class="btn ghost" id="ptFaire">📝 Point de la semaine (saisie à la main)</button></div>
-        ${!P ? (err ? '' : '<div class="empty">Chargement…</div>') : `<div class="ptcols"><div class="ptcolA">
+        ${!P ? (err ? '' : '<div class="charge"><span class="spin"></span></div>') : `<div class="ptcols"><div class="ptcolA">
         <div class="ptcard" style="margin-top:0"><h3>🗓️ Revenus réels par jour</h3>
           ${(J || []).length ? `<p class="sub">Cette semaine : <b>${nbSem}</b> jour${nbSem > 1 ? 's' : ''} tourné${nbSem > 1 ? 's' : ''}${offSem ? ' (' + offSem + ' non tourné' + (offSem > 1 ? 's' : '') + ')' : ' sur 6'} · CA ${esc(fmt(som(jSem, 'ca'), dev))} · ${livSem} livré${livSem > 1 ? 's' : ''} · bénéfice <b class="${som(jSem, 'benefice') < 0 ? 'n' : 'p'}">${esc(fmt(som(jSem, 'benefice'), dev))}</b></p>
           ${J30.length ? `<div class="ptk ptmoy"><div><small>Bénéfice moyen / jour tourné</small><b class="${moyJ < 0 ? 'n' : ''}">${esc(fmt(Math.round(moyJ), dev))}</b></div><div><small>Livrés / jour tourné</small><b>${Math.round(livJ * 10) / 10}</b></div></div>
@@ -2326,7 +2471,7 @@ function nettoyerHtml(h){
         <h2>📦 Mes stocks</h2><p class="sub">${esc(nomB)} · chaque commande chez ton fournisseur, pour cette boutique</p>
         ${msg ? `<div class="okmsg">${msg}</div>` : ''}${errBloc()}
         <button class="btn blue" id="stNew">＋ Nouveau stock</button>
-        ${!STK ? '<div class="empty">Chargement…</div>' : L.length ? L.map(carteStock).join('') : '<div class="empty">Aucun stock pour le moment.<br>Ajoute ta dernière commande chez ton fournisseur : l’appli calcule ce que te coûte chaque produit.</div>'}
+        ${!STK ? '<div class="charge"><span class="spin"></span></div>' : L.length ? L.map(carteStock).join('') : '<div class="empty">Aucun stock pour le moment.<br>Ajoute ta dernière commande chez ton fournisseur : l’appli calcule ce que te coûte chaque produit.</div>'}
         <p class="sub" style="margin-top:12px">Dans chaque point (du jour ou d’une période), indique combien de produits de chaque stock ont été livrés : le stock baisse tout seul, tu reçois une notification quand la moitié est vendue, puis le bilan quand il est épuisé.</p>
         <button class="btn ghost" id="ptX" style="margin-top:12px">Fermer</button></div>`;
       ov.querySelector('#ptX').onclick = () => ov.remove();
@@ -2350,7 +2495,7 @@ function nettoyerHtml(h){
         <div class="ptcard" style="margin-top:6px"><h3>La commande</h3>
           <label class="lbl" for="sk_prod">Nom du produit<small style="display:block;font-weight:500;color:var(--soft)">Écris-le comme tu veux (ex : Calcium Premium)</small></label><input class="field" id="sk_prod" value="${esc(x.produit || '')}" placeholder="Ex : Calcium Premium">
           <label class="lbl">Pages produits de ce stock <small style="font-weight:500;color:var(--soft)">(facultatif, coche toutes celles qui vendent ce produit)</small></label>
-          <div class="skpages">${PRD ? PRD.produits.map(p => `<label class="skpage"><input type="checkbox" data-pp="${esc(p.id)}" ${String(x.produitId || '').split(',').includes(p.id) ? 'checked' : ''}><span>${esc(p.nom)}</span></label>`).join('') || '<small>Aucune page produit.</small>' : '<small>Chargement des pages produits…</small>'}</div>
+          <div class="skpages">${PRD ? PRD.produits.map(p => `<label class="skpage"><input type="checkbox" data-pp="${esc(p.id)}" ${String(x.produitId || '').split(',').includes(p.id) ? 'checked' : ''}><span>${esc(p.nom)}</span></label>`).join('') || '<small>Aucune page produit.</small>' : '<span class="spin"></span>'}</div>
           <label class="lbl" for="sk_cd">Jour où tu as passé la commande</label><input class="field" type="date" id="sk_cd" value="${esc(x.commandeLe || isoJ(new Date()))}" max="${esc(isoJ(new Date()))}">
           <div class="ptin"><label for="sk_qc">Nombre de produits commandés</label><input class="field" id="sk_qc" inputmode="numeric" placeholder="0" value="${x.commande || ''}"></div>
           <div class="ptin"><label for="sk_mt">Montant de la commande<small>Ce que tu as payé au fournisseur</small></label><input class="field" id="sk_mt" inputmode="numeric" placeholder="0" value="${x.montant || ''}"></div>
@@ -2625,7 +2770,7 @@ function nettoyerHtml(h){
   function start(){ nav.classList.remove('hidden'); render(); schedule(); }
 
   /* ---------- Navigation ---------- */
-  function go(v){ clearTimeout(dvTimer); dvTimer = null; view = v; SS.set('adm_view', v); scrollAReprendre = 0; [...nav.children].forEach(b => b.classList.toggle('on', b.dataset.v === v)); render(); scrollTo({top:0}); }
+  function go(v){ if (window.fermerPages && !window.fermerPages()) return; clearTimeout(dvTimer); dvTimer = null; view = v; SS.set('adm_view', v); scrollAReprendre = 0; [...nav.children].forEach(b => b.classList.toggle('on', b.dataset.v === v)); render(); scrollTo({top:0}); }
   nav.addEventListener('click', e => { const b = e.target.closest('button'); if (b) go(b.dataset.v); });
   let demarre = false;
   function finDemarrage(){
@@ -2636,7 +2781,7 @@ function nettoyerHtml(h){
   }
   function render(){
     if (D || view === 'products' || view === 'tiktok' || view === 'apercu') finDemarrage();
-    if (!D && view !== 'products' && view !== 'tiktok' && view !== 'apercu') { app.innerHTML = '<div class="loading">Chargement…</div>'; return; }
+    if (!D && view !== 'products' && view !== 'tiktok' && view !== 'apercu') { app.innerHTML = '<div class="charge"><span class="spin"></span></div>'; return; }
     appliquerVue(); document.body.classList.toggle('v-settings', view === 'settings');
     [...nav.children].forEach(b => b.classList.toggle('on', b.dataset.v === view));
     ({home, orders, abandons, products, settings, tiktok, apercu, direct}[view])();
@@ -2736,7 +2881,7 @@ function nettoyerHtml(h){
           <div class="tile yes"><small>Livrées</small><b>${c.livrees}</b></div>
           <div class="tile"><small>Taux de livraison</small><b>${c.commandes ? Math.round(c.livrees / c.commandes * 100) : 0} %</b></div>
         </div>
-        <button class="ptile" id="ptOpen"><span>💰</span><div><b>Point du jour et de la semaine</b><small>Tes revenus réels : chiffre d’affaires, livrés, pub, bénéfice net</small></div><i>›</i></button>
+        <button class="ptile" id="ptOpen"><span>${ICN.argent}</span><div><b>Point du jour et de la semaine</b><small>Tes revenus réels : chiffre d’affaires, livrés, pub, bénéfice net</small></div><i>›</i></button>
         <div class="block"><h3>Chiffre d'affaires</h3><div class="money">
           <div><span>Commandé (brut)</span><span>${esc(fmt(ca, dev))}</span></div>
           <div><span>Livré (encaissé)</span><span>${esc(fmt(c.caLivre[dev] || 0, dev))}</span></div>
@@ -2931,7 +3076,7 @@ function nettoyerHtml(h){
     const body = document.getElementById('dvBody'); if (!body) return;
     const J = periode === 'jour' ? D : (DJ || fromCache('jour'));
     const V = DV || {live: [], lieux: [], achats: []};
-    if (!J){ body.innerHTML = '<div class="dvcard"><p class="dvvide">Chargement…</p></div>'; return; }
+    if (!J){ body.innerHTML = '<div class="dvcard"><div class="charge"><span class="spin"></span></div></div>'; return; }
     const dev = J.devise, now = Date.now(), jour = auj();
     const hNow = new Date().getHours();
     const prevJusque = arr => (arr || []).slice(0, hNow + 1).reduce((a, b) => a + b, 0);
@@ -2972,7 +3117,7 @@ function nettoyerHtml(h){
         <div class="dvleg"><span><i class="n"></i>Nouveau<b>${nouv}</b></span><span><i class="r"></i>Récurrent<b>${rec}</b></span></div>
         <div class="dvstack">${nouv + rec ? `<i class="n" style="flex:${nouv}"></i><i class="r" style="flex:${rec}"></i>` : '<i class="z"></i>'}</div></div>
       <div class="dvcard"><h2 class="dvt">Ventes totales par produit</h2>
-        ${prods.length ? prods.map(([k, v]) => { const [nom, d] = k.split('|'); const im = imgDe(nom); return `<div class="dvprod">${im ? `<img src="${esc(im)}" alt="" loading="lazy" decoding="async">` : '<span class="dvpi">🛍️</span>'}<u>${esc(nom)}</u><b>${esc(fmt(v) + ' ' + (d === 'FCFA' ? 'XOF' : d))}</b></div>`; }).join('')
+        ${prods.length ? prods.map(([k, v]) => { const [nom, d] = k.split('|'); const im = imgDe(nom); return `<div class="dvprod">${im ? `<img src="${esc(im)}" alt="" loading="lazy" decoding="async">` : '<span class="dvpi">' + ICN.sac + '</span>'}<u>${esc(nom)}</u><b>${esc(fmt(v) + ' ' + (d === 'FCFA' ? 'XOF' : d))}</b></div>`; }).join('')
           : '<p class="dvvide">Aucune vente aujourd’hui pour l’instant.</p>'}</div>`;
     // Points sur le globe
     if (GL){
@@ -3191,15 +3336,15 @@ function nettoyerHtml(h){
         <button id="cmdPdf" aria-label="Bon de commande en PDF">${SVG('<path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/>')}</button></div>
       <div class="dnav" style="display:none"><button class="dnavb" data-aller="${esc(prec || '')}" ${prec ? '' : 'disabled'} aria-label="Commande précédente">‹</button><span>${i + 1} / ${listeDetail.length}</span><button class="dnavb" data-aller="${esc(suiv || '')}" ${suiv ? '' : 'disabled'} aria-label="Commande suivante">›</button></div>
       <h2>Commande #${esc(o.numero)}</h2>
-      <p class="sub">${esc(dayName(o.date))} à ${esc(o.heure)} · ${esc(o.pays)}${o.source ? ' · ' + esc(o.source) : ''}</p>
+      <p class="sub">${esc(dayName(o.date))} à ${esc(o.heure)} · ${esc(o.pays)}${o.source ? ' · ' + esc(nomSource(o.source)) : ''}</p>
       ${badge(o.statut)}
       <div class="ticket">
         <div class="row"><span>Client</span><span>${esc(o.nom)}</span></div>
-        <div class="row"><span>Téléphone</span><span>${esc(o.tel)}</span></div>
+        <div class="row"><span>Téléphone</span><span>${esc(telJoli(tel))}</span></div>
         <div class="row"><span>Adresse</span><a class="maplink" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(String(o.adresse || '').replace(/\s+[–-]\s+/g, ', ') + ', ' + o.pays)}" target="_blank" rel="noopener">${esc(o.adresse)}<small>📍 Voir sur la carte</small></a></div>
         <div class="row"><span>Produit</span><span>${esc(o.produit)}</span></div>
         <div class="row"><span>Offre</span><span>${esc(o.offre)}</span></div>
-        <div class="row"><span>Livraison</span><span>${esc(o.livraison)}</span></div>
+        ${String(o.livraison || '').trim() ? `<div class="row"><span>Livraison</span><span>${esc(o.livraison)}</span></div>` : ''}
         ${o.campagne ? `<div class="row"><span>Campagne</span><span>${esc(o.campagne)}</span></div>` : ''}
         ${o.ensemble ? `<div class="row"><span>Ensemble de pub</span><span>${esc(o.ensemble)}</span></div>` : ''}
         ${o.pub ? `<div class="row"><span>Publicité</span><span>${esc(o.pub)}</span></div>` : ''}
@@ -3211,7 +3356,7 @@ function nettoyerHtml(h){
       <label class="lbl" for="st">Statut de la commande</label>
       <select class="st" id="st">${D.statuts.map(s => `<option ${s === o.statut ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select>
       <button class="btn blue" id="save" style="margin-top:12px">Enregistrer le statut</button>
-      <button class="btn ghost" id="close" style="margin-top:10px">Fermer</button>
+      <button class="btn ghost" id="close" style="margin-top:10px;display:none">Fermer</button>
       <button class="lnk dsuppr" id="dsup">🗑 Mettre à la corbeille (test, erreur…)</button></div>`;
   }
   function detail(num, sens, ovExistant){
@@ -3301,7 +3446,7 @@ function nettoyerHtml(h){
   async function corbeille(){
     const o = feuille(`<div class="cbhd"><h2>Corbeille</h2><button class="lnk" id="cbVid" hidden>Vider la corbeille</button></div>
       <p class="sub">Chaque commande reste 30 jours ici, avec son numéro. « Restaurer » la remet à sa place (application, Google Sheets, fichier de l’agence). Au bout de 30 jours, elle est supprimée pour de bon.</p>
-      <div id="cbL"><div class="empty">Chargement…</div></div>
+      <div id="cbL"><div class="charge"><span class="spin"></span></div></div>
       <div class="cbbar" id="cbBar" hidden><span id="cbN"></span><button class="cbres" id="cbRes">Restaurer</button><button class="cbdel" id="cbDel">Supprimer définitivement</button></div>
       <button class="btn ghost" id="cbX" style="margin-top:14px">Fermer</button>`);
     o.querySelector('.detail').classList.add('cbsheet');
@@ -3371,7 +3516,7 @@ function nettoyerHtml(h){
     const o = feuille(`<h2>Commandes de test</h2><p class="sub">Quand tu commandes avec un de ces numéros, la commande s’appelle TEST1, TEST2… Tu reçois une notification, mais elle n’entre <b>jamais</b> dans tes commandes ni tes chiffres, ne part pas chez l’agence et n’est pas envoyée aux pixels. Valable pour toutes tes boutiques.</p>
       <div class="rgc"><label for="tsN">Mes numéros de test<small>Avec l’indicatif, séparés par des virgules. Ex : +229 01 60 00 00 00, +225 07 00 00 00 00</small></label><textarea class="field" id="tsN" rows="2" placeholder="+229 01 …"></textarea></div>
       <button class="btn blue" id="tsOk">Enregistrer les numéros</button>
-      <div class="cbhd" style="margin-top:20px"><h3 class="rgt" style="margin:0">Dernières commandes de test</h3><button class="lnk" id="tsVid" hidden>Tout effacer</button></div><div id="tsL"><div class="empty">Chargement…</div></div>
+      <div class="cbhd" style="margin-top:20px"><h3 class="rgt" style="margin:0">Dernières commandes de test</h3><button class="lnk" id="tsVid" hidden>Tout effacer</button></div><div id="tsL"><div class="charge"><span class="spin"></span></div></div>
       <button class="btn ghost" id="tsX" style="margin-top:14px">Fermer</button>`);
     o.querySelector('#tsX').onclick = () => o.remove();
     const dessiner = j => { const z = o.querySelector('#tsL'); if (!z) return; const L = j.commandes || [];
@@ -3390,7 +3535,7 @@ function nettoyerHtml(h){
   async function voixStock(){
     const o = feuille(`<h2>Voix off enregistrées</h2><p class="sub">Classées par page produit. Pour en ajouter : Produits → ⋮ → Générer des voix off → « Enregistrer ».</p>
       <div class="pgsrch" style="margin:10px 0 4px">${ic('loupe')}<input id="vsQ" type="search" placeholder="Rechercher un produit ou un mot" aria-label="Rechercher"></div>
-      <div id="vsL"><div class="empty">Chargement…</div></div><button class="btn ghost" id="vsX" style="margin-top:14px">Fermer</button>`);
+      <div id="vsL"><div class="charge"><span class="spin"></span></div></div><button class="btn ghost" id="vsX" style="margin-top:14px">Fermer</button>`);
     o.querySelector('.detail').classList.add('cbsheet');
     o.querySelector('#vsX').onclick = () => o.remove();
     let L = [], q = '';
@@ -3542,13 +3687,13 @@ function nettoyerHtml(h){
   function abandons(){
     const carte = (a, i) => `<div class="ab ${aRelancer(a) ? '' : 'fait'}">
         <div class="l1"><b>${esc(a.nom || 'Sans nom')}</b><span class="tag">${esc(dayName(a.date))} ${esc(a.heure)}</span></div>
-        <p>${esc(a.produit)} · ${esc(a.offre)} · ${esc(a.prix)} · ${esc(a.pays)}${!aRelancer(a) ? ` · <b class="okrel">✓ ${esc(a.suivi)}</b>` : ''}</p>
+        <p>${esc(a.produit)} · ${esc(/^\d+$/.test(String(a.offre).trim()) ? a.offre + (a.offre > 1 ? ' pièces' : ' pièce') : a.offre)} · ${esc(/^\d+$/.test(String(a.prix).replace(/\s/g, '')) ? fmt(String(a.prix).replace(/\s/g, ''), a.devise || (D && D.devise) || 'FCFA') : a.prix)} · ${esc(a.pays)}${!aRelancer(a) ? ` · <b class="okrel">✓ ${esc(a.suivi)}</b>` : ''}</p>
         <div class="row"><a class="a-call" href="tel:+${esc(String(a.tel).replace(/\D/g,''))}">📞 Appeler</a><button data-copytel="${esc(telJoli(a.tel))}">📋 Copier</button>${
           aRelancer(a) ? (a.lien ? `<a class="a-wa" href="${esc(a.lien)}" target="_blank" rel="noopener" data-rel="${i}" data-wa="1">📲 Relancer</a>` : `<button class="a-wa" data-rel="${i}">✓ Fait</button>`)
                        : `<button data-annule="${i}">↩ Annuler</button>`}</div></div>`;
     const tous = D.abandons.map((a, i) => [a, i]).filter(([a]) => a.suivi !== 'Numéro invalide'), afaire = tous.filter(([a]) => aRelancer(a)), faits = tous.filter(([a]) => !aRelancer(a));
     app.innerHTML = `<div class="page"><h1>Abandons</h1>
-      <p class="tag" style="margin:-6px 0 8px">Touche « Relancer » : le message s'ouvre dans WhatsApp et la personne passe automatiquement dans « Déjà relancés ».</p>
+      <p class="tag" style="margin:-6px 0 8px">Appelez ou écrivez au client, puis touchez « Fait » : il passe dans « Déjà relancés ».</p>
       <h3 class="absec">À relancer <span>${afaire.length}</span></h3>
       ${afaire.length ? afaire.map(([a, i]) => carte(a, i)).join('') : `<div class="empty">Tout le monde a été relancé. Bravo !</div>`}
       ${faits.length ? `<h3 class="absec">Déjà relancés ✓ <span>${faits.length}</span></h3>${faits.map(([a, i]) => carte(a, i)).join('')}` : ''}</div>`;
@@ -3695,7 +3840,7 @@ function nettoyerHtml(h){
       ${sel ? `<div class="selbar"><button id="selX" aria-label="Annuler la sélection">✕</button><b>${sel.size} sélectionné${sel.size > 1 ? 's' : ''}</b><button id="selAll">${vis.length && vis.every(p => sel.has(p.id)) ? 'Tout désélectionner' : 'Tout sélectionner'}</button></div>` : ''}
       ${!sel && pp && pp.ids && pp.ids.length && (pp.source || '') !== (BQ || '') ? `<div class="ppban"><span>📋 ${pp.ids.length} produit${pp.ids.length > 1 ? 's' : ''} copié${pp.ids.length > 1 ? 's' : ''} de « ${esc(pp.nom)} »</span><button id="ppCol">📥 Coller ici</button></div>` : ''}
       <div class="filters">${[['tous', 'Tous'], ['ligne', 'En ligne'], ['brouillon', 'Brouillons' + (nbB ? ' (' + nbB + ')' : '')]].map(([k, l]) => `<button class="${k === prFiltre ? 'on' : ''}" data-pf="${k}">${l}</button>`).join('')}</div>
-      <div id="pl">${!liste ? '<div class="empty">Chargement…</div>' : vis.length ? vis.map(p => `<div class="prod ${sel && sel.has(p.id) ? 'sel' : ''}" data-row="${esc(p.id)}">
+      <div id="pl">${!liste ? '<div class="charge"><span class="spin"></span></div>' : vis.length ? vis.map(p => `<div class="prod ${sel && sel.has(p.id) ? 'sel' : ''}" data-row="${esc(p.id)}">
           ${sel ? `<span class="pck" aria-hidden="true">${sel.has(p.id) ? '✓' : ''}</span>` : ''}
           <img src="${esc(vignette(p.photos[0]))}" alt="" loading="lazy">
           <div class="info"><b>${esc(p.nom)}</b><small>${etatP(p.id) === 'off' ? '<span class="pst off">● Désactivé</span>' : (p.enLigne ? '<span class="pst on">● En ligne</span>' : '<span class="pst">● Brouillon</span>') + (etatP(p.id) === 'pause' ? ' <span class="pst pause">❚❚ En pause</span>' : '')} ${esc(prixResume(p))}</small></div>
@@ -3837,8 +3982,9 @@ function nettoyerHtml(h){
     return d.toLocaleDateString('fr-FR', {day: 'numeric', month: 'short', year: d.getFullYear() === auj.getFullYear() ? undefined : 'numeric'}) + ' · ' + h; };
   function majCloche(n){ if (D) D.notifs = n; const b = document.getElementById('nfBtn'); if (!b) return;
     b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>' + (n ? `<span class="nfbadge">${n > 99 ? '99+' : n}</span>` : ''); }
+  const K_NF = 'adm_nfcache' + (VID ? '_v' + VID : '');
   async function ouvrirNotifs(){
-    const o = feuille(`<div class="nfhead"><h2>🔔 Notifications</h2><button class="iconbtn2" id="nfMenu" aria-label="Options">⋮</button></div><div id="nfL"><div class="iaload"><span class="spin"></span> Chargement…</div></div><button class="btn ghost" data-x style="margin-top:14px">Fermer</button>`);
+    const o = feuille(`<div class="nfhead"><h2>🔔 Notifications</h2><button class="iconbtn2" id="nfMenu" aria-label="Options">⋮</button></div><div id="nfL"><div class="charge"><span class="spin"></span></div></div><button class="btn ghost" data-x style="margin-top:14px">Fermer</button>`);
     o.querySelector('[data-x]').onclick = () => o.remove();
     let L = [];
     const nomsB = c => { const b = ((typeof BQS !== 'undefined' && BQS && BQS.boutiques) || []).find(x => x.code === c); return b ? b.nom : c; };
@@ -3849,7 +3995,7 @@ function nettoyerHtml(h){
       z.querySelectorAll('[data-i]').forEach(b => b.onclick = () => ouvrir(L[+b.dataset.i]));
     };
     const charger = async action => {
-      try { const j = await call(Object.assign({type: 'notifs'}, action || {})); L = j.notifs || []; majCloche(j.nonLues || 0); dess(); }
+      try { const j = await call(Object.assign({type: 'notifs'}, action || {})); L = j.notifs || []; majCloche(j.nonLues || 0); dess(); try { S.set(K_NF, JSON.stringify(L.slice(0, 60))); } catch(x){} }
       catch(e){ const z = o.querySelector('#nfL'); if (z) z.innerHTML = `<div class="iaerr">${esc(e.message)}</div>`; }
     };
     const ouvrir = async n => {
@@ -3867,8 +4013,10 @@ function nettoyerHtml(h){
     o.querySelector('#nfMenu').onclick = async () => {
       const c = await menuListe('', 'Notifications', [['tout', '✓ Tout marquer comme lu'], ['son', sound ? '🔕 Couper le son des commandes' : '🔔 Activer le son des commandes']]);
       if (c === 'tout'){ L.forEach(n => n.lu = true); dess(); majCloche(0); charger({action: 'toutLu'}); }
-      if (c === 'son'){ sound = !sound; S.set('adm_sound', sound ? '1' : '0'); if (sound) chime(); toast(sound ? '🔔 Son des commandes activé' : '🔕 Son des commandes coupé'); }
+      if (c === 'son'){ sound = !sound; S.set('adm_sound', sound ? '1' : '0'); if (sound) chime(); toast(sound ? 'Son des commandes activé' : 'Son des commandes coupé'); }
     };
+    // Affichage immédiat des dernières notifications connues, puis mise à jour
+    try { const c = JSON.parse(S.get(K_NF) || 'null'); if (Array.isArray(c) && c.length){ L = c; dess(); } } catch(x){}
     charger();
   }
 
@@ -4133,7 +4281,7 @@ function nettoyerHtml(h){
   }
 
   function editer(src, message){
-    const neuf = !src;
+    let neuf = !src;
     const P = JSON.parse(JSON.stringify(src || { id: '', enLigne: false, nom: '', accroche: '', photos: [], description: '', avantages: '', boite: '', stock: '', faq: '', prix: [], avis: [] }));
     // Description mise en forme (comme Shopify) : ancien format converti automatiquement
     let descHtml = /<(p|img|h[1-6]|br|ul|ol|li|div|table|b|strong|em|i|u|a|span|blockquote|figure)\b[^>]*>/i.test(String(P.description || '')) ? String(P.description) : String(P.description || '').split(/\n/).map(l => l.trim()).filter(Boolean).map(l =>
@@ -4158,26 +4306,26 @@ function nettoyerHtml(h){
 
     let ouverts = [];
     function dessiner(){
-      const y = ed.scrollTop;
+      const y = ed.scrollTop, h0 = ed.scrollHeight;
       ed.querySelectorAll('details[data-p]').forEach(d => { const i = ouverts.indexOf(d.dataset.p); if (d.open && i < 0) ouverts.push(d.dataset.p); if (!d.open && i >= 0) ouverts.splice(i, 1); });
-      ed.innerHTML = `<div class="edbar"><button class="iconbtn2" id="edX" aria-label="Fermer">✕</button><b>${neuf ? 'Nouveau produit' : 'Modifier le produit'}</b><div class="edacts${base != null && base !== sigCourante ? '' : ' off'}"><button class="btn ghost small" data-ann="1">Annuler</button><button class="btn blue small" id="edSave">Enregistrer</button></div></div>
+      ed.innerHTML = `<div class="edbar"><button class="iconbtn2" id="edX" aria-label="Retour">${ICN.retour}</button><b>${esc(neuf ? 'Nouveau produit' : (P.nom || 'Produit'))}</b><div class="edacts${base != null && base !== sigCourante ? '' : ' off'}"><button class="btn ghost small" data-ann="1">Annuler</button><button class="btn blue small" id="edSave">Enregistrer</button></div></div>
       <div class="edbody">
         ${message ? `<div class="okmsg">${esc(message)}</div>` : ''}
         <div class="card"><div class="seg" role="radiogroup" aria-label="Statut">
           <button class="${P.enLigne ? 'on' : ''}" data-st="1">🟢 En ligne</button><button class="${!P.enLigne ? 'on' : ''}" data-st="0">📝 Brouillon</button></div>
           <p class="tag" style="margin-top:8px">${P.enLigne ? 'Visible sur le site par tes clients.' : 'Caché du site. Tu recevras un rappel chaque matin pour le mettre en ligne.'}</p></div>
 
-        <div class="card iacard"><button class="ianote" data-ia="note"><span>✨</span><div><b>Un client achèterait-il ?</b><small>L’IA note ta page sur 10 et te dit quoi améliorer avant de la publier</small></div></button></div>
+        <div class="card iacard"><button class="ianote" data-ia="note"><span>${ICN.loupe}</span><div><b>Un client achèterait-il ?</b><small>Une note sur 10 et la liste de ce qu’il faut améliorer avant de publier</small></div></button></div>
 
-        <div class="card"><div class="iah"><label class="lbl" for="eNom">Titre</label><button class="iab" data-ia="titre">✨ IA</button></div><input class="field" id="eNom" value="${esc(P.nom)}" placeholder="Ex : Calcium Complexe Premium">
-          <div class="iah"><label class="lbl" for="eAcc">Accroche (sous le titre)</label><button class="iab" data-ia="accroche">✨ IA</button></div><input class="field" id="eAcc" value="${esc(P.accroche)}" placeholder="Ex : Marcher enfin librement sans douleur"></div>
+        <div class="card"><div class="iah"><label class="lbl" for="eNom">Titre</label><button class="iab" data-ia="titre">Rédiger</button></div><input class="field" id="eNom" value="${esc(P.nom)}" placeholder="Ex : Calcium Complexe Premium">
+          <div class="iah"><label class="lbl" for="eAcc">Accroche (sous le titre)</label><button class="iab" data-ia="accroche">Rédiger</button></div><input class="field" id="eAcc" value="${esc(P.accroche)}" placeholder="Ex : Marcher enfin librement sans douleur"></div>
 
-        <div class="card"><div class="iah"><h3>Photos</h3><button class="iab" data-ia="photo">✨ IA</button></div><p class="tag">La première photo est la photo principale. Touche ⋮ sur une photo pour la retoucher, la modifier avec l’IA ou la télécharger.</p>
+        <div class="card"><div class="iah"><h3>Photos</h3><button class="iab" data-ia="photo">Améliorer</button></div><p class="tag">La première photo est la photo principale. Touche ⋮ sur une photo pour la retoucher, la modifier avec l’IA ou la télécharger.</p>
           <div class="phgrid">${P.photos.map((u, i) => `<div class="ph"><img src="${esc(img(u))}" alt=""><button class="phedit" data-pe="${i}" aria-label="Options de la photo">⋮</button><div class="phb">${i ? `<button data-pl="${i}" aria-label="Avancer">◀</button>` : ''}<button data-pd="${i}" aria-label="Supprimer">✕</button>${i < P.photos.length - 1 ? `<button data-pr="${i}" aria-label="Reculer">▶</button>` : ''}</div></div>`).join('')}
             <button class="ph add" id="phAdd">＋<span>Ajouter</span></button></div>
           <button class="lnk" id="phUrl">Ou coller le lien d'une photo</button></div>
 
-        <div class="card"><div class="iah"><h3>Description</h3><button class="iab" data-ia="description">✨ IA</button></div><p class="tag">Écris comme dans Shopify : gras, italique, alignement, liens, images, vidéos et tableaux. Touche une image pour la redimensionner ; touche-la 2 fois (double-clic sur ordinateur) pour la modifier avec l’IA, la remplacer ou la télécharger.</p>
+        <div class="card"><div class="iah"><h3>Description</h3><button class="iab" data-ia="description">Rédiger</button></div><p class="tag">Écris comme dans Shopify : gras, italique, alignement, liens, images, vidéos et tableaux. Touche une image pour la redimensionner ; touche-la 2 fois (double-clic sur ordinateur) pour la modifier avec l’IA, la remplacer ou la télécharger.</p>
           <div class="rte">
             <div class="rtebar" id="rteBar">
               <select id="rteBloc" aria-label="Style du texte"><option value="p">Paragraphe</option><option value="h2">Titre</option><option value="h3">Sous-titre</option></select>
@@ -4186,12 +4334,12 @@ function nettoyerHtml(h){
               <button data-c="justifyLeft" aria-label="Aligner à gauche">⇤</button><button data-c="justifyCenter" aria-label="Centrer">≡</button><button data-c="justifyRight" aria-label="Aligner à droite">⇥</button>
               <button data-c="insertUnorderedList" aria-label="Liste à puces">•</button>
               <span class="sep"></span>
-              <button id="rteLien" aria-label="Lien">🔗</button><button id="rteImg" aria-label="Image">🖼</button><button id="rteGif" aria-label="GIF animé" class="gifbtn">GIF</button><button id="rteVid" aria-label="Vidéo">▶</button><button id="rteTab" aria-label="Tableau">▦</button>
+              <button id="rteLien" aria-label="Lien">${ICN.lien}</button><button id="rteImg" aria-label="Image">${ICN.image}</button><button id="rteGif" aria-label="GIF animé" class="gifbtn">GIF</button><button id="rteVid" aria-label="Vidéo">▶</button><button id="rteTab" aria-label="Tableau">▦</button>
               <span class="sep"></span>
               <button data-c="undo" aria-label="Annuler">↶</button><button data-c="redo" aria-label="Rétablir">↷</button>
             </div>
             <div class="rteimg hidden" id="rteImgBar"><span>Image :</span><button data-iw="100%">100 %</button><button data-iw="75%">75 %</button><button data-iw="50%">50 %</button><button data-iw="33%">33 %</button>
-              <button data-ia="left">⇤</button><button data-ia="center">≡</button><button data-ia="right">⇥</button><button id="rteOpt">⋮ Options</button><button id="rteRet">✏️ Retoucher</button><button id="rteDel">🗑</button></div>
+              <button data-ia="left">⇤</button><button data-ia="center">≡</button><button data-ia="right">⇥</button><button id="rteOpt">⋮ Options</button><button id="rteRet">Retoucher</button><button id="rteDel" aria-label="Supprimer l’image">${ICN.poubelle}</button></div>
             <div class="rtetab hidden" id="rteTabBar"><span>Tableau :</span><button id="tbL">+ Ligne</button><button id="tbC">+ Colonne</button><button id="tbX">Supprimer le tableau</button></div>
             <div class="rtezone" id="eDesc" contenteditable="true" spellcheck="true"></div>
           </div></div>
@@ -4215,17 +4363,17 @@ function nettoyerHtml(h){
             <label>Réduction si livré aujourd'hui<input class="field" inputmode="numeric" data-px="${k}|jour" value="${esc(x.jour || '')}"></label><label>Offre : achetés<input class="field" inputmode="numeric" data-px="${k}|oa" value="${esc(x.oa || '')}" placeholder="ex : 2"></label>
             <label>Offre : offerts<input class="field" inputmode="numeric" data-px="${k}|oo" value="${esc(x.oo || '')}" placeholder="ex : 1"></label><label>Offre : prix<input class="field" inputmode="numeric" data-px="${k}|op" value="${esc(x.op || '')}" placeholder="auto"></label></div>
             <button class="lnk" data-cp="${k}">Copier ces prix dans tous les pays ${esc(p.devise)}</button></details>`; }).join('')}</div>`}
-        <div class="card"><div class="iah"><h3>Avantages</h3><button class="iab" data-ia="avantages">✨ IA</button></div><textarea class="field" id="eAv" rows="4" placeholder="Un avantage par ligne">${esc(P.avantages)}</textarea>
-          <div class="iah"><label class="lbl" for="eBo">Dans la boîte</label><button class="iab" data-ia="boite">✨ IA</button></div><textarea class="field" id="eBo" rows="2" placeholder="Un élément par ligne">${esc(P.boite)}</textarea>
+        <div class="card"><div class="iah"><h3>Avantages</h3><button class="iab" data-ia="avantages">Rédiger</button></div><textarea class="field" id="eAv" rows="4" placeholder="Un avantage par ligne">${esc(P.avantages)}</textarea>
+          <div class="iah"><label class="lbl" for="eBo">Dans la boîte</label><button class="iab" data-ia="boite">Rédiger</button></div><textarea class="field" id="eBo" rows="2" placeholder="Un élément par ligne">${esc(P.boite)}</textarea>
           <label class="lbl" for="eSt">Compteur « Plus que 3 → 2 → 1 en stock »</label><select class="field" id="eSt">${/^(non|0|cach)/i.test(String(P.stock || '').trim()) ? '<option value="">Afficher sur ce produit</option><option value="NON" selected>Cacher sur ce produit</option>' : `<option value="${esc(P.stock || '')}" selected>Afficher sur ce produit</option><option value="NON">Cacher sur ce produit</option>`}</select></div>
 
-        <div class="card"><div class="iah"><h3>Questions fréquentes</h3><button class="iab" data-ia="faq">✨ IA</button></div>
+        <div class="card"><div class="iah"><h3>Questions fréquentes</h3><button class="iab" data-ia="faq">Rédiger</button></div>
           ${faq.map((f, i) => `<div class="blk"><div class="blkh"><span>Question ${i + 1}</span><button data-fx="${i}" aria-label="Supprimer">✕</button></div><input class="field" data-fq="${i}" value="${esc(f.q)}" placeholder="Question"><textarea class="field" data-fr="${i}" rows="2" placeholder="Réponse" style="margin-top:6px">${esc(f.r)}</textarea></div>`).join('')}
           <div class="addrow"><button id="fAdd">+ Ajouter une question</button></div></div>
 
         <div class="card"><h3>Avis clients</h3>
           <p class="tag">Pour chaque avis, mets ce que tu as : un texte, une capture d'écran WhatsApp, une note vocale ou une vidéo du client.</p>
-          ${P.avis.map((a, i) => `<div class="blk avblk"><div class="blkh"><span>Avis ${i + 1}</span><button class="iab" data-ia="avis" data-iai="${i}">✨ Reformuler</button><button data-ax="${i}" aria-label="Supprimer">✕</button></div>
+          ${P.avis.map((a, i) => `<div class="blk avblk"><div class="blkh"><span>Avis ${i + 1}</span><button class="iab" data-ia="avis" data-iai="${i}">Reformuler</button><button data-ax="${i}" aria-label="Supprimer">✕</button></div>
             <div class="avtete"><button class="avatar2" data-amed="${i}|avatar" aria-label="Photo du client">${a.avatar ? `<img src="${esc(img(a.avatar))}" alt="">` : '👤<small>Photo</small>'}</button>
               <div class="avchamps"><input class="field" data-an="${i}" value="${esc(a.nom)}" placeholder="Nom (ex : Maman Rose)">
                 <div class="g2"><input class="field" data-aag="${i}" value="${esc(a.age || '')}" placeholder="Âge (ex : 53 ans)"><select class="field" data-ano="${i}">${[5,4,3,2,1].map(n => `<option value="${n}" ${Number(a.note) === n ? 'selected' : ''}>${'★'.repeat(n)}</option>`).join('')}</select></div></div></div>
@@ -4244,7 +4392,11 @@ function nettoyerHtml(h){
         ${neuf ? '' : `<div class="card"><div class="addrow"><button id="eDup">⧉ Dupliquer ce produit</button><button id="eDel" class="danger">🗑 Supprimer</button></div></div>`}
         <div class="edacts edbas${base != null && base !== sigCourante ? '' : ' off'}"><button class="btn ghost" data-ann="1">Annuler les modifications</button><button class="btn blue" id="edSave2">Enregistrer</button></div>
       </div>`;
+      // Même endroit après la mise à jour : la hauteur est gardée le temps que les photos se rechargent (sinon la page saute)
+      const corps = ed.querySelector('.edbody');
+      if (corps && y > 0){ corps.style.minHeight = Math.max(0, h0 - corps.offsetTop) + 'px'; clearTimeout(ed._mh); ed._mh = setTimeout(() => { corps.style.minHeight = ''; }, 2500); }
       ed.scrollTop = y;
+      requestAnimationFrame(() => { if (Math.abs(ed.scrollTop - y) > 2) ed.scrollTop = y; });
       ed.querySelectorAll('[data-ann]').forEach(b => b.onclick = annulerModifs);
       lier();
     }
@@ -4469,7 +4621,7 @@ function nettoyerHtml(h){
           if (t.trim()) montrer(t); return;
         }
         // Assistant intégré (clé Gemini gratuite de la boutique)
-        R.innerHTML = `<div class="iaload"><span class="spin"></span> ${T.type === 'image' ? 'L’IA prépare la photo… (jusqu’à 1 minute)' : 'L’IA écrit…'}</div>`;
+        R.innerHTML = `<div class="iaload"><span class="spin"></span> ${T.type === 'image' ? 'L’IA prépare la photo… (jusqu’à 1 minute)' : 'Rédaction en cours…'}</div>`;
         ov.querySelectorAll('[data-a]').forEach(z => z.disabled = true);
         try {
           const ph = srcPh ? await iaPhoto(srcPh) : null;
@@ -4659,8 +4811,11 @@ function nettoyerHtml(h){
       if (neuf) PR.produits.push(fait); else PR.produits[PR.produits.findIndex(p => p.id === src.id)] = fait;
       memoPR();
       enfiler({action: 'sauver', produit: fait, ancienId: ancien});
-      sale = false; fermer(true);
-      toast(fait.enLigne ? '✅ Enregistré · en ligne sur le site dans quelques secondes' : '📝 Enregistré en brouillon');
+      // On reste sur la fiche, au même endroit (comme Shopify) : seules les actions « Annuler / Enregistrer » disparaissent
+      src = fait; neuf = false; P.id = fait.id; sale = false;
+      base = signature(); sigCourante = base; majActions();
+      const t = ed.querySelector('.edbar b'); if (t) t.textContent = P.nom || 'Produit';
+      toast(fait.enLigne ? 'Enregistré · visible sur le site dans quelques secondes' : 'Enregistré en brouillon');
     }
     // « Enregistrer » et « Annuler » n'apparaissent que s'il y a vraiment une modification
     const signature = () => { lire(); return JSON.stringify([P, descHtml, faq, M]); };
@@ -4778,7 +4933,7 @@ function nettoyerHtml(h){
       </div></button>`;
   function drawTT(){
     if (view !== 'tiktok') return;
-    if (!TT){ app.innerHTML = ttTop() + `<div class="sheet"><div class="empty">Chargement des promotions…</div></div>`; bindTT(); return; }
+    if (!TT){ app.innerHTML = ttTop() + `<div class="sheet"><div class="charge"><span class="spin"></span></div></div>`; bindTT(); return; }
     const actives = TT.promos.filter(p => p.statut === 'Active'), attente = TT.promos.filter(p => p.statut === 'En attente'), finies = TT.promos.filter(p => p.statut !== 'Active' && p.statut !== 'En attente');
     app.innerHTML = ttTop() + `<div class="sheet">
       ${!TT.promos.length ? `<div class="block"><h3>Comment ça marche</h3><ol class="steps">
@@ -4791,7 +4946,7 @@ function nettoyerHtml(h){
       ${TT.autres.length ? `<div class="block"><h3>Autres commandes venues de TikTok</h3>${TT.autres.map((p, i) => promoCard(p, i, true)).join('')}</div>` : ''}
       ${finies.length ? `<div class="block"><h3>Promotions terminées</h3>${finies.map(p => promoCard(p, TT.promos.indexOf(p))).join('')}</div>` : ''}
       <div class="block"><h3>Réglages TikTok</h3>
-        <div class="usdbox"><span>💱</span><div><b>1 $ = ${esc(String(TT.usd).replace('.', ','))} FCFA · 1 € = 655,957 FCFA</b><small>${TT.usdAuto ? 'Taux du jour, mis à jour automatiquement' + (TT.usdHeure ? ' · ' + esc(TT.usdHeure) : '') : 'Taux automatique indisponible pour le moment, nouvel essai dans 1 heure'}</small></div></div>
+        <div class="usdbox"><span>${ICN.change}</span><div><b>1 $ = ${esc(String(TT.usd).replace('.', ','))} FCFA · 1 € = 655,957 FCFA</b><small>${TT.usdAuto ? 'Taux du jour, mis à jour automatiquement' + (TT.usdHeure ? ' · ' + esc(TT.usdHeure) : '') : 'Taux automatique indisponible pour le moment, nouvel essai dans 1 heure'}</small></div></div>
         <label class="lbl" for="ttCible">Coût maximum accepté par commande</label>
         <div class="frow"><input class="field" id="ttCible" type="number" inputmode="decimal" placeholder="Ex : 2500" value="${TT.cibleBrut || TT.cible ? esc(TT.cibleBrut || TT.cible) : ''}"><select class="field" id="ttCibleDev" aria-label="Devise">${['FCFA','USD','EUR'].map(d => `<option ${d === (TT.cibleDevise || 'FCFA') ? 'selected' : ''}>${d}</option>`).join('')}</select></div>
         ${TT.cible && TT.cibleDevise && TT.cibleDevise !== 'FCFA' ? `<p class="tag" style="margin-top:6px">Soit environ ${esc(F(TT.cible))} au taux du jour.</p>` : ''}
@@ -4856,7 +5011,7 @@ function nettoyerHtml(h){
       <label class="lbl" for="npProd">Produit</label>
       <select class="field" id="npProd"><option value="">Chargement…</option></select>
       <div class="prow"><span class="lbl">Pays de la promotion <span class="tag" id="npNb"></span></span><button type="button" id="npTous">Tout cocher</button></div>
-      <div class="pays" id="npPays"><span class="tag">Chargement…</span></div>
+      <div class="pays" id="npPays"><span class="spin"></span></div>
       <p class="tag" style="margin-top:6px">Coche jusqu'à 20 de tes pays actifs. Sur le site, le client choisit toujours parmi tous tes pays actifs.</p>
       <label class="lbl" for="npBud">Budget total de la promotion</label>
       <div class="frow"><input class="field" id="npBud" type="number" inputmode="decimal" placeholder="Ex : 10000"><select class="field" id="npDev"><option>FCFA</option><option>USD</option><option>EUR</option></select></div>
@@ -4967,7 +5122,7 @@ function nettoyerHtml(h){
     };
     const st = ov.querySelector('#pdStat');
     if (st) st.onclick = async () => {
-      st.textContent = '…';
+      st.innerHTML = '<span class="spin spin-s"></span>';
       try { await call({type: 'tiktok', action: 'statut', code: p.code, statut: p.statut === 'Active' ? 'Terminée' : 'Active'}); await loadTT(true); ov.remove(); drawTT(); }
       catch(e){ st.textContent = 'Échec : réessayer'; alert('Raison : ' + e.message); }
     };
@@ -5041,7 +5196,8 @@ function nettoyerHtml(h){
     pixels: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/>',
     agences: '<path d="M2 6h11v10H2z"/><path d="M13 9h4l4 4v3h-8"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
     copier: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/>',
-    ia: '<path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
+    ia: '<path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+    aide: '<circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.6"/><path d="M12 17.2h.01"/>',
     sheets: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 9v12"/>',
     sortie: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/>',
     corbeille: '<path d="M3 6h18M8 6V4h8v2M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14M10 11v6M14 11v6"/>',
@@ -5050,7 +5206,7 @@ function nettoyerHtml(h){
     chevron: '<path d="M9 6l6 6-6 6"/>', retour: '<path d="M15 18l-6-6 6-6"/>', loupe: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '125';
+  const VERSION_APP = '126';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
@@ -5095,7 +5251,8 @@ function nettoyerHtml(h){
         <section class="psec"><h3>Paramètres de l’appli</h3>
           ${L('notifs', 'cloche', 'Notifications push', pushOn ? 'Activées sur ce téléphone' : 'Commandes même téléphone verrouillé')}
           ${L('sons', 'son', 'Sons', sound ? 'Son des commandes activé' : 'Son des commandes coupé')}
-          ${L('installer', 'installer', 'Installer l’application')}</section>
+          ${L('installer', 'installer', 'Installer l’application')}
+          ${L('aide', 'aide', 'Aide', 'Posez une question sur l’application')}</section>
         <section class="psec"><h3>Paramètres de la boutique</h3>
           ${L('general', 'general', 'Général', 'Nom, lien du site, Google Sheets')}
           ${b ? L('pays', 'pays', 'Pays de vente', esc(nomsPaysBq(b.pays)) || '') : ''}
@@ -5106,7 +5263,7 @@ function nettoyerHtml(h){
           ${L('tests', 'test', 'Commandes de test', 'Tes numéros de test, jamais comptés')}
           ${L('voix', 'micro', 'Voix off enregistrées', 'Classées par page produit')}
           ${b ? L('produitsBq', 'copier', 'Produits entre boutiques', pp && pp.ids && pp.ids.length && (pp.source || '') !== (b.code || '') ? pp.ids.length + ' produit' + (pp.ids.length > 1 ? 's' : '') + ' prêt' + (pp.ids.length > 1 ? 's' : '') + ' à coller' : 'Copier, puis coller dans une autre boutique') : ''}
-          ${L('ia', 'ia', 'Assistant IA', 'Clés gratuites Gemini et Groq')}
+          ${L('ia', 'ia', 'Rédaction automatique', 'Clés gratuites Gemini et Groq')}
           ${abonne ? L('abo', 'carte', 'Abonnement Vendoo', D.vendoo.statut === 'essai' ? 'Essai gratuit jusqu’au ' + esc(D.vendoo.expire || '') : D.vendoo.statut === 'actif' ? 'Actif jusqu’au ' + esc(D.vendoo.expire || '') : '') : ''}
           ${L('sheets', 'sheets', 'Google Sheets', 'Produits, prix, pays, agences et commandes')}</section>
         <section class="psec">${L('sortie', 'sortie', 'Se déconnecter')}
@@ -5159,6 +5316,7 @@ function nettoyerHtml(h){
       if (k === 'coller') return b && collerBq(b, ret);
       if (k === 'agences'){ const ov = document.createElement('div'); ov.className = 'overlay'; ov.onclick = e => { if (e.target === ov) ov.remove(); }; document.body.appendChild(ov); return agences(ov, BQ, (D && D.boutique) || 'Ma boutique', () => ov.remove()); }
       if (k === 'ia') return brancherIA();
+      if (k === 'aide'){ fermer(); setTimeout(() => { const b = document.getElementById('iaBtn'); if (b) b.click(); }, 200); return; }
       if (k === 'abo') return open(PAYER, '_blank');
       if (k === 'sheets') return open((b && b.sheetUrl) || D.sheetUrl, '_blank');
       if (k === 'lien'){ const u = lienSite(''); try { await navigator.clipboard.writeText(u); toast('Lien du site copié'); } catch(x){ prompt('Lien du site :', u); } return; }
@@ -5173,7 +5331,7 @@ function nettoyerHtml(h){
       }
       if (id === 'notifs'){
         pan.querySelector('#testPush').onclick = async e => {
-          const bt = e.target, dg = pan.querySelector('#diag'); bt.textContent = '…';
+          const bt = e.target, dg = pan.querySelector('#diag'); bt.innerHTML = '<span class="spin spin-s"></span>';
           let regs = [];
           try { regs = (await navigator.serviceWorker.getRegistrations()).map(r => r.scope.replace(location.origin, '') + ' (' + ((r.active && r.active.scriptURL) || '').split('/').pop().split('?')[0] + ')'); } catch(x){}
           const os = window.OneSignal && OneSignal.User ? OneSignal.User.PushSubscription : null;
@@ -5223,16 +5381,16 @@ function nettoyerHtml(h){
   function assistantIA(){
     if (document.getElementById('iaPan')) return;
     const pan = document.createElement('div'); pan.className = 'iapan'; pan.id = 'iaPan'; pan.setAttribute('role', 'dialog'); pan.setAttribute('aria-label', 'Assistant');
-    pan.innerHTML = `<div class="iahd"><span class="av">✦</span><b>Assistant<small>Pose ta question sur l’application</small></b><button id="iaNew">Nouveau</button><button id="iaX" aria-label="Fermer" style="font-size:20px">✕</button></div>
+    pan.innerHTML = `<div class="iahd"><span class="av">${ICN.bulle}</span><b>Assistant<small>Pose ta question sur l’application</small></b><button id="iaNew">Nouveau</button><button id="iaX" aria-label="Fermer" style="font-size:20px">✕</button></div>
       <div class="iamsgs" id="iaMsgs" aria-live="polite"></div>
-      <form class="iabas" id="iaF"><textarea id="iaQ" rows="1" placeholder="Écris ta question…" aria-label="Ta question"></textarea><button id="iaGo" aria-label="Envoyer">➤</button></form>`;
+      <form class="iabas" id="iaF"><textarea id="iaQ" rows="1" placeholder="Écris ta question…" aria-label="Ta question"></textarea><button id="iaGo" aria-label="Envoyer">${ICN.envoyer}</button></form>`;
     document.body.appendChild(pan); document.body.style.overflow = 'hidden';
     const msgs = pan.querySelector('#iaMsgs'), q = pan.querySelector('#iaQ'), go = pan.querySelector('#iaGo');
     let attente = false;
     const dessiner = () => {
       msgs.innerHTML = (IA.length ? '' : `<div class="iam ia">Bonjour 👋 Je connais tout le fonctionnement de l’application, du site et de Vendoo. Pose-moi ta question.</div><div class="iasug">${IA_SUG.map(t => `<button type="button">${esc(t)}</button>`).join('')}</div>`)
         + IA.map(m => `<div class="iam ${m.role === 'ia' ? 'ia' : 'moi'}">${m.role === 'ia' ? iaTexte(m.texte) : esc(m.texte)}</div>`).join('')
-        + (attente ? '<div class="iam ia att">…</div>' : '');
+        + (attente ? '<div class="iam ia att"><span class="spin spin-s"></span></div>' : '');
       msgs.querySelectorAll('.iasug button').forEach(b => b.onclick = () => envoyer(b.textContent));
       msgs.scrollTop = msgs.scrollHeight;
     };
