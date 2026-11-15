@@ -1503,8 +1503,8 @@ function nettoyerHtml(h){
       if ('Notification' in window && Notification.permission === 'granted'){
         const reg = await navigator.serviceWorker?.getRegistration();
         if (document.visibilityState !== 'visible'){
-          const opts = { body: `${fmt(o.total, o.devise)} · ${o.produit} · ${o.pays}`, icon: 'icon-commande.png', badge: 'badge-v3-96.png', tag: 'cmd-' + o.numero, vibrate: [70, 80, 200] };
-          if (reg) reg.showNotification('🛒 Nouvelle commande n°' + o.numero, opts); else new Notification('🛒 Nouvelle commande n°' + o.numero, opts);
+          const opts = { body: `${fmt(o.total, o.devise)} · ${o.produit} · ${o.pays}`, icon: 'icon-commande-v2.png', badge: 'badge-v3-96.png', tag: 'cmd-' + o.numero, vibrate: [70, 80, 200] };
+          if (reg) reg.showNotification('Nouvelle commande n°' + o.numero, opts); else new Notification('Nouvelle commande n°' + o.numero, opts);
         }
       }
     } catch(e){}
@@ -1532,8 +1532,8 @@ function nettoyerHtml(h){
       document.body.appendChild(t); setTimeout(() => t.remove(), 9000);
       try {
         if ('Notification' in window && Notification.permission === 'granted' && document.visibilityState !== 'visible')
-          navigator.serviceWorker?.getRegistration().then(reg => reg && reg.showNotification('⏰ À relancer : ' + (a.nom || 'Sans nom'),
-            { body: a.produit + ' · ' + a.prix + ' · ' + a.pays, icon: 'icon-relance.png', badge: 'icon-relance.png', tag: 'ab-' + k, vibrate: [60, 120, 60] }));
+          navigator.serviceWorker?.getRegistration().then(reg => reg && reg.showNotification('À relancer : ' + (a.nom || 'Sans nom'),
+            { body: a.produit + ' · ' + a.prix + ' · ' + a.pays, icon: 'icon-relance-v2.png', badge: 'badge-v3-96.png', tag: 'ab-' + k, vibrate: [60, 120, 60] }));
       } catch(e){}
     });
     if (change) try { S.set('adm_relvus', JSON.stringify(relVus)); } catch(e){}
@@ -5206,7 +5206,7 @@ function nettoyerHtml(h){
     chevron: '<path d="M9 6l6 6-6 6"/>', retour: '<path d="M15 18l-6-6 6-6"/>', loupe: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '127';
+  const VERSION_APP = '128';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
