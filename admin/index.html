@@ -1185,6 +1185,36 @@ html.ordi .detail.page>.pgh+*{margin-top:0}
 .spin-s{width:16px;height:16px;border-width:2px;vertical-align:-3px}
 .charge{display:flex;justify-content:center;align-items:center;padding:36px 0}
 .charge .spin{width:26px;height:26px}
+
+/* Formation */
+.fmhero{display:flex;flex-direction:column;gap:6px;padding:16px;border-radius:16px;background:linear-gradient(160deg,#0f1b3d,#1736A6);color:#fff;margin-bottom:12px}
+.fmhero b{font-size:18px;line-height:1.3}.fmhero span{font-size:14px;opacity:.85}.fmhero small{font-size:13px;opacity:.85}
+.fmprog{height:6px;border-radius:4px;background:rgba(255,255,255,.2);overflow:hidden;margin-top:6px}.fmprog i{display:block;height:100%;background:#7fd1a8;border-radius:4px}
+.fmvid{border-radius:14px;overflow:hidden;background:#0f1b3d;margin-bottom:10px;aspect-ratio:9/16;max-height:62vh;margin-left:auto;margin-right:auto}
+.fmvid video{width:100%;height:100%;display:block;object-fit:contain;background:#0f1b3d}
+.fmpdf{display:block;text-align:center;text-decoration:none}
+.fmh{font-size:16px;margin:18px 0 8px}
+.fmliste{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.fmrow{display:flex;align-items:center;gap:12px;padding:13px 14px;background:var(--card,#fff);border:0;border-bottom:1px solid var(--line);text-align:left;font:inherit;color:inherit;cursor:pointer;width:100%}
+.fmrow:last-child{border-bottom:0}.fmrow:active{background:#f5f6f8}
+.fmn{flex:0 0 auto;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#eef1f8;color:#1736A6;font-weight:700;font-size:13px}
+.fmn.ok{background:#e3f4ea;color:#11743f}
+.fmt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.fmt b{font-size:15px}.fmt small{font-size:13px;color:var(--soft);line-height:1.35}
+.fmch{color:var(--soft);font-size:22px}
+.fmmod{font-size:15.5px;line-height:1.6}.fmmod h3{font-size:16.5px;margin:20px 0 6px}.fmmod p{margin:0 0 10px}.fmmod ul,.fmmod ol{margin:0 0 10px;padding-left:20px}.fmmod li{margin-bottom:5px}
+.fmmod table{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0 12px;display:block;overflow-x:auto}.fmmod th{background:#0f1b3d;color:#fff;text-align:left;padding:7px 8px;font-weight:600}.fmmod td{border-bottom:1px solid var(--line);padding:7px 8px;vertical-align:top}
+.fmmod .ex{background:#fbfaf6;border:1px solid #ece7d8;border-radius:10px;padding:10px 12px;margin:6px 0 12px;font-size:14.5px}
+.fmmod code{font-size:12px;background:#f1f3f8;padding:1px 4px;border-radius:4px;word-break:break-all}
+.fmbut{background:#f2f5fc;border-left:3px solid #1736A6;padding:10px 12px;border-radius:0 10px 10px 0;margin-bottom:6px}
+.fmret{border:1.5px solid #1736A6;border-radius:12px;padding:12px 14px;margin:18px 0 6px}.fmret b{color:#1736A6;font-size:12px;letter-spacing:.1em;text-transform:uppercase}.fmret ul{margin:6px 0 0}
+.fmnav{display:flex;gap:8px;margin-top:14px}.fmnav .btn{flex:1}.fmnav span{flex:1}
+.fmq{padding:14px 0;border-bottom:1px solid var(--line)}.fmq>b{display:block;font-size:15px;line-height:1.4;margin-bottom:8px}
+.fmo{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px;font-size:14.5px;cursor:pointer}
+.fmo input{margin-top:3px;accent-color:#1736A6}
+.fmo.juste{border-color:#11743f;background:#eef8f2}.fmo.errone{border-color:#c62828;background:#fdf0f0}
+.fmq.faux>b{color:#b42318}.fmexp{font-size:13.5px;color:var(--soft);margin:4px 0 0}
+.fmres{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:14px;background:#fdf0f0;margin:4px 0 8px}.fmres.ok{background:#eef8f2}.fmres b{font-size:28px}.fmres span{font-size:14.5px;line-height:1.45}
+html.ordi .fmvid{max-width:360px}
 </style>
 </head>
 <body>
@@ -1702,6 +1732,62 @@ function nettoyerHtml(h){
       gt.disabled = false; };
   }
   // Feuille par-dessus (sans fermer la liste des boutiques)
+  /* ---------- Formation « Publicité rentable » : chapitres, vidéo, PDF et QCM noté (pour tous les utilisateurs) ---------- */
+  function ouvrirFormation(){
+    const K = 'adm_formation', BASE = 'formation/';
+    let st; try { st = JSON.parse(S.get(K) || '{}'); } catch(e){ st = {}; }
+    st.lus = st.lus || []; const garder = () => { try { S.set(K, JSON.stringify(st)); } catch(e){} };
+    const ov = feuille('<h2>Formation publicité</h2><div class="charge"><span class="spin"></span></div>');
+    const d = ov.querySelector('.detail'); d.classList.add('fmdet');
+    let vue = 'accueil', mi = 0, rep = {}, fini = false, ordre = null;
+    const go = () => { const F = window.FORMATION; if (!F) return;
+      const N = F.modules.length, lus = st.lus.filter(i => i < N).length;
+      if (vue === 'accueil'){
+        d.innerHTML = `<h2>Formation publicité</h2>
+          <div class="fmhero"><b>${esc(F.titre)}</b><span>${esc(F.sousTitre)}</span>
+            <div class="fmprog"><i style="width:${Math.round(lus / N * 100)}%"></i></div>
+            <small>${lus} module${lus > 1 ? 's' : ''} lu${lus > 1 ? 's' : ''} sur ${N}${st.note != null ? ' · meilleure note au QCM : ' + st.note + '/20' + (st.note >= 16 ? ' · formation validée' : '') : ''}</small></div>
+          <div class="fmvid"><video controls playsinline preload="none" poster="${BASE}affiche.jpg" src="${BASE}formation-publicite.mp4"></video></div>
+          <a class="btn ghost fmpdf" href="${BASE}formation-publicite.pdf" target="_blank" rel="noopener" download>Télécharger le PDF (24 pages)</a>
+          <h3 class="fmh">Les modules</h3>
+          <div class="fmliste">${F.modules.map((m, i) => `<button class="fmrow" data-m="${i}"><span class="fmn ${st.lus.includes(i) ? 'ok' : ''}">${st.lus.includes(i) ? '✓' : i + 1}</span><span class="fmt"><b>${esc(m.titre)}</b><small>${esc(m.but)}</small></span><span class="fmch">›</span></button>`).join('')}
+            <button class="fmrow fmqcm" id="fmQ"><span class="fmn ${st.note >= 16 ? 'ok' : ''}">${st.note >= 16 ? '✓' : 'Q'}</span><span class="fmt"><b>QCM final</b><small>20 questions · objectif 16/20${st.note != null ? ' · votre note : ' + st.note + '/20' : ''}</small></span><span class="fmch">›</span></button></div>`;
+        d.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { mi = +b.dataset.m; vue = 'module'; go(); d.scrollTop = 0; });
+        d.querySelector('#fmQ').onclick = () => { vue = 'qcm'; rep = {}; fini = false; ordre = null; go(); d.scrollTop = 0; };
+      } else if (vue === 'module'){
+        const m = F.modules[mi];
+        if (!st.lus.includes(mi)){ st.lus.push(mi); garder(); }
+        d.innerHTML = `<h2>Module ${mi + 1} · ${esc(m.titre)}</h2>
+          <div class="fmmod"><div class="fmbut"><b>Objectif :</b> ${esc(m.but)}</div>
+          ${m.sections.map(x => `<h3>${esc(x.h)}</h3>${x.html}`).join('')}
+          <div class="fmret"><b>À retenir</b><ul>${m.retenir.map(r => `<li>${esc(r)}</li>`).join('')}</ul></div></div>
+          <div class="fmnav">${mi > 0 ? '<button class="btn ghost" id="fmP">‹ Précédent</button>' : '<span></span>'}${mi < N - 1 ? '<button class="btn blue" id="fmS">Module suivant ›</button>' : '<button class="btn blue" id="fmQ2">Passer le QCM</button>'}</div>
+          <button class="btn ghost" id="fmA" style="margin-top:8px">Tous les modules</button>`;
+        const b1 = d.querySelector('#fmP'), b2 = d.querySelector('#fmS'), b3 = d.querySelector('#fmQ2');
+        if (b1) b1.onclick = () => { mi--; go(); d.scrollTop = 0; };
+        if (b2) b2.onclick = () => { mi++; go(); d.scrollTop = 0; };
+        if (b3) b3.onclick = () => { vue = 'qcm'; rep = {}; fini = false; ordre = null; go(); d.scrollTop = 0; };
+        d.querySelector('#fmA').onclick = () => { vue = 'accueil'; go(); d.scrollTop = 0; };
+      } else {
+        // Les réponses sont mélangées à chaque tentative
+        if (!ordre) ordre = F.qcm.map(q => q.o.map((_, j) => j).sort(() => Math.random() - .5));
+        const note = F.qcm.reduce((t, q, i) => t + (rep[i] === q.r ? 1 : 0), 0), nr = Object.keys(rep).length;
+        d.innerHTML = `<h2>QCM final</h2>
+          ${fini ? `<div class="fmres ${note >= 16 ? 'ok' : ''}"><b>${note}/20</b><span>${note >= 16 ? 'Formation validée. Vous maîtrisez les règles : appliquez-les chaque jour.' : 'Pas encore : relisez les modules des questions en rouge, puis recommencez. Objectif : 16/20.'}</span></div>` : `<p class="sub">Une seule bonne réponse par question. ${nr}/20 répondues.</p>`}
+          ${F.qcm.map((q, i) => `<div class="fmq ${fini ? (rep[i] === q.r ? 'bon' : 'faux') : ''}"><b>${i + 1}. ${esc(q.q)}</b>
+            ${ordre[i].map(j => `<label class="fmo ${fini && j === q.r ? 'juste' : ''} ${fini && rep[i] === j && j !== q.r ? 'errone' : ''}"><input type="radio" name="q${i}" value="${j}" ${rep[i] === j ? 'checked' : ''} ${fini ? 'disabled' : ''}><span>${esc(q.o[j])}</span></label>`).join('')}
+            ${fini ? `<p class="fmexp">${esc(q.e)}</p>` : ''}</div>`).join('')}
+          ${fini ? '<button class="btn blue" id="fmR">Recommencer</button>' : `<button class="btn blue" id="fmV" ${nr < 20 ? 'disabled' : ''}>Valider mes réponses${nr < 20 ? ' (' + (20 - nr) + ' restantes)' : ''}</button>`}
+          <button class="btn ghost" id="fmA" style="margin-top:8px">Retour à la formation</button>`;
+        d.querySelectorAll('input[type=radio]').forEach(r => r.onchange = () => { rep[+r.name.slice(1)] = +r.value; const y = d.scrollTop; go(); d.scrollTop = y; });
+        const v = d.querySelector('#fmV'); if (v) v.onclick = () => { fini = true; if (st.note == null || note > st.note) st.note = note; st.date = new Date().toISOString(); garder(); go(); d.scrollTop = 0; };
+        const r = d.querySelector('#fmR'); if (r) r.onclick = () => { rep = {}; fini = false; ordre = null; go(); d.scrollTop = 0; };
+        d.querySelector('#fmA').onclick = () => { vue = 'accueil'; go(); d.scrollTop = 0; };
+      }
+    };
+    if (window.FORMATION) go();
+    else { const sc = document.createElement('script'); sc.src = BASE + 'cours.js?v=1'; sc.onload = go; sc.onerror = () => { d.innerHTML = '<h2>Formation publicité</h2><p class="sub">Impossible de charger la formation. Vérifiez votre connexion.</p>'; }; document.head.appendChild(sc); }
+  }
   function feuille(html){ const o = document.createElement('div'); o.className = 'overlay'; o.innerHTML = `<div class="detail bqsheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`; o.onclick = e => { if (e.target === o) o.remove(); }; document.body.appendChild(o); return o; }
 
   // Cadran des pays : liste de haut en bas, cases à cocher, recherche
@@ -5187,6 +5273,7 @@ function nettoyerHtml(h){
     boutiques: '<path d="M3 7l9-4 9 4-9 4z"/><path d="M3 12l9 4 9-4"/><path d="M3 17l9 4 9-4"/>',
     abonnes: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.7-3.4 3.3-5.3 6.5-5.3s5.8 1.9 6.5 5.3"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18.5 14.9c1.6.7 2.7 2.3 3 5.1"/>',
     carte: '<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6.5 15h4"/>',
+    formation: '<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/>',
     reglages: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
     cloche: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
     son: '<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>',
@@ -5206,7 +5293,7 @@ function nettoyerHtml(h){
     chevron: '<path d="M9 6l6 6-6 6"/>', retour: '<path d="M15 18l-6-6 6-6"/>', loupe: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '129';
+  const VERSION_APP = '130';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
@@ -5221,6 +5308,7 @@ function nettoyerHtml(h){
       ${proprio ? m('vendoo', 'abonnes', 'Vendoo : abonnés et paiements') : ''}
       ${abonne ? `<a class="mrow" href="${PAYER}" target="_blank" rel="noopener">${ic('carte')}<span>Mon abonnement Vendoo</span></a>` : ''}
       <h3 class="mhd">Application</h3>
+      <button class="mrow" id="mForm">${ic('formation')}<span>Formation publicité</span></button>
       <button class="mrow" id="mGear">${ic('reglages')}<span>Paramètres</span></button>
     </div>`;
     app.querySelectorAll('[data-mn]').forEach(b => b.onclick = async () => {
@@ -5233,6 +5321,7 @@ function nettoyerHtml(h){
       if (k === 'lien'){ const u = lienSite(''); try { await navigator.clipboard.writeText(u); toast('Lien du site copié'); } catch(x){ prompt('Lien du site :', u); } }
     });
     document.getElementById('mGear').onclick = () => parametres();
+    document.getElementById('mForm').onclick = () => ouvrirFormation();
     if (!BQS) fetch(API, {method: 'POST', body: JSON.stringify({type: 'boutiques', key, v: VID})}).then(r => r.json()).then(j => { if (j.ok){ BQS = j; try { localStorage.setItem(K_BQS, JSON.stringify(j)); } catch(e){} } }).catch(() => {});
   }
 
