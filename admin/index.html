@@ -1747,7 +1747,7 @@ function nettoyerHtml(h){
           <div class="fmhero"><b>${esc(F.titre)}</b><span>${esc(F.sousTitre)}</span>
             <div class="fmprog"><i style="width:${Math.round(lus / N * 100)}%"></i></div>
             <small>${lus} module${lus > 1 ? 's' : ''} lu${lus > 1 ? 's' : ''} sur ${N}${st.note != null ? ' · meilleure note au QCM : ' + st.note + '/20' + (st.note >= 16 ? ' · formation validée' : '') : ''}</small></div>
-          <div class="fmvid"><video controls playsinline preload="none" poster="${BASE}affiche.jpg" src="${BASE}formation-publicite.mp4"></video></div>
+          <div class="fmvid"><video controls playsinline preload="none" poster="${BASE}affiche.jpg" src="${BASE}formation-publicite.mp4?v=2"></video></div>
           <a class="btn ghost fmpdf" href="${BASE}formation-publicite.pdf" target="_blank" rel="noopener" download>Télécharger le PDF (24 pages)</a>
           <h3 class="fmh">Les modules</h3>
           <div class="fmliste">${F.modules.map((m, i) => `<button class="fmrow" data-m="${i}"><span class="fmn ${st.lus.includes(i) ? 'ok' : ''}">${st.lus.includes(i) ? '✓' : i + 1}</span><span class="fmt"><b>${esc(m.titre)}</b><small>${esc(m.but)}</small></span><span class="fmch">›</span></button>`).join('')}
@@ -5293,7 +5293,7 @@ function nettoyerHtml(h){
     chevron: '<path d="M9 6l6 6-6 6"/>', retour: '<path d="M15 18l-6-6 6-6"/>', loupe: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '130';
+  const VERSION_APP = '131';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
