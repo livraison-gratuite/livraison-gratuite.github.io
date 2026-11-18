@@ -1,6 +1,10 @@
 // Notifications (OneSignal) + ouverture rapide de l'application
+// Une seule icône par notification : le logo de l'application à gauche (règle d'Android) et, en haut de l'écran,
+// la petite icône blanche du type d'événement (caddie, téléphone, cloche). Aucune image encadrée à droite.
+(() => { const P = self.ServiceWorkerRegistration && ServiceWorkerRegistration.prototype; if (!P || P.__sansImage) return;
+  const o = P.showNotification; P.showNotification = function(t, opt){ opt = Object.assign({}, opt || {}); delete opt.icon; delete opt.image; return o.call(this, t, opt); }; P.__sansImage = 1; })();
 importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
-const CACHE = 'abro-admin-v135';
+const CACHE = 'abro-admin-v136';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './commande.mp3', './relance.mp3', './icon-relance.png', './icon-commande.png', './icon-info.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('abro-') && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
