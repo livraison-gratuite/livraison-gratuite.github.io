@@ -1418,11 +1418,18 @@ window.ICN = (function(){
   // Boutique en cours (Vendoo) : '' = boutique principale ; chaque boutique garde ses propres données sur le téléphone
   // Abonné Vendoo : tout ce qui est gardé sur le téléphone est séparé de celui du propriétaire
   const K_B = VID ? 'adm_b_v' + VID : 'adm_b', K_BQS = VID ? 'adm_bqs_v' + VID : 'adm_bqs';
+  // Boutique ouverte : l'adresse d'abord, puis celle de CETTE fenêtre (sessionStorage), puis la dernière choisie.
+  // L'adresse garde toujours ?b= : si le téléphone recharge l'application (retour de TikTok, mémoire libérée,
+  // mise à jour), on revient dans la même boutique, même si une autre fenêtre ou une notification en a ouvert une autre.
   const BQ = (() => {
     const u = new URLSearchParams(location.search); let b = u.get('b');
     if (b === null && u.get('cmd')) b = '';
+    if (b === null) { try { const s = sessionStorage.getItem(K_B); if (s !== null) b = s; } catch(e){} }
     try { if (b !== null) localStorage.setItem(K_B, b); else b = localStorage.getItem(K_B) || ''; } catch(e){ b = b || ''; }
-    return String(b || '').toLowerCase().replace(/[^a-z0-9-]/g, '');
+    b = String(b || '').toLowerCase().replace(/[^a-z0-9-]/g, '');
+    try { sessionStorage.setItem(K_B, b); } catch(e){}
+    try { if (u.get('b') !== b){ u.set('b', b); history.replaceState(history.state, '', location.pathname + '?' + u.toString() + location.hash); } } catch(e){}
+    return b;
   })();
   const cleS = k => { let p = VID && !/^adm_(affichage|sound|apvue)$/.test(k) ? 'v' + VID + '_' : ''; if (BQ && !/^adm_(key|affichage|sound|b|apvue)$/.test(k)) p += BQ + '_'; return p ? k.replace(/^adm_/, 'adm_' + p) : k; };
   const S = { get(k){ try{return localStorage.getItem(cleS(k))}catch(e){return null} }, set(k,v){ try{localStorage.setItem(cleS(k),v)}catch(e){} }, del(k){ try{localStorage.removeItem(cleS(k))}catch(e){} } };
@@ -1586,7 +1593,7 @@ function nettoyerHtml(h){
 
   /* ---------- Mes boutiques (Vendoo) : passer de l'une à l'autre, en créer une nouvelle ---------- */
   let BQS = null; try { BQS = JSON.parse(localStorage.getItem(K_BQS) || 'null'); } catch(e){}
-  function ouvrirBoutique(code){ try { localStorage.setItem(K_B, code || ''); SS.set('adm_periode', 'jour'); } catch(e){} location.href = location.pathname + (code ? '?b=' + encodeURIComponent(code) : '?b='); }
+  function ouvrirBoutique(code){ try { localStorage.setItem(K_B, code || ''); sessionStorage.setItem(K_B, code || ''); SS.set('adm_periode', 'jour'); } catch(e){} location.href = location.pathname + (code ? '?b=' + encodeURIComponent(code) : '?b='); }
   async function mesBoutiques(){
     const ov = document.createElement('div'); ov.className = 'overlay';
     const dessiner = msg => {
@@ -2846,7 +2853,7 @@ function nettoyerHtml(h){
   function openFromLink(){
     if (opened || !D) return; opened = true;
     const n = new URLSearchParams(location.search).get('cmd');
-    if (n && D.commandes.some(o => o.numero === n)){ history.replaceState(null, '', location.pathname); view = 'orders'; [...nav.children].forEach(b => b.classList.toggle('on', b.dataset.v === 'orders')); render(); detail(n); }
+    if (n && D.commandes.some(o => o.numero === n)){ history.replaceState(null, '', location.pathname + '?b=' + encodeURIComponent(BQ)); view = 'orders'; [...nav.children].forEach(b => b.classList.toggle('on', b.dataset.v === 'orders')); render(); detail(n); }
   }
   function schedule(){
     clearTimeout(timer);
@@ -5449,7 +5456,7 @@ function nettoyerHtml(h){
     preparer: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8.5 12.5l2.5 2.5 4.5-4.8"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '134';
+  const VERSION_APP = '135';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
