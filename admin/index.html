@@ -2776,7 +2776,7 @@ function nettoyerHtml(h){
       // Notification « point du jour à faire » / « résumé de la semaine » : ouvre directement le point
       if (vueDemandee === 'analyse' && !window.__vAp){ window.__vAp = 1; analysePubUI(); }
       // Notification « client à préparer » : ouvre directement la liste
-      if (vueDemandee === 'prep' && !window.__vPr){ window.__vPr = 1; aPreparerUI(); }
+      if (vueDemandee === 'prep' && !window.__vPr){ window.__vPr = 1; aPreparerUI(new URLSearchParams(location.search).get('f')); }
       if (vueDemandee === 'point' && !window.__vPt){ window.__vPt = 1; pointHebdo({jour: new URLSearchParams(location.search).get('jour'), stock: new URLSearchParams(location.search).get('stock')}); }
       if (!precharge){ precharge = true; setTimeout(() => { traiterFile(); loadPub(); loadPR(); loadTT(); }, 400); }
     } catch(e){
@@ -3656,37 +3656,50 @@ function nettoyerHtml(h){
       + `Montant à préparer : ${fmt(c.total, c.devise || 'FCFA')}. Vous payez seulement après avoir vu votre colis.\n\n`
       + `Merci de répondre OK pour confirmer.`;
   }
-  async function aPreparerUI(){
+  // Rappel du matin : le jour de la livraison, pour les clients qui ont commandé la veille après l'heure limite, la nuit ou le jour de repos
+  function messageMatin(c){
+    const H = heurePays(Date.now(), c.tz), pre = String(c.nom || '').trim().split(/\s+/)[0], prenom = pre ? pre.charAt(0).toUpperCase() + pre.slice(1) : '';
+    return `${H.h < 12 ? 'Bonjour' : 'Bonsoir'}${prenom ? ' ' + prenom : ''}, c’est aujourd’hui !\n\n`
+      + `Votre commande n°${c.numero} (${c.produit}${c.offre ? ', ' + c.offre : ''}) vous est livrée aujourd’hui, entre ${hPays(c.debut)} et ${hPays(c.limite)}.\n\n`
+      + `Le livreur va vous appeler avant de passer : gardez votre téléphone allumé et décrochez, même si le numéro ne vous est pas connu.\n\n`
+      + `Préparez ${fmt(c.total, c.devise || 'FCFA')}. Vous payez seulement après avoir vu votre colis.\n\n`
+      + `Si vous n’êtes pas disponible aujourd’hui, répondez simplement à ce message : nous trouverons ensemble un autre moment.`;
+  }
+  async function aPreparerUI(filtre0){
     const o = feuille(`<h2>Clients à préparer</h2><p class="sub">Commandes passées en dehors des heures de livraison. Envoie le message : le client sait quand il sera livré et ce qu’il doit préparer, et il décroche quand le livreur l’appelle.</p>
-      <div class="prtabs" role="tablist"><button data-f="a" class="on">À envoyer <span id="prNa"></span></button><button data-f="e">Envoyés <span id="prNe"></span></button><button data-f="t">Toutes</button></div>
+      <div class="prtabs" role="tablist"><button data-f="a" class="on">À envoyer <span id="prNa"></span></button><button data-f="m">Rappel du matin <span id="prNm"></span></button><button data-f="e">Envoyés <span id="prNe"></span></button><button data-f="t">Toutes</button></div>
       <div id="prL"><div class="charge"><span class="spin"></span></div></div>
       <button class="btn ghost" id="prX" style="margin-top:14px">Fermer</button>`);
     o.querySelector('.detail').classList.add('cbsheet');
     o.querySelector('#prX').onclick = () => o.remove();
-    let L = [], filtre = 'a';
+    let L = [], filtre = filtre0 === 'matin' ? 'm' : 'a';
+    o.querySelectorAll('.prtabs [data-f]').forEach(x => x.classList.toggle('on', x.dataset.f === filtre));
     const depuis = t => { const m = Math.round((Date.now() - t) / 6e4); return m < 1 ? 'à l’instant' : m < 60 ? 'il y a ' + m + ' min' : m < 1440 ? 'il y a ' + Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + String(m % 60).padStart(2, '0') : '') : 'il y a ' + Math.floor(m / 1440) + ' j'; };
     const video = c => c.pct >= 95 ? ['ok', 'Vidéo vue en entier'] : c.pct > 0 ? ['mi', 'Vidéo vue à ' + c.pct + ' %'] : c.page ? ['no', 'Vidéo non regardée'] : ['no', 'Page de remerciement non vue'];
     const dessiner = () => { const z = o.querySelector('#prL'); if (!z) return;
-      const A = L.filter(c => c.hors && !c.envoye), E = L.filter(c => c.envoye);
-      o.querySelector('#prNa').textContent = A.length ? '(' + A.length + ')' : ''; o.querySelector('#prNe').textContent = E.length ? '(' + E.length + ')' : '';
-      const V = filtre === 'a' ? A : filtre === 'e' ? E : L;
+      const A = L.filter(c => c.hors && !c.envoye), E = L.filter(c => c.envoye || c.rappel), M = L.filter(c => c.matin);
+      const nb = (id, l) => { o.querySelector(id).textContent = l.length ? '(' + l.length + ')' : ''; };
+      nb('#prNa', A); nb('#prNe', E); nb('#prNm', M.filter(c => !c.rappel));
+      const V = filtre === 'a' ? A : filtre === 'e' ? E : filtre === 'm' ? M : L, mat = filtre === 'm';
       z.innerHTML = V.length ? V.map(c => { const i = L.indexOf(c), [vc, vt] = video(c), frais = Date.now() - c.t < 5 * 6e4;
-        return `<div class="prc${c.envoye ? ' fait' : ''}">
+        return `<div class="prc${(mat ? c.rappel : c.envoye) ? ' fait' : ''}">
           <div class="prh"><b>${esc(c.nom || 'Sans nom')}</b><span>${esc(depuis(c.t))}</span></div>
           <div class="prp">${esc(c.produit)} · ${esc(c.offre)} · <b>${esc(fmt(c.total, c.devise || 'FCFA'))}</b></div>
           <div class="prm"><span class="prch liv">${ic('calendrier')}Livraison ${esc(livPrep(c))}</span><span class="prch v${vc}">${esc(vt)}</span>
             <span class="prch">${esc(c.pays)}${c.boutique ? ' · ' + esc(c.boutique) : ''}</span>${c.test ? '<span class="prch tst">Test</span>' : ''}${!c.hors ? '<span class="prch">Heures de livraison</span>' : ''}</div>
-          <details class="prmsg"><summary>Voir le message</summary><div>${esc(messagePrep(c)).replace(/\n/g, '<br>')}</div></details>
-          ${c.envoye ? `<div class="prok">${ic('coche')}Envoyé ${esc(depuis(c.envoye))}<button class="lnk" data-re="${i}">Renvoyer</button></div>`
+          <details class="prmsg"><summary>Voir le message</summary><div>${esc(mat ? messageMatin(c) : messagePrep(c)).replace(/\n/g, '<br>')}</div></details>
+          ${mat ? (c.rappel ? `<div class="prok">${ic('coche')}Rappel envoyé ${esc(depuis(c.rappel))}<button class="lnk" data-rm="${i}">Renvoyer</button></div>`
+                  : `<button class="btn prwa" data-rm="${i}">Envoyer le rappel du matin</button>`)
+            : c.envoye ? `<div class="prok">${ic('coche')}Envoyé ${esc(depuis(c.envoye))}<button class="lnk" data-re="${i}">Renvoyer</button></div>`
             : `<button class="btn prwa" data-wa="${i}">${frais ? 'Envoyer maintenant' : 'Envoyer le message WhatsApp'}</button>`}
         </div>`; }).join('')
-        : `<div class="cbvide">${ic('coche')}<b>${filtre === 'a' ? 'Aucun client à préparer' : filtre === 'e' ? 'Aucun message envoyé' : 'Aucune commande ces 3 derniers jours'}</b><small>${filtre === 'a' ? 'Les commandes passées en dehors des heures de livraison apparaîtront ici, avec le message déjà écrit.' : ''}</small></div>`;
-      z.querySelectorAll('[data-wa],[data-re]').forEach(b => b.onclick = async () => {
-        const c = L[Number(b.dataset.wa != null ? b.dataset.wa : b.dataset.re)], tel = String(c.tel || '').replace(/\D/g, '');
+        : `<div class="cbvide">${ic('coche')}<b>${filtre === 'a' ? 'Aucun client à préparer' : filtre === 'm' ? 'Aucun rappel ce matin' : filtre === 'e' ? 'Aucun message envoyé' : 'Aucune commande ces 3 derniers jours'}</b><small>${filtre === 'a' ? 'Les commandes passées en dehors des heures de livraison apparaîtront ici, avec le message déjà écrit.' : filtre === 'm' ? 'Les clients livrés aujourd’hui qui ont commandé hier après l’heure limite, la nuit ou le jour de repos apparaissent ici chaque matin.' : ''}</small></div>`;
+      z.querySelectorAll('[data-wa],[data-re],[data-rm]').forEach(b => b.onclick = async () => {
+        const rap = b.dataset.rm != null, c = L[Number(rap ? b.dataset.rm : b.dataset.wa != null ? b.dataset.wa : b.dataset.re)], tel = String(c.tel || '').replace(/\D/g, '');
         if (tel.length < 8) return alert('Numéro du client invalide.');
-        window.open('https://wa.me/' + tel + '?text=' + encodeURIComponent(messagePrep(c)), '_blank');
-        c.envoye = Date.now(); dessiner();
-        try { await call({type: 'prepEnvoye', numero: c.numero, bq: c.bq}); } catch(e){ toast('Envoi noté sur ce téléphone seulement : ' + e.message); }
+        window.open('https://wa.me/' + tel + '?text=' + encodeURIComponent(rap ? messageMatin(c) : messagePrep(c)), '_blank');
+        if (rap) c.rappel = Date.now(); else c.envoye = Date.now(); dessiner();
+        try { await call({type: 'prepEnvoye', numero: c.numero, bq: c.bq, quoi: rap ? 'rappel' : ''}); } catch(e){ toast('Envoi noté sur ce téléphone seulement : ' + e.message); }
       });
     };
     o.querySelectorAll('.prtabs [data-f]').forEach(b => b.onclick = () => { filtre = b.dataset.f; o.querySelectorAll('.prtabs [data-f]').forEach(x => x.classList.toggle('on', x === b)); dessiner(); });
@@ -5392,7 +5405,7 @@ function nettoyerHtml(h){
     preparer: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8.5 12.5l2.5 2.5 4.5-4.8"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '132';
+  const VERSION_APP = '133';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
