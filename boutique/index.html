@@ -1272,6 +1272,7 @@ Heure de la livraison : ${r.livraison}`;
   function lancerSav(cas){
     const box = $('sav'), v = $('savV'); if (!box || !v) return;
     const W = SAV_W[cas] || {}, son = $('savSon'), jouer = $('savPlay'), bar = $('savBar'), ov = [...box.querySelectorAll('.ov')];
+    const srcs = [...v.querySelectorAll('source')]; if (srcs.length) srcs[srcs.length - 1].addEventListener('error', () => { box.remove(); });
     const taille = () => { if (box.isConnected) box.style.fontSize = (box.clientWidth / 100) + 'px'; }; taille(); addEventListener('resize', taille);
     const ease = x => 1 - Math.pow(1 - Math.max(0, Math.min(1, x)), 3);
     const peindre = () => {
@@ -1309,7 +1310,7 @@ Heure de la livraison : ${r.livraison}`;
         : `Nos livreurs sont en repos le ${repos}. Votre commande part <b>en priorité ${PL.jour}</b>, ${fen}. Le livreur vous appellera avant de passer : gardez votre téléphone allumé.`;
     // La vidéo parle de 9 h, 16 h et du dimanche : elle n'est montrée que si ce sont bien les horaires de la boutique
     const avecVideo = L.video && L.debut === 9 && L.limite === 16 && L.off.length === 1 && L.off[0] === 0 && !!SAV_W[PL.cas];
-    const src = `sav/${PL.cas}-${PL.salut === 'Bonjour' ? 'bonjour' : 'bonsoir'}.mp4`;
+    const src = `sav/${PL.cas}-${PL.salut === 'Bonjour' ? 'bonjour' : 'bonsoir'}`;
     const photo = P && P.photos && P.photos[0] ? `<img src="${esc(imgM(P.photos[0]))}" alt="">` : svgS('colis');
     const numAff = r.numero ? esc(r.numero) : '…';
     const livTicket = majus(PL.lib) + (PL.k || PL.avant ? ', ' + fen : '');
@@ -1319,7 +1320,7 @@ Heure de la livraison : ${r.livraison}`;
         <p class="lead">Merci pour votre commande de <b>${esc(r.produit)}</b>.</p>
         <p class="num">Commande n°<span id="numCmd">${numAff}</span></p>
         ${avecVideo ? `<div class="sav" id="sav" role="region" aria-label="Vidéo : comment va se passer votre livraison">
-          <video id="savV" src="${src}" poster="sav/affiche.jpg" playsinline webkit-playsinline preload="auto"></video>
+          <video id="savV" poster="sav/affiche.jpg" playsinline webkit-playsinline preload="auto"><source src="${src}.mp4" type='video/mp4; codecs="avc1.64001F, mp4a.40.2"'><source src="${src}.webm" type='video/webm; codecs="vp9, opus"'></video>
           <div class="ov" data-w="sA"><div class="ic">${svgS('coche')}</div><div><div class="k">Bienvenue</div><div class="v">Merci${prenom ? ', ' + esc(prenom) : ''}</div><div class="w">Commande n°<span class="savNum">${numAff}</span></div></div></div>
           <div class="ov" data-w="sB"><div class="ic">${photo}</div><div><div class="k">Votre produit</div><div class="v s">${esc(r.produit)}</div><div class="w">${esc(r.offre)}</div></div></div>
           <div class="ov" data-w="sD" data-d="0.36"><div class="ic">${svgS('cal')}</div><div><div class="k">Votre jour de livraison</div><div class="v">${esc(majus(PL.lib))}</div><div class="w">Entre 9 h et 16 h</div></div></div>
