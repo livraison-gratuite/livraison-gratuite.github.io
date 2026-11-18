@@ -2881,6 +2881,50 @@ function nettoyerHtml(h){
   /* ---------- Navigation ---------- */
   function go(v){ if (window.fermerPages && !window.fermerPages()) return; clearTimeout(dvTimer); dvTimer = null; view = v; SS.set('adm_view', v); scrollAReprendre = 0; [...nav.children].forEach(b => b.classList.toggle('on', b.dataset.v === v)); render(); scrollTo({top:0}); }
   nav.addEventListener('click', e => { const b = e.target.closest('button'); if (b) go(b.dataset.v); });
+  /* Glisser le doigt à gauche / à droite pour passer d'un écran à l'autre, dans l'ordre de la barre du bas.
+     Ignoré : sur ordinateur, quand une page ou une fenêtre est ouverte, sur les zones qui défilent de côté
+     (filtres, périodes, onglets), les graphiques, les champs de saisie, et près des bords (geste « retour » du téléphone). */
+  (() => {
+    let x0 = 0, y0 = 0, t0 = 0, dx = 0, etat = '';   // etat : '' | 'h' (glissé horizontal) | 'non'
+    const ordre = () => [...nav.children].filter(b => b.dataset.v && getComputedStyle(b).display !== 'none').map(b => b.dataset.v);
+    const bloque = el => {
+      if (document.documentElement.classList.contains('ordi') || document.querySelector('.overlay, .pmsheet, #edit:not(.hidden)')) return true;
+      if (el.closest('input, textarea, select, [contenteditable="true"], canvas, video, .chart, .dvfgraph, .ptchart, .nosw')) return true;
+      for (let e = el; e && e !== app; e = e.parentElement){
+        const s = getComputedStyle(e);
+        if (/(auto|scroll)/.test(s.overflowX) && e.scrollWidth > e.clientWidth + 2) return true;
+      }
+      return false;
+    };
+    const remettre = anim => { app.style.transition = anim ? 'transform .2s ease, opacity .2s ease' : ''; app.style.transform = ''; app.style.opacity = '';
+      if (anim) setTimeout(() => { app.style.transition = ''; }, 220); };
+    app.addEventListener('touchstart', e => {
+      etat = ''; dx = 0;
+      if (e.touches.length !== 1) { etat = 'non'; return; }
+      const t = e.touches[0]; x0 = t.clientX; y0 = t.clientY; t0 = Date.now();
+      if (x0 < 24 || x0 > innerWidth - 24 || ordre().indexOf(view) < 0 || bloque(e.target)) etat = 'non';
+    }, {passive: true});
+    app.addEventListener('touchmove', e => {
+      if (etat === 'non') return;
+      const t = e.touches[0], ddx = t.clientX - x0, ddy = t.clientY - y0;
+      if (!etat){ if (Math.abs(ddx) < 12 && Math.abs(ddy) < 12) return; etat = Math.abs(ddx) > Math.abs(ddy) * 1.6 ? 'h' : 'non'; if (etat === 'non') return; }
+      const L = ordre(), i = L.indexOf(view), bout = (ddx > 0 && i === 0) || (ddx < 0 && i === L.length - 1);
+      dx = ddx; app.style.transition = ''; app.style.transform = `translateX(${(bout ? ddx * 0.12 : ddx * 0.45).toFixed(1)}px)`; app.style.opacity = String(1 - Math.min(0.35, Math.abs(ddx) / 900));
+    }, {passive: true});
+    const fin = () => {
+      if (etat !== 'h'){ etat = ''; return; }
+      etat = '';
+      const L = ordre(), i = L.indexOf(view), v = Math.abs(dx) / Math.max(1, Date.now() - t0), j = dx < 0 ? i + 1 : i - 1;
+      if ((Math.abs(dx) > 80 || (Math.abs(dx) > 40 && v > 0.45)) && j >= 0 && j < L.length){
+        const sens = dx < 0 ? 1 : -1;
+        app.style.transform = ''; app.style.opacity = '';
+        go(L[j]);
+        try { app.animate([{transform: `translateX(${sens * 48}px)`, opacity: 0.35}, {transform: 'none', opacity: 1}], {duration: 200, easing: 'cubic-bezier(.2,.8,.2,1)'}); } catch(x){}
+      } else remettre(true);
+    };
+    app.addEventListener('touchend', fin, {passive: true});
+    app.addEventListener('touchcancel', () => { etat = ''; remettre(true); }, {passive: true});
+  })();
   let demarre = false;
   function finDemarrage(){
     if (demarre) return; demarre = true;
@@ -5405,7 +5449,7 @@ function nettoyerHtml(h){
     preparer: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8.5 12.5l2.5 2.5 4.5-4.8"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '133';
+  const VERSION_APP = '134';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
