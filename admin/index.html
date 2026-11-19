@@ -1963,7 +1963,7 @@ function nettoyerHtml(h){
       coul: 'Couleur principale', logo: 'Logo (lien image, optionnel)', band: 'Bandeau du haut', fb: 'Pixel Facebook (ID)', fbj: 'Jeton API Conversions Meta (optionnel)', fbt: 'Code test événements Meta (optionnel)',
       iak: 'IA – clé Gemini (gratuite sur aistudio.google.com)', nb: 'Bloc NB en bas du site (OUI/NON)', nbwa: 'WhatsApp affiché dans le NB', tt: 'Pixel TikTok (ID)', ttj: 'Jeton Events API TikTok (optionnel)', cmb: 'WhatsApp – clé CallMeBot (optionnel)', cmbn: 'WhatsApp – numéro qui reçoit les commandes (CallMeBot)', rel: 'Alerte de relance des abandons après (minutes, 0 = jamais)',
       waw: 'WhatsApp API – identifiant du compte (WABA ID)', wap: 'WhatsApp API – identifiant du numéro (Phone number ID)', waj: 'WhatsApp API – jeton d’accès permanent',
-      waa: 'WhatsApp API – numéros des agences (reçoivent les commandes)', wax: 'WhatsApp API – envoi automatique (OUI/NON)',
+      waa: 'WhatsApp API – numéros des agences (reçoivent les commandes)', wax: 'WhatsApp API – envoi automatique (OUI/NON)', wapin: 'WhatsApp API – code PIN à 6 chiffres',
       livd: 'Livraison – heure de début (ex. 9)', livl: 'Livraison – heure limite pour le jour même (ex. 16)', livo: 'Livraison – jours sans livraison (ex. dimanche)', vid: 'Vidéo de suivi après la commande (OUI/NON)'};
     const SECRET = /jeton|clé|cle /i, ph = k => sub && H[k] ? (SECRET.test(k) ? 'Vide = comme la principale (déjà rempli)' : 'Vide = comme la principale (' + H[k] + ')') : '';
     const champ = (k, lib, aide, type) => `<div class="rgc"><label for="rg_${String(k).replace(/\W/g, '')}">${lib}${aide ? `<small>${aide}</small>` : ''}</label><input class="field" id="rg_${String(k).replace(/\W/g, '')}" data-k="${esc(K[k] || k)}" ${type ? `type="${type}"` : ''} value="${esc(V[K[k] || k] || '')}" placeholder="${esc(ph(K[k] || k))}"></div>`;
@@ -2002,11 +2002,13 @@ function nettoyerHtml(h){
       ${ouiNon('vid', 'Vidéo de suivi après la commande', 'Montrée au client juste après sa commande. Elle annonce 9 h – 16 h et le repos du dimanche : avec d’autres horaires, seul le message écrit s’affiche')}
       ${sub ? '' : `<h3 class="rgt">WhatsApp automatique (API officielle Meta)</h3>
       <p class="rgaide">Un numéro réservé envoie tout seul : chaque commande à l’agence, le message de suivi au client 5 min après sa commande, et le rappel du matin à 9 h. Environ 2 à 3 FCFA par message. Toutes tes boutiques l’utilisent.</p>
-      ${champ('waw', 'Identifiant du compte WhatsApp (WABA ID)', 'WhatsApp Manager → Paramètres du compte → ID du compte')}
+      ${champ('waw', 'Identifiant du compte WhatsApp (WABA ID)', 'Dans WhatsApp Manager, le chiffre après « asset_id= » dans la barre d’adresse')}
       ${champ('wap', 'Identifiant du numéro (Phone number ID)', 'developers.facebook.com → ton app → WhatsApp → Configuration de l’API')}
       ${champ('waj', 'Jeton d’accès permanent', 'Colle-le seulement ici, jamais dans une discussion', 'password')}
       ${champ('waa', 'Numéros des agences (reçoivent les commandes)', 'Avec l’indicatif, séparés par des virgules. Ex : 2250700000000, 22890000000. L’indicatif dit le pays')}
+      ${champ('wapin', 'Code PIN à 6 chiffres', 'Choisis 6 chiffres et garde-les. Ils activent le numéro sur l’API (vérification en deux étapes)', 'password')}
       ${ouiNon('wax', 'Envoi automatique', 'Non = plus rien ne part tout seul, tu repasses en envoi manuel')}
+      <p class="rgaide">Appuie d’abord sur « Enregistrer » en bas, rouvre les Réglages, puis utilise le bouton ci-dessous.</p>
       <div class="rgwa"><button class="btn ghost" type="button" id="waMod">Créer et vérifier les modèles de message</button><div id="waEtat"></div>
         <div class="rgwat"><input class="field" id="waTel" inputmode="tel" placeholder="Ton numéro avec l’indicatif"><button class="btn ghost" type="button" id="waTest">Envoyer un essai</button></div></div>`}
       <h3 class="rgt">💬 WhatsApp automatique (CallMeBot)</h3>
@@ -2034,7 +2036,7 @@ function nettoyerHtml(h){
     // WhatsApp officiel : modèles de message (création chez Meta + état de validation) et message d'essai
     const waEt = B.querySelector('#waEtat'), waLib = {APPROVED: ['ok', 'Validé'], PENDING: ['at', 'En attente de validation'], IN_APPEAL: ['at', 'En appel'], REJECTED: ['no', 'Refusé'], PAUSED: ['no', 'En pause'], DISABLED: ['no', 'Désactivé'], ABSENT: ['no', 'Pas encore créé']};
     const waNoms = {suivi_commande_bonjour: 'Suivi client (bonjour)', suivi_commande_bonsoir: 'Suivi client (bonsoir)', rappel_livraison: 'Rappel du matin', commande_agence: 'Commande à l’agence', confirmation_agence: 'Confirmation à l’agence'};
-    const waAff = j => { waEt.innerHTML = `<div class="rgwal">${(j.modeles || []).map(m => { const [c, t] = waLib[m.statut] || ['at', m.statut]; return `<div><span>${esc(waNoms[m.nom] || m.nom)}</span><b class="wa${c}">${esc(t)}${m.raison && m.raison !== 'NONE' ? ' · ' + esc(m.raison) : ''}</b></div>`; }).join('')}</div>`
+    const waAff = j => { const n = j.numero, nOk = n && n.statut === 'CONNECTED'; waEt.innerHTML = `<div class="rgwal">${n ? `<div><span>Numéro ${esc(n.tel || '')}</span><b class="wa${nOk ? 'ok' : 'no'}">${nOk ? 'Connecté' : 'Hors ligne'}</b></div>` : ''}${(j.modeles || []).map(m => { const [c, t] = waLib[m.statut] || ['at', m.statut]; return `<div><span>${esc(waNoms[m.nom] || m.nom)}</span><b class="wa${c}">${esc(t)}${m.raison && m.raison !== 'NONE' ? ' · ' + esc(m.raison) : ''}</b></div>`; }).join('')}</div>`
       + ((j.erreurs || []).length ? `<p class="rgaide" style="color:#B42318">${j.erreurs.map(esc).join('<br>')}</p>` : '')
       + `<p class="rgaide">${j.actif ? 'Envoi automatique : actif.' : 'Envoi automatique : inactif (numéro, jeton ou « Envoi automatique » manquant).'} Les messages partent dès que leurs modèles sont validés par Meta (souvent en quelques minutes, parfois quelques heures).</p>`; };
     const waBt = B.querySelector('#waMod'); if (waBt) waBt.onclick = async () => { waBt.disabled = true; waBt.textContent = 'Vérification…'; waEt.innerHTML = '<div class="charge"><span class="spin"></span></div>';
@@ -5486,7 +5488,7 @@ function nettoyerHtml(h){
     preparer: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8.5 12.5l2.5 2.5 4.5-4.8"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '139';
+  const VERSION_APP = '140';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
