@@ -1215,6 +1215,10 @@ html.ordi .detail.page>.pgh+*{margin-top:0}
 .fmq.faux>b{color:#b42318}.fmexp{font-size:13.5px;color:var(--soft);margin:4px 0 0}
 .fmres{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:14px;background:#fdf0f0;margin:4px 0 8px}.fmres.ok{background:#eef8f2}.fmres b{font-size:28px}.fmres span{font-size:14.5px;line-height:1.45}
 html.ordi .fmvid{max-width:360px}
+.rgaide{font-size:13px;color:var(--soft);line-height:1.5;margin:4px 0 10px}
+.rgwa{margin:6px 0 14px}.rgwat{display:flex;gap:8px;margin-top:10px}.rgwat .field{flex:1;margin:0}.rgwat .btn{width:auto;margin:0;white-space:nowrap}
+.rgwal{border:1px solid var(--line);border-radius:12px;margin-top:10px;overflow:hidden}.rgwal>div{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;font-size:13.5px;border-top:1px solid var(--line)}.rgwal>div:first-child{border-top:0}
+.rgwal b{font-weight:600;text-align:right}.waok{color:#0B6B35}.waat{color:#8A5600}.wano{color:#B42318}
 /* Clients à préparer */
 .prtabs{display:flex;gap:6px;margin:12px 0 10px;overflow-x:auto;scrollbar-width:none}
 .prtabs button{flex:0 0 auto;border:1px solid var(--line);background:var(--card,#fff);color:var(--ink);font:600 14px/1 inherit;padding:9px 14px;border-radius:999px;cursor:pointer}
@@ -1958,6 +1962,8 @@ function nettoyerHtml(h){
       pre: 'Préfixe n° commande (optionnel)', reco: 'Nouvelle commande permise si la précédente est livrée (OUI/NON)', test: 'Numéros de test (jamais bloqués, séparés par des virgules)', preuves: 'Notifications de ventes sur le site (OUI/NON)',
       coul: 'Couleur principale', logo: 'Logo (lien image, optionnel)', band: 'Bandeau du haut', fb: 'Pixel Facebook (ID)', fbj: 'Jeton API Conversions Meta (optionnel)', fbt: 'Code test événements Meta (optionnel)',
       iak: 'IA – clé Gemini (gratuite sur aistudio.google.com)', nb: 'Bloc NB en bas du site (OUI/NON)', nbwa: 'WhatsApp affiché dans le NB', tt: 'Pixel TikTok (ID)', ttj: 'Jeton Events API TikTok (optionnel)', cmb: 'WhatsApp – clé CallMeBot (optionnel)', cmbn: 'WhatsApp – numéro qui reçoit les commandes (CallMeBot)', rel: 'Alerte de relance des abandons après (minutes, 0 = jamais)',
+      waw: 'WhatsApp API – identifiant du compte (WABA ID)', wap: 'WhatsApp API – identifiant du numéro (Phone number ID)', waj: 'WhatsApp API – jeton d’accès permanent',
+      waa: 'WhatsApp API – numéros des agences (reçoivent les commandes)', wax: 'WhatsApp API – envoi automatique (OUI/NON)',
       livd: 'Livraison – heure de début (ex. 9)', livl: 'Livraison – heure limite pour le jour même (ex. 16)', livo: 'Livraison – jours sans livraison (ex. dimanche)', vid: 'Vidéo de suivi après la commande (OUI/NON)'};
     const SECRET = /jeton|clé|cle /i, ph = k => sub && H[k] ? (SECRET.test(k) ? 'Vide = comme la principale (déjà rempli)' : 'Vide = comme la principale (' + H[k] + ')') : '';
     const champ = (k, lib, aide, type) => `<div class="rgc"><label for="rg_${String(k).replace(/\W/g, '')}">${lib}${aide ? `<small>${aide}</small>` : ''}</label><input class="field" id="rg_${String(k).replace(/\W/g, '')}" data-k="${esc(K[k] || k)}" ${type ? `type="${type}"` : ''} value="${esc(V[K[k] || k] || '')}" placeholder="${esc(ph(K[k] || k))}"></div>`;
@@ -1994,6 +2000,15 @@ function nettoyerHtml(h){
       ${champ('livl', 'Heure limite pour être livré le jour même', 'Vide = 16 h. Une commande passée après part le lendemain', 'number')}
       ${champ('livo', 'Jours sans livraison', 'Vide = dimanche. Écris « aucun » si tu livres tous les jours')}
       ${ouiNon('vid', 'Vidéo de suivi après la commande', 'Montrée au client juste après sa commande. Elle annonce 9 h – 16 h et le repos du dimanche : avec d’autres horaires, seul le message écrit s’affiche')}
+      ${sub ? '' : `<h3 class="rgt">WhatsApp automatique (API officielle Meta)</h3>
+      <p class="rgaide">Un numéro réservé envoie tout seul : chaque commande à l’agence, le message de suivi au client 5 min après sa commande, et le rappel du matin à 9 h. Environ 2 à 3 FCFA par message. Toutes tes boutiques l’utilisent.</p>
+      ${champ('waw', 'Identifiant du compte WhatsApp (WABA ID)', 'WhatsApp Manager → Paramètres du compte → ID du compte')}
+      ${champ('wap', 'Identifiant du numéro (Phone number ID)', 'developers.facebook.com → ton app → WhatsApp → Configuration de l’API')}
+      ${champ('waj', 'Jeton d’accès permanent', 'Colle-le seulement ici, jamais dans une discussion', 'password')}
+      ${champ('waa', 'Numéros des agences (reçoivent les commandes)', 'Avec l’indicatif, séparés par des virgules. Ex : 2250700000000, 22890000000. L’indicatif dit le pays')}
+      ${ouiNon('wax', 'Envoi automatique', 'Non = plus rien ne part tout seul, tu repasses en envoi manuel')}
+      <div class="rgwa"><button class="btn ghost" type="button" id="waMod">Créer et vérifier les modèles de message</button><div id="waEtat"></div>
+        <div class="rgwat"><input class="field" id="waTel" inputmode="tel" placeholder="Ton numéro avec l’indicatif"><button class="btn ghost" type="button" id="waTest">Envoyer un essai</button></div></div>`}
       <h3 class="rgt">💬 WhatsApp automatique (CallMeBot)</h3>
       ${champ('cmb', 'Clé CallMeBot', '', 'password')}
       ${champ('cmbn', 'Numéro qui reçoit les alertes', 'Avec l’indicatif')}
@@ -2016,6 +2031,17 @@ function nettoyerHtml(h){
     const B = o.querySelector('#rgB');
     B.querySelector('#rgX').onclick = () => o.remove();
     B.querySelector('#rgPx').onclick = () => pixelsMeta(b);
+    // WhatsApp officiel : modèles de message (création chez Meta + état de validation) et message d'essai
+    const waEt = B.querySelector('#waEtat'), waLib = {APPROVED: ['ok', 'Validé'], PENDING: ['at', 'En attente de validation'], IN_APPEAL: ['at', 'En appel'], REJECTED: ['no', 'Refusé'], PAUSED: ['no', 'En pause'], DISABLED: ['no', 'Désactivé'], ABSENT: ['no', 'Pas encore créé']};
+    const waNoms = {suivi_commande_bonjour: 'Suivi client (bonjour)', suivi_commande_bonsoir: 'Suivi client (bonsoir)', rappel_livraison: 'Rappel du matin', commande_agence: 'Commande à l’agence', confirmation_agence: 'Confirmation à l’agence'};
+    const waAff = j => { waEt.innerHTML = `<div class="rgwal">${(j.modeles || []).map(m => { const [c, t] = waLib[m.statut] || ['at', m.statut]; return `<div><span>${esc(waNoms[m.nom] || m.nom)}</span><b class="wa${c}">${esc(t)}${m.raison && m.raison !== 'NONE' ? ' · ' + esc(m.raison) : ''}</b></div>`; }).join('')}</div>`
+      + ((j.erreurs || []).length ? `<p class="rgaide" style="color:#B42318">${j.erreurs.map(esc).join('<br>')}</p>` : '')
+      + `<p class="rgaide">${j.actif ? 'Envoi automatique : actif.' : 'Envoi automatique : inactif (numéro, jeton ou « Envoi automatique » manquant).'} Les messages partent dès que leurs modèles sont validés par Meta (souvent en quelques minutes, parfois quelques heures).</p>`; };
+    const waBt = B.querySelector('#waMod'); if (waBt) waBt.onclick = async () => { waBt.disabled = true; waBt.textContent = 'Vérification…'; waEt.innerHTML = '<div class="charge"><span class="spin"></span></div>';
+      try { waAff(await call({type: 'waModeles', action: 'creer'})); } catch(e){ waEt.innerHTML = `<p class="rgaide" style="color:#B42318">${esc(e.message)}</p>`; }
+      waBt.disabled = false; waBt.textContent = 'Créer et vérifier les modèles de message'; };
+    const waTs = B.querySelector('#waTest'); if (waTs) waTs.onclick = async () => { const t = B.querySelector('#waTel').value.replace(/\D/g, ''); if (t.length < 8) return alert('Écris ton numéro avec l’indicatif.');
+      waTs.disabled = true; try { await call({type: 'waModeles', action: 'test', tel: t}); toast('Message d’essai envoyé sur WhatsApp'); } catch(e){ alert('Échec de l’essai : ' + e.message); } waTs.disabled = false; };
     B.querySelectorAll('[data-utm]').forEach(x => x.onclick = async () => { try { await navigator.clipboard.writeText(x.dataset.utm); x.textContent = '✓ Copié'; setTimeout(() => x.textContent = '📋 Copier', 1500); } catch(e){ prompt('Copie ce texte :', x.dataset.utm); } });
     const chargerPixels = async () => { if (PX) return PX; try { PX = (await bqAppel({action: 'pixels'})).pixels; } catch(e){ PX = []; } return PX; };
     B.querySelectorAll('.rgpx').forEach(bl => {
@@ -3741,7 +3767,7 @@ function nettoyerHtml(h){
           <div class="prh"><b>${esc(c.nom || 'Sans nom')}</b><span>${esc(depuis(c.t))}</span></div>
           <div class="prp">${esc(c.produit)} · ${esc(c.offre)} · <b>${esc(fmt(c.total, c.devise || 'FCFA'))}</b></div>
           <div class="prm"><span class="prch liv">${ic('calendrier')}Livraison ${esc(livPrep(c))}</span><span class="prch v${vc}">${esc(vt)}</span>
-            <span class="prch">${esc(c.pays)}${c.boutique ? ' · ' + esc(c.boutique) : ''}</span>${c.test ? '<span class="prch tst">Test</span>' : ''}${!c.hors ? '<span class="prch">Heures de livraison</span>' : ''}</div>
+            ${c.confirme ? '<span class="prch vok">' + ic('coche') + 'Client a confirmé</span>' : ''}<span class="prch">${esc(c.pays)}${c.boutique ? ' · ' + esc(c.boutique) : ''}</span>${c.test ? '<span class="prch tst">Test</span>' : ''}${!c.hors ? '<span class="prch">Heures de livraison</span>' : ''}</div>
           <details class="prmsg"><summary>Voir le message</summary><div>${esc(mat ? messageMatin(c) : messagePrep(c)).replace(/\*([^*\n]+)\*/g, '<b>$1</b>').replace(/\n/g, '<br>')}</div></details>
           ${mat ? (c.rappel ? `<div class="prok">${ic('coche')}Rappel envoyé ${esc(depuis(c.rappel))}<button class="lnk" data-rm="${i}">Renvoyer</button></div>`
                   : `<button class="btn prwa" data-rm="${i}">Envoyer le rappel du matin</button>`)
@@ -5460,7 +5486,7 @@ function nettoyerHtml(h){
     preparer: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8.5 12.5l2.5 2.5 4.5-4.8"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '138';
+  const VERSION_APP = '139';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;

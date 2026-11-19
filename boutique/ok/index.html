@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Confirmation de livraison</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0F1B3D;--soft:#5B6478;--line:#E3E8F2;--bg:#F4F6FB;--main:#1736A6;--ok:#12A150;--okbg:#E3F5EA}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;justify-content:center;padding:28px 16px calc(28px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+.carte{width:100%;max-width:440px;background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:0 12px 36px rgba(15,27,61,.08);padding:30px 24px 24px;text-align:center;align-self:flex-start}
+.rond{width:84px;height:84px;margin:0 auto 18px;border-radius:50%;background:var(--okbg);display:grid;place-items:center}
+.rond svg{width:46px;height:46px;fill:none;stroke:var(--ok);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.rond circle,.rond path{stroke-dasharray:100;stroke-dashoffset:100;animation:trait .7s ease forwards}.rond path{animation-delay:.45s}
+@keyframes trait{to{stroke-dashoffset:0}}
+h1{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.sous{color:var(--soft);font-size:15.5px;line-height:1.5;margin-top:8px}
+.lignes{margin:22px 0 4px;border:1px solid var(--line);border-radius:16px;text-align:left;overflow:hidden}
+.ligne{display:flex;justify-content:space-between;gap:14px;padding:13px 16px;font-size:14.5px;border-top:1px solid var(--line)}
+.ligne:first-child{border-top:0}.ligne span{color:var(--soft)}.ligne b{text-align:right;font-weight:600}
+.ligne.tot{background:#F8FAFD}.ligne.tot b{font-size:16px;font-weight:800}
+.conseil{display:flex;gap:12px;align-items:flex-start;text-align:left;background:#EEF3FF;border-radius:14px;padding:14px 16px;margin-top:16px;font-size:14.5px;line-height:1.5;color:#1D2A57}
+.conseil svg{flex:0 0 auto;width:22px;height:22px;fill:none;stroke:var(--main);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-top:1px}
+.btn{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:18px;width:100%;border-radius:14px;padding:15px;font:700 15.5px Inter,sans-serif;text-decoration:none;color:#fff;background:#128C4A}
+.btn svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.charge{padding:40px 0;color:var(--soft);font-size:15px}
+.spin{width:34px;height:34px;margin:0 auto 14px;border:3px solid var(--line);border-top-color:var(--main);border-radius:50%;animation:t .8s linear infinite}
+@keyframes t{to{transform:rotate(360deg)}}
+.erreur .rond{background:#FFF1E6}.erreur .rond svg{stroke:#C2410C}
+@media (prefers-reduced-motion:reduce){.rond circle,.rond path{animation:none;stroke-dashoffset:0}}
+</style>
+</head>
+<body>
+<main class="carte" id="z"><div class="charge"><div class="spin"></div>Confirmation en cours…</div></main>
+<script>
+(function(){
+  var API = "https://script.google.com/macros/s/AKfycbwgdtcXlXB9niD3hactnz4SLIrpY_q74iQQZwkr1vrUBjczfCCVWwamG69uqnUQZsba/exec";
+  var z = document.getElementById('z'), c = new URLSearchParams(location.search).get('c') || '';
+  var esc = function(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(x){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[x]; }); };
+  var maj = function(s){ s = String(s || ''); return s.charAt(0).toUpperCase() + s.slice(1); };
+  var coche = '<div class="rond"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" pathLength="100"/><path d="M7.6 12.4l3 3 5.8-6.2" pathLength="100"/></svg></div>';
+  function erreur(t){
+    z.className = 'carte erreur';
+    z.innerHTML = '<div class="rond"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 7.5v5.5M12 16.5h.01"/></svg></div><h1>Lien non valide</h1><p class="sous">' + esc(t) + '</p>';
+  }
+  if (!c || c.indexOf('.') < 1) return erreur('Ce lien de confirmation est incomplet. Utilisez le bouton « Je confirme » reçu sur WhatsApp.');
+  var v = '';
+  try { var p = c.slice(0, c.lastIndexOf('.')).replace(/-/g, '+').replace(/_/g, '/'); v = JSON.parse(decodeURIComponent(escape(atob(p + '==='.slice((p.length + 3) % 4))))).v || ''; } catch(e){}
+  fetch(API, {method: 'POST', body: JSON.stringify({type: 'confirmer', c: c, v: v})}).then(function(r){ return r.json(); }).then(function(r){
+    if (!r || !r.ok) return erreur((r && r.erreur) || 'La confirmation n’a pas pu être enregistrée. Réessayez dans un instant.');
+    if (r.introuvable){ z.innerHTML = coche + '<h1>Merci !</h1><p class="sous">Votre réponse est bien reçue. Notre équipe vous appellera avant la livraison.</p>'; return; }
+    var wa = String(r.wa || '').replace(/\D/g, '');
+    z.innerHTML = coche
+      + '<h1>' + (r.prenom ? 'Merci ' + esc(r.prenom) + ', c’est confirmé !' : 'Merci, c’est confirmé !') + '</h1>'
+      + '<p class="sous">' + (r.deja ? 'Votre livraison était déjà confirmée.' : 'Votre livraison est confirmée. Notre livreur est prévenu.') + '</p>'
+      + '<div class="lignes">'
+      + '<div class="ligne"><span>Produit</span><b>' + esc(r.produit) + (r.offre ? ' · ' + esc(r.offre) : '') + '</b></div>'
+      + '<div class="ligne"><span>Livraison</span><b>' + esc(maj(r.liv)) + ', ' + esc(r.heures) + '</b></div>'
+      + '<div class="ligne tot"><span>À payer à la livraison</span><b>' + esc(r.total) + '</b></div></div>'
+      + '<div class="conseil"><svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>'
+      + '<span>Le livreur vous appellera juste avant de passer : <b>gardez votre téléphone allumé et décrochez</b>, même si le numéro ne vous est pas connu. Vous payez seulement après avoir vu votre colis.</span></div>'
+      + (wa ? '<a class="btn" href="https://wa.me/' + wa + '"><svg viewBox="0 0 24 24"><path d="M20.5 11.6a8.4 8.4 0 0 1-12.3 7.4L3.5 20.5l1.6-4.5a8.4 8.4 0 1 1 15.4-4.4z"/></svg>Écrire au service client</a>' : '');
+  }).catch(function(){ erreur('Connexion impossible. Vérifiez votre connexion internet puis rouvrez le lien.'); });
+})();
+</script>
+</body>
+</html>
