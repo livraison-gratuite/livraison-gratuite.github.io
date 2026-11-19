@@ -3700,20 +3700,24 @@ function nettoyerHtml(h){
   function messagePrep(c){
     const now = Date.now(), H = heurePays(now, c.tz), auj = H.y * 1e4 + H.m * 100 + H.d;
     let P = planPays(c.t, c); if (P.cle < auj) P = planPays(now, c);   // jour prévu déjà passé : on repart de maintenant
+    // « aujourd'hui » / « demain » se disent par rapport au moment de l'ENVOI, pas de la commande
+    const dem = heurePays(now + 864e5, c.tz), cleDem = dem.y * 1e4 + dem.m * 100 + dem.d;
+    const quand = P.cle === auj ? 'aujourd’hui' : P.cle === cleDem ? 'demain, ' + P.jour : P.jour;
     const pre = String(c.nom || '').trim().split(/\s+/)[0], prenom = pre ? pre.charAt(0).toUpperCase() + pre.slice(1) : '';
+    // *texte* = gras dans WhatsApp
     return `${H.h < 12 ? 'Bonjour' : 'Bonsoir'}${prenom ? ' ' + prenom : ''}, ici le service client${c.boutique ? (/^[aeiouyhàâéèêëîïôöûü]/i.test(c.boutique) ? ' d’' : ' de ') + c.boutique : ''}.\n\n`
-      + `Merci pour votre commande n°${c.numero} : ${c.produit}${c.offre ? ' (' + c.offre + ')' : ''}.\n\n`
-      + `Votre livraison est prévue ${P.lib}, entre ${hPays(c.debut)} et ${hPays(c.limite)}. Le livreur vous appellera juste avant de passer : gardez votre téléphone allumé et décrochez, même si le numéro ne vous est pas connu.\n\n`
-      + `Montant à préparer : ${fmt(c.total, c.devise || 'FCFA')}. Vous payez seulement après avoir vu votre colis.\n\n`
-      + `Merci de répondre OK pour confirmer.`;
+      + `Merci pour votre commande n°${c.numero} : *${c.produit}*${c.offre ? ' (' + c.offre + ')' : ''}.\n\n`
+      + `Votre livraison est prévue *${quand}, entre ${hPays(c.debut)} et ${hPays(c.limite)}*. Le livreur vous appellera juste avant de passer : *gardez votre téléphone allumé et décrochez*, même si le numéro ne vous est pas connu.\n\n`
+      + `Montant à préparer : *${fmt(c.total, c.devise || 'FCFA')}*. Vous payez seulement après avoir vu votre colis.\n\n`
+      + `Merci de répondre *OK* pour confirmer.`;
   }
   // Rappel du matin : le jour de la livraison, pour les clients qui ont commandé la veille après l'heure limite, la nuit ou le jour de repos
   function messageMatin(c){
     const H = heurePays(Date.now(), c.tz), pre = String(c.nom || '').trim().split(/\s+/)[0], prenom = pre ? pre.charAt(0).toUpperCase() + pre.slice(1) : '';
-    return `${H.h < 12 ? 'Bonjour' : 'Bonsoir'}${prenom ? ' ' + prenom : ''}, c’est aujourd’hui !\n\n`
-      + `Votre commande n°${c.numero} (${c.produit}${c.offre ? ', ' + c.offre : ''}) vous est livrée aujourd’hui, entre ${hPays(c.debut)} et ${hPays(c.limite)}.\n\n`
-      + `Le livreur va vous appeler avant de passer : gardez votre téléphone allumé et décrochez, même si le numéro ne vous est pas connu.\n\n`
-      + `Préparez ${fmt(c.total, c.devise || 'FCFA')}. Vous payez seulement après avoir vu votre colis.\n\n`
+    return `${H.h < 12 ? 'Bonjour' : 'Bonsoir'}${prenom ? ' ' + prenom : ''}, *c’est aujourd’hui !*\n\n`
+      + `Votre commande n°${c.numero} (*${c.produit}*${c.offre ? ', ' + c.offre : ''}) vous est livrée *aujourd’hui, entre ${hPays(c.debut)} et ${hPays(c.limite)}*.\n\n`
+      + `Le livreur va vous appeler avant de passer : *gardez votre téléphone allumé et décrochez*, même si le numéro ne vous est pas connu.\n\n`
+      + `Préparez *${fmt(c.total, c.devise || 'FCFA')}*. Vous payez seulement après avoir vu votre colis.\n\n`
       + `Si vous n’êtes pas disponible aujourd’hui, répondez simplement à ce message : nous trouverons ensemble un autre moment.`;
   }
   async function aPreparerUI(filtre0){
@@ -3738,7 +3742,7 @@ function nettoyerHtml(h){
           <div class="prp">${esc(c.produit)} · ${esc(c.offre)} · <b>${esc(fmt(c.total, c.devise || 'FCFA'))}</b></div>
           <div class="prm"><span class="prch liv">${ic('calendrier')}Livraison ${esc(livPrep(c))}</span><span class="prch v${vc}">${esc(vt)}</span>
             <span class="prch">${esc(c.pays)}${c.boutique ? ' · ' + esc(c.boutique) : ''}</span>${c.test ? '<span class="prch tst">Test</span>' : ''}${!c.hors ? '<span class="prch">Heures de livraison</span>' : ''}</div>
-          <details class="prmsg"><summary>Voir le message</summary><div>${esc(mat ? messageMatin(c) : messagePrep(c)).replace(/\n/g, '<br>')}</div></details>
+          <details class="prmsg"><summary>Voir le message</summary><div>${esc(mat ? messageMatin(c) : messagePrep(c)).replace(/\*([^*\n]+)\*/g, '<b>$1</b>').replace(/\n/g, '<br>')}</div></details>
           ${mat ? (c.rappel ? `<div class="prok">${ic('coche')}Rappel envoyé ${esc(depuis(c.rappel))}<button class="lnk" data-rm="${i}">Renvoyer</button></div>`
                   : `<button class="btn prwa" data-rm="${i}">Envoyer le rappel du matin</button>`)
             : c.envoye ? `<div class="prok">${ic('coche')}Envoyé ${esc(depuis(c.envoye))}<button class="lnk" data-re="${i}">Renvoyer</button></div>`
@@ -5456,7 +5460,7 @@ function nettoyerHtml(h){
     preparer: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8.5 12.5l2.5 2.5 4.5-4.8"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '137';
+  const VERSION_APP = '138';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
