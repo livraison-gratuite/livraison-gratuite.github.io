@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Ouverture de WhatsApp</title>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#F4F6FB;font:500 16px Inter,system-ui,sans-serif;color:#0F1B3D;text-align:center;padding:24px}a{display:inline-block;margin-top:16px;background:#128C4A;color:#fff;text-decoration:none;font-weight:700;padding:14px 22px;border-radius:14px}</style>
+</head>
+<body>
+<main id="z">Ouverture de WhatsApp…</main>
+<script>
+(function(){
+  var n = (new URLSearchParams(location.search).get('n') || '').replace(/\D/g, '');
+  var z = document.getElementById('z');
+  if (n.length < 8) { z.textContent = 'Lien incomplet.'; return; }
+  var u = 'https://wa.me/' + n;
+  z.innerHTML = 'Ouverture de WhatsApp…<br><a href="' + u + '">Ouvrir la discussion</a>';
+  location.replace(u);
+})();
+</script>
+</body>
+</html>
