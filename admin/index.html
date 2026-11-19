@@ -723,6 +723,7 @@ body.v-settings{background:var(--bg)}
 .pmsheet .annul{text-align:center;background:var(--surface);margin-top:6px}
 .prod .pname{text-align:left;padding:0}
 .pst{color:#B45309;font-weight:700}.pst.on{color:#0B6B35}.pst.off{color:#6B7280}.pst.pause{color:#8A5A00}
+.prod .info .pca{display:flex;flex-wrap:wrap;gap:4px 10px;margin:6px 0 0;font-size:12.5px;color:var(--soft)}.prod .info .pca b{display:inline;line-height:inherit;color:var(--ink,#0F1B3D);font-weight:700}.prod .info .pca .pcl b{color:#0B6B35}
 .pxl{display:flex;align-items:flex-start;gap:8px;padding:12px 0;border-bottom:1px solid var(--line)}
 .pxl.eteint .pxi>b,.pxl.eteint .pxi>small{opacity:.55}
 .pxi{flex:1;min-width:0}.pxi b{display:block;font-size:15px}.pxi small{display:block;color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums;margin-top:1px}
@@ -4113,16 +4114,21 @@ function nettoyerHtml(h){
     if (PR) liste = PR.produits;
     else if (pubData) liste = pubData.produits.map(p => ({ id: p.id, nom: p.nom, photos: p.photos, enLigne: true, prix: [] }));
     const nbB = liste ? liste.filter(p => !p.enLigne).length : 0;
-    const vis = liste ? liste.filter(p => prFiltre === 'tous' || (prFiltre === 'ligne' ? p.enLigne : !p.enLigne)) : [];
+    const VT = (PR && PR.ventes) || {}, vt = p => VT[String(p.nom || '').trim()];
+    let vis = liste ? liste.filter(p => prFiltre === 'tous' || prFiltre === 'top' || (prFiltre === 'ligne' ? p.enLigne : !p.enLigne)) : [];
+    if (prFiltre === 'top') vis = vis.filter(p => vt(p)).sort((a, b) => (vt(b).caLivre - vt(a).caLivre) || (vt(b).ca - vt(a).ca));
+    const caLigne = p => { const x = vt(p); if (!PR || !PR.ventes) return ''; if (!x) return '<span class="pca">Aucune commande pour l’instant</span>';
+      const taux = x.livrees + x.annulees ? Math.round(100 * x.livrees / (x.livrees + x.annulees)) : null;
+      return `<span class="pca"><span class="pcl">Encaissé <b>${esc(fmt(x.caLivre, x.dev))}</b></span><span>Commandé <b>${esc(fmt(x.ca, x.dev))}</b></span><span>${x.livrees} livrée${x.livrees > 1 ? 's' : ''} / ${x.cmd} commande${x.cmd > 1 ? 's' : ''}${taux != null ? ' · ' + taux + ' % livrées' : ''}</span></span>`; };
     const sel = prSel, pp = pressePapier();
     app.innerHTML = `<div class="page"><div class="prhead"><h1>Produits</h1>${sel ? '' : `<span style="display:flex;gap:8px">${liste && liste.length ? '<button class="btn ghost small" id="prSel">Sélectionner</button>' : ''}<button class="btn blue small" id="prNew">+ Ajouter</button></span>`}</div>
       ${sel ? `<div class="selbar"><button id="selX" aria-label="Annuler la sélection">✕</button><b>${sel.size} sélectionné${sel.size > 1 ? 's' : ''}</b><button id="selAll">${vis.length && vis.every(p => sel.has(p.id)) ? 'Tout désélectionner' : 'Tout sélectionner'}</button></div>` : ''}
       ${!sel && pp && pp.ids && pp.ids.length && (pp.source || '') !== (BQ || '') ? `<div class="ppban"><span>📋 ${pp.ids.length} produit${pp.ids.length > 1 ? 's' : ''} copié${pp.ids.length > 1 ? 's' : ''} de « ${esc(pp.nom)} »</span><button id="ppCol">📥 Coller ici</button></div>` : ''}
-      <div class="filters">${[['tous', 'Tous'], ['ligne', 'En ligne'], ['brouillon', 'Brouillons' + (nbB ? ' (' + nbB + ')' : '')]].map(([k, l]) => `<button class="${k === prFiltre ? 'on' : ''}" data-pf="${k}">${l}</button>`).join('')}</div>
+      <div class="filters">${[['tous', 'Tous'], ['top', 'Meilleures ventes'], ['ligne', 'En ligne'], ['brouillon', 'Brouillons' + (nbB ? ' (' + nbB + ')' : '')]].map(([k, l]) => `<button class="${k === prFiltre ? 'on' : ''}" data-pf="${k}">${l}</button>`).join('')}</div>
       <div id="pl">${!liste ? '<div class="charge"><span class="spin"></span></div>' : vis.length ? vis.map(p => `<div class="prod ${sel && sel.has(p.id) ? 'sel' : ''}" data-row="${esc(p.id)}">
           ${sel ? `<span class="pck" aria-hidden="true">${sel.has(p.id) ? '✓' : ''}</span>` : ''}
           <img src="${esc(vignette(p.photos[0]))}" alt="" loading="lazy">
-          <div class="info"><b>${esc(p.nom)}</b><small>${etatP(p.id) === 'off' ? '<span class="pst off">● Désactivé</span>' : (p.enLigne ? '<span class="pst on">● En ligne</span>' : '<span class="pst">● Brouillon</span>') + (etatP(p.id) === 'pause' ? ' <span class="pst pause">❚❚ En pause</span>' : '')} ${esc(prixResume(p))}</small></div>
+          <div class="info"><b>${esc(p.nom)}</b><small>${etatP(p.id) === 'off' ? '<span class="pst off">● Désactivé</span>' : (p.enLigne ? '<span class="pst on">● En ligne</span>' : '<span class="pst">● Brouillon</span>') + (etatP(p.id) === 'pause' ? ' <span class="pst pause">❚❚ En pause</span>' : '')} ${esc(prixResume(p))}</small>${caLigne(p)}</div>
           ${sel ? '' : `<button class="pmenu" data-pm="${esc(p.id)}" aria-label="Options de ${esc(p.nom)}">⋮</button>`}</div>`).join('') : `<div class="empty">${prFiltre === 'brouillon' ? 'Aucun brouillon.' : 'Aucun produit. Appuie sur « + Ajouter ».'}</div>`}</div>
       ${sel ? `<div class="selact"><button id="selOpt" ${sel.size ? '' : 'disabled'}>${sel.size ? `Options pour ${sel.size} produit${sel.size > 1 ? 's' : ''} ▴` : 'Touche les produits à sélectionner'}</button></div>` : `<a class="btn ghost" style="margin-top:18px" href="${esc(D ? D.sheetUrl : '#')}" target="_blank" rel="noopener">Ouvrir le Google Sheets</a>`}</div>`;
     const pret = () => { if (!PR){ alert('Encore une seconde, les détails des produits arrivent…'); return false; } return true; };
@@ -5488,7 +5494,7 @@ function nettoyerHtml(h){
     preparer: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8.5 12.5l2.5 2.5 4.5-4.8"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '140';
+  const VERSION_APP = '141';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
