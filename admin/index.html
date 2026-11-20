@@ -2037,9 +2037,9 @@ function nettoyerHtml(h){
     B.querySelector('#rgPx').onclick = () => pixelsMeta(b);
     // WhatsApp officiel : modèles de message (création chez Meta + état de validation) et message d'essai
     const waEt = B.querySelector('#waEtat'), waLib = {APPROVED: ['ok', 'Validé'], PENDING: ['at', 'En attente de validation'], IN_APPEAL: ['at', 'En appel'], REJECTED: ['no', 'Refusé'], PAUSED: ['no', 'En pause'], DISABLED: ['no', 'Désactivé'], ABSENT: ['no', 'Pas encore créé']};
-    const waNoms = {suivi_commande_bonjour: 'Suivi client (bonjour)', suivi_commande_bonsoir: 'Suivi client (bonsoir)', rappel_livraison: 'Rappel du matin', commande_agence: 'Commande à l’agence', confirmation_agence: 'Confirmation à l’agence', suivi_commande_matin: 'Suivi client (matin, secours)'};
+    const waNoms = {suivi_commande_bonjour: 'Suivi client (bonjour)', suivi_commande_bonsoir: 'Suivi client (bonsoir)', rappel_livraison: 'Rappel du matin', commande_agence: 'Commande à l’agence', confirmation_agence: 'Confirmation à l’agence', suivi_commande_matin: 'Suivi client (matin, secours)', reception_colis: 'Colis reçu ? (le soir de la livraison)'};
     const waJournal = J => { if (!J || !J.length) return '<p class="rgaide">Aucun envoi automatique pour l’instant.</p>';
-      const quoi = {commande_agence: 'Commande → agence', confirmation_agence: 'Confirmation → agence', rappel_livraison: 'Rappel du matin → client', suivi_commande_bonjour: 'Suivi → client', suivi_commande_bonsoir: 'Suivi → client', suivi_commande_matin: 'Suivi → client'};
+      const quoi = {commande_agence: 'Commande → agence', confirmation_agence: 'Confirmation → agence', rappel_livraison: 'Rappel du matin → client', suivi_commande_bonjour: 'Suivi → client', suivi_commande_bonsoir: 'Suivi → client', suivi_commande_matin: 'Suivi → client', reception_colis: 'Colis reçu ? → client'};
       const h = t => new Date(t).toLocaleString('fr-FR', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'});
       return `<h4 class="rgwah">Derniers envois automatiques</h4><div class="rgwal">${J.slice(0, 25).map(x => `<div><span>${esc(h(x.t))} · ${esc(quoi[x.m] || x.m)}${x.n ? ' · n°' + esc(x.n) : ''}${x.qui && x.m !== 'commande_agence' ? ' · ' + esc(x.qui) : ''}<small style="display:block;color:var(--soft)">+${esc(x.to)}${x.ok ? '' : ' · ' + esc(x.e)}</small></span><b class="wa${x.ok ? 'ok' : 'no'}">${x.ok ? 'Parti' : 'Échec'}</b></div>`).join('')}</div>`; };
     const waAff = j => { const n = j.numero, nOk = n && n.statut === 'CONNECTED'; waEt.innerHTML = `<div class="rgwal">${n ? `<div><span>Numéro ${esc(n.tel || '')}</span><b class="wa${nOk ? 'ok' : 'no'}">${nOk ? 'Connecté' : 'Hors ligne'}</b></div>` : ''}${(j.modeles || []).map(m => { const [c, t] = waLib[m.statut] || ['at', m.statut]; return `<div><span>${esc(waNoms[m.nom] || m.nom)}</span><b class="wa${c}">${esc(t)}${m.raison && m.raison !== 'NONE' ? ' · ' + esc(m.raison) : ''}</b></div>`; }).join('')}</div>`
@@ -3776,7 +3776,7 @@ function nettoyerHtml(h){
           <div class="prh"><b>${esc(c.nom || 'Sans nom')}</b><span>${esc(depuis(c.t))}</span></div>
           <div class="prp">${esc(c.produit)} · ${esc(c.offre)} · <b>${esc(fmt(c.total, c.devise || 'FCFA'))}</b></div>
           <div class="prm"><span class="prch liv">${ic('calendrier')}Livraison ${esc(livPrep(c))}</span><span class="prch v${vc}">${esc(vt)}</span>
-            ${c.confirme ? '<span class="prch vok">' + ic('coche') + 'Client a confirmé</span>' : ''}<span class="prch">${esc(c.pays)}${c.boutique ? ' · ' + esc(c.boutique) : ''}</span>${c.test ? '<span class="prch tst">Test</span>' : ''}${!c.hors ? '<span class="prch">Heures de livraison</span>' : ''}</div>
+            ${c.confirme ? '<span class="prch vok">' + ic('coche') + 'Client a confirmé</span>' : ''}${c.reponse ? '<span class="prch' + (/^Reçu/.test(c.reponse) ? ' vok' : '') + '">' + esc(/^Reçu/.test(c.reponse) ? 'Colis reçu' : 'Colis pas encore reçu') + '</span>' : c.recu ? '<span class="prch">Réception demandée</span>' : ''}<span class="prch">${esc(c.pays)}${c.boutique ? ' · ' + esc(c.boutique) : ''}</span>${c.test ? '<span class="prch tst">Test</span>' : ''}${!c.hors ? '<span class="prch">Heures de livraison</span>' : ''}</div>
           <details class="prmsg"><summary>Voir le message</summary><div>${esc(mat ? messageMatin(c) : messagePrep(c)).replace(/\*([^*\n]+)\*/g, '<b>$1</b>').replace(/\n/g, '<br>')}</div></details>
           ${mat ? (c.rappel ? `<div class="prok">${ic('coche')}Rappel envoyé ${esc(depuis(c.rappel))}<button class="lnk" data-rm="${i}">Renvoyer</button></div>`
                   : `<button class="btn prwa" data-rm="${i}">Envoyer le rappel du matin</button>`)
@@ -5500,7 +5500,7 @@ function nettoyerHtml(h){
     preparer: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8.5 12.5l2.5 2.5 4.5-4.8"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '142';
+  const VERSION_APP = '143';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
