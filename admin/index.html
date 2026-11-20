@@ -1219,6 +1219,7 @@ html.ordi .fmvid{max-width:360px}
 .rgaide{font-size:13px;color:var(--soft);line-height:1.5;margin:4px 0 10px}
 .rgwa{margin:6px 0 14px}.rgwat{display:flex;gap:8px;margin-top:10px}.rgwat .field{flex:1;margin:0}.rgwat .btn{width:auto;margin:0;white-space:nowrap}
 .rgwal{border:1px solid var(--line);border-radius:12px;margin-top:10px;overflow:hidden}.rgwal>div{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;font-size:13.5px;border-top:1px solid var(--line)}.rgwal>div:first-child{border-top:0}
+.rgwah{margin:16px 0 0;font-size:14px;font-weight:700}
 .rgwal b{font-weight:600;text-align:right}.waok{color:#0B6B35}.waat{color:#8A5600}.wano{color:#B42318}
 /* Clients à préparer */
 .prtabs{display:flex;gap:6px;margin:12px 0 10px;overflow-x:auto;scrollbar-width:none}
@@ -2036,9 +2037,14 @@ function nettoyerHtml(h){
     B.querySelector('#rgPx').onclick = () => pixelsMeta(b);
     // WhatsApp officiel : modèles de message (création chez Meta + état de validation) et message d'essai
     const waEt = B.querySelector('#waEtat'), waLib = {APPROVED: ['ok', 'Validé'], PENDING: ['at', 'En attente de validation'], IN_APPEAL: ['at', 'En appel'], REJECTED: ['no', 'Refusé'], PAUSED: ['no', 'En pause'], DISABLED: ['no', 'Désactivé'], ABSENT: ['no', 'Pas encore créé']};
-    const waNoms = {suivi_commande_bonjour: 'Suivi client (bonjour)', suivi_commande_bonsoir: 'Suivi client (bonsoir)', rappel_livraison: 'Rappel du matin', commande_agence: 'Commande à l’agence', confirmation_agence: 'Confirmation à l’agence'};
+    const waNoms = {suivi_commande_bonjour: 'Suivi client (bonjour)', suivi_commande_bonsoir: 'Suivi client (bonsoir)', rappel_livraison: 'Rappel du matin', commande_agence: 'Commande à l’agence', confirmation_agence: 'Confirmation à l’agence', suivi_commande_matin: 'Suivi client (matin, secours)'};
+    const waJournal = J => { if (!J || !J.length) return '<p class="rgaide">Aucun envoi automatique pour l’instant.</p>';
+      const quoi = {commande_agence: 'Commande → agence', confirmation_agence: 'Confirmation → agence', rappel_livraison: 'Rappel du matin → client', suivi_commande_bonjour: 'Suivi → client', suivi_commande_bonsoir: 'Suivi → client', suivi_commande_matin: 'Suivi → client'};
+      const h = t => new Date(t).toLocaleString('fr-FR', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'});
+      return `<h4 class="rgwah">Derniers envois automatiques</h4><div class="rgwal">${J.slice(0, 25).map(x => `<div><span>${esc(h(x.t))} · ${esc(quoi[x.m] || x.m)}${x.n ? ' · n°' + esc(x.n) : ''}${x.qui && x.m !== 'commande_agence' ? ' · ' + esc(x.qui) : ''}<small style="display:block;color:var(--soft)">+${esc(x.to)}${x.ok ? '' : ' · ' + esc(x.e)}</small></span><b class="wa${x.ok ? 'ok' : 'no'}">${x.ok ? 'Parti' : 'Échec'}</b></div>`).join('')}</div>`; };
     const waAff = j => { const n = j.numero, nOk = n && n.statut === 'CONNECTED'; waEt.innerHTML = `<div class="rgwal">${n ? `<div><span>Numéro ${esc(n.tel || '')}</span><b class="wa${nOk ? 'ok' : 'no'}">${nOk ? 'Connecté' : 'Hors ligne'}</b></div>` : ''}${(j.modeles || []).map(m => { const [c, t] = waLib[m.statut] || ['at', m.statut]; return `<div><span>${esc(waNoms[m.nom] || m.nom)}</span><b class="wa${c}">${esc(t)}${m.raison && m.raison !== 'NONE' ? ' · ' + esc(m.raison) : ''}</b></div>`; }).join('')}</div>`
       + ((j.erreurs || []).length ? `<p class="rgaide" style="color:#B42318">${j.erreurs.map(esc).join('<br>')}</p>` : '')
+      + waJournal(j.journal)
       + `<p class="rgaide">${j.actif ? 'Envoi automatique : actif.' : 'Envoi automatique : inactif (numéro, jeton ou « Envoi automatique » manquant).'} Les messages partent dès que leurs modèles sont validés par Meta (souvent en quelques minutes, parfois quelques heures).</p>`; };
     const waBt = B.querySelector('#waMod'); if (waBt) waBt.onclick = async () => { waBt.disabled = true; waBt.textContent = 'Vérification…'; waEt.innerHTML = '<div class="charge"><span class="spin"></span></div>';
       try { waAff(await call({type: 'waModeles', action: 'creer'})); } catch(e){ waEt.innerHTML = `<p class="rgaide" style="color:#B42318">${esc(e.message)}</p>`; }
@@ -3756,7 +3762,7 @@ function nettoyerHtml(h){
       <button class="btn ghost" id="prX" style="margin-top:14px">Fermer</button>`);
     o.querySelector('.detail').classList.add('cbsheet');
     o.querySelector('#prX').onclick = () => o.remove();
-    let L = [], filtre = filtre0 === 'matin' ? 'm' : 'a';
+    let L = [], filtre = filtre0 === 'matin' ? 'm' : filtre0 === 'envoyes' ? 'e' : 'a';
     o.querySelectorAll('.prtabs [data-f]').forEach(x => x.classList.toggle('on', x.dataset.f === filtre));
     const depuis = t => { const m = Math.round((Date.now() - t) / 6e4); return m < 1 ? 'à l’instant' : m < 60 ? 'il y a ' + m + ' min' : m < 1440 ? 'il y a ' + Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + String(m % 60).padStart(2, '0') : '') : 'il y a ' + Math.floor(m / 1440) + ' j'; };
     const video = c => c.pct >= 95 ? ['ok', 'Vidéo vue en entier'] : c.pct > 0 ? ['mi', 'Vidéo vue à ' + c.pct + ' %'] : c.page ? ['no', 'Vidéo non regardée'] : ['no', 'Page de remerciement non vue'];
@@ -5494,7 +5500,7 @@ function nettoyerHtml(h){
     preparer: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8.5 12.5l2.5 2.5 4.5-4.8"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '141';
+  const VERSION_APP = '142';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
