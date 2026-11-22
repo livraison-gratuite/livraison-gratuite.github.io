@@ -115,7 +115,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .ofadd{margin-top:8px;width:100%}
 .pxg>b{font-size:13px;color:var(--soft)}.pxg>span{font-weight:700;font-size:15px}.pxg .field{margin:0}
 .pxauto{display:block;padding:12px 14px;border-radius:12px;background:var(--surface);color:var(--soft);font-weight:700;text-decoration:line-through;min-height:46px}
-.avet{color:#F5A524;letter-spacing:1px}.avet i{color:#D9DEE8;font-style:normal}.avrep{font-size:13px;color:var(--soft);margin:8px 0;line-height:1.45}.avtexte{font-size:14.5px;line-height:1.5;margin:8px 0}.avtx{width:100%;min-height:90px;border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;font-size:14.5px;margin:8px 0;resize:vertical}.avph{width:96px;height:96px;object-fit:cover;border-radius:10px;margin:4px 0 8px;display:block}.avbt{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.avet{color:#F5A524;letter-spacing:1px}.avet i{color:#D9DEE8;font-style:normal}.avrep{font-size:13px;color:var(--soft);margin:8px 0;line-height:1.45}.avtexte{font-size:14.5px;line-height:1.5;margin:8px 0}.avtx{width:100%;min-height:90px;border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;font-size:14.5px;margin:8px 0;resize:vertical}.avph{width:96px;height:96px;object-fit:cover;border-radius:10px;margin:4px 0 8px;display:block}.avbt{display:flex;flex-direction:column;gap:8px;margin-top:6px}.avphs{display:flex;flex-wrap:wrap;gap:8px}.avphs .avph{margin:4px 0}.avmed{margin:8px 0}.avmed small{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--soft);margin-bottom:4px}.avmed small svg{width:15px;height:15px}.avmed audio{width:100%;display:block}.avmed iframe{width:100%;aspect-ratio:9/12;max-height:420px;border:0;border-radius:10px;background:#000;display:block}.avpub{background:#F7F9FD;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0;display:flex;flex-direction:column;gap:8px}.avpub .lib{font-size:12.5px;font-weight:700;color:var(--soft)}.avpub label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;font-weight:600}.avpub input{border:1px solid var(--line);border-radius:9px;padding:9px 10px;font:inherit;font-size:14px}.avpub small{font-size:11.5px;color:var(--soft)}
 .nfbtn{position:relative}.nfbadge{position:absolute;top:2px;right:0;min-width:19px;height:19px;padding:0 5px;white-space:nowrap;border-radius:10px;background:#E5484D;color:#fff;font-size:11.5px;font-weight:800;display:grid;place-items:center;line-height:1}
 .nfhead{display:flex;align-items:center;justify-content:space-between;gap:10px}.nfhead h2{margin:0}
 .nfit{display:flex;gap:10px;width:100%;text-align:left;padding:14px 4px;border-bottom:1px solid var(--line);background:none}
@@ -3772,6 +3772,10 @@ function nettoyerHtml(h){
     let L = [], filtre = 'r';
     const etoiles = n => '<span class="avet">' + '★★★★★'.slice(0, n) + '<i>' + '★★★★★'.slice(0, 5 - n) + '</i></span>';
     const vignette = u => { const m = String(u || '').match(/\/d\/([\w-]{20,})/); return m ? 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w400' : u; };
+    const idDrive = u => (String(u || '').match(/\/d\/([\w-]{20,})/) || [])[1] || '';
+    const apercu = u => idDrive(u) ? 'https://drive.google.com/file/d/' + idDrive(u) + '/preview' : u;
+    const mots = x => String(x || '').split(/\s+/).filter(Boolean);
+    const lecteurAudio = u => idDrive(u) ? `<audio controls preload="none" src="https://drive.google.com/uc?export=download&amp;id=${idDrive(u)}" onerror="this.outerHTML='&lt;iframe src=&quot;${apercu(u)}&quot; style=&quot;height:64px&quot;&gt;&lt;/iframe&gt;'"></audio>` : `<audio controls preload="none" src="${esc(u)}"></audio>`;
     const dessiner = () => { const z = o.querySelector('#avL'); if (!z) return;
       const R = L.filter(a => !a.statut || a.statut === 'À relire');
       o.querySelector('#avNr').textContent = R.length ? '(' + R.length + ')' : '';
@@ -3781,8 +3785,15 @@ function nettoyerHtml(h){
           <div class="prh"><b>${esc(a.prenom || 'Client')}${a.age ? ', ' + esc(a.age) + ' ans' : ''}</b><span>${esc(new Date(a.t).toLocaleDateString('fr-FR', {day: '2-digit', month: '2-digit'}))}</span></div>
           <div class="prp">${etoiles(a.note)} · ${esc(a.produit)}${a.pays ? ' · ' + esc(a.pays) : ''}</div>
           ${a.reponses ? `<div class="avrep">${esc(a.reponses).replace(/\n/g, '<br>')}</div>` : ''}
-          ${filtre === 'r' && a.accord ? `<textarea class="avtx" data-t="${i}">${esc(a.texte)}</textarea>` : `<p class="avtexte">« ${esc(a.texte)} »</p>`}
-          ${a.photo ? `<a href="${esc(a.photo)}" target="_blank" rel="noopener"><img class="avph" alt="" src="${esc(vignette(a.photo))}"></a>` : ''}
+          ${filtre === 'r' && a.accord ? `<textarea class="avtx" data-t="${i}" placeholder="Pas de texte (avis en voix, photo ou vidéo)">${esc(a.texte)}</textarea>` : a.texte ? `<p class="avtexte">« ${esc(a.texte)} »</p>` : ''}
+          ${mots(a.audio).map(u => `<div class="avmed"><small>${ic('micro')}Note vocale</small>${lecteurAudio(u)}</div>`).join('')}
+          ${mots(a.photo).length ? `<div class="avphs">${mots(a.photo).map(u => `<a href="${esc(u)}" target="_blank" rel="noopener"><img class="avph" alt="" src="${esc(vignette(u))}"></a>`).join('')}</div>` : ''}
+          ${mots(a.video).map(u => `<div class="avmed"><small>${ic('video')}Vidéo</small><iframe src="${esc(apercu(u))}" allow="autoplay" allowfullscreen loading="lazy"></iframe></div>`).join('')}
+          ${filtre === 'r' && a.accord ? `<div class="avpub"><div class="lib">Affiché sur la page du produit</div>
+            <label>Nom<input data-n="${i}" value="${esc(a.prenom || '')}" maxlength="80"></label>
+            <label>Quartier ou ville<input data-l="${i}" value="${esc(a.lieu || '')}" maxlength="60" placeholder="ex. le quartier du client"></label>
+            <label>Commandé le<input data-d="${i}" value="${esc(a.dateLongue || '')}" maxlength="40"></label>
+            <small>L’adresse exacte n’est jamais publiée : seulement le quartier ou la ville.</small></div>` : (a.lieu || a.dateLongue) ? `<div class="avrep">${esc([a.lieu, a.dateLongue && 'commandé le ' + a.dateLongue].filter(Boolean).join(' · '))}</div>` : ''}
           ${filtre !== 'r' ? '' : a.accord
             ? `<div class="avbt"><button class="btn" data-pub="${i}">Publier sur la page du produit</button><button class="btn ghost" data-ref="${i}">Ne pas publier</button></div>`
             : `<div class="prok">Le client n’a pas accepté la publication : avis réservé à ton suivi.<button class="lnk" data-ref="${i}">Classer</button></div>`}
@@ -3791,7 +3802,9 @@ function nettoyerHtml(h){
       z.querySelectorAll('[data-pub],[data-ref]').forEach(b => b.onclick = async () => {
         const pub = b.dataset.pub != null, a = L[Number(pub ? b.dataset.pub : b.dataset.ref)], tx = z.querySelector('[data-t="' + L.indexOf(a) + '"]');
         b.disabled = true;
-        try { const j = await call({type: 'avisDecision', bq: a.bq, ligne: a.ligne, action: pub ? 'publier' : 'refuser', texte: tx ? tx.value : undefined});
+        const val = k => { const x = z.querySelector('[data-' + k + '="' + L.indexOf(a) + '"]'); return x ? x.value.trim() : undefined; };
+        if (pub && val('n') === '') { alert('Indique le nom à afficher.'); b.disabled = false; return; }
+        try { const j = await call({type: 'avisDecision', bq: a.bq, ligne: a.ligne, action: pub ? 'publier' : 'refuser', texte: tx ? tx.value : undefined, nom: pub ? val('n') : undefined, lieu: pub ? val('l') : undefined, date: pub ? val('d') : undefined});
           a.statut = pub ? 'Publié' : 'Refusé'; toast(pub ? 'Avis publié sur « ' + (j.produit || a.produit) + ' »' : 'Avis classé'); dessiner(); }
         catch(e){ b.disabled = false; alert(e.message); }
       });
@@ -4394,6 +4407,14 @@ function nettoyerHtml(h){
     try { return JSON.parse(t.slice(a, b + 1)); } catch(e){}
     try { return JSON.parse(t.slice(a, b + 1).replace(/\r?\n/g, ' ')); } catch(e){ return null; }
   }
+  // Cadeau offert après la livraison (guide PDF du produit) : la voix off l'annonce pour faire commander et accepter le colis
+  let VO_CADEAUX = null;
+  async function cadeauDe(P){
+    if (!VO_CADEAUX) { try { VO_CADEAUX = (await call({type: 'bonusListe'})).cadeaux || []; } catch(e){ VO_CADEAUX = []; } }
+    const n = s => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').replace(/\s+(tg|bj|ci)$/, '').trim();
+    const c = VO_CADEAUX.find(x => { const m = String(x.produit || '').match(/^\/(.+)\/(\w*)$/); return m ? new RegExp(m[1], m[2]).test(P.nom) : n(x.produit) === n(P.nom); });
+    return c && c.titre ? c.titre : '';
+  }
   async function voixOff(P, type, duree){
     type = type || await menuListe(vignette(P.photos[0]), 'Quel type de voix off ?', VO_TYPES.map(([k, l]) => [k, l]));
     if (!type) return;
@@ -4406,6 +4427,7 @@ function nettoyerHtml(h){
       P.boite && 'Dans la boîte : ' + voTexte(P.boite).split('\n').join(' ; '),
       P.faq && 'Questions des clients : ' + voTexte(P.faq).split('\n').join(' | ')].filter(Boolean).join('\n');
     const T = VO_TYPES.find(x => x[0] === type);
+    const cadeau = await cadeauDe(P);
     const o = feuille(`<h2>🎙️ Voix off · ${esc(P.nom)}</h2><p class="sub">${esc(T[1])} · ${sec < 60 ? sec + ' secondes' : sec === 60 ? '1 minute' : '1 minute 30'}</p><div id="voZ"></div><button class="btn ghost" data-x style="margin-top:14px">Fermer</button>`);
     o.querySelector('[data-x]').onclick = () => o.remove();
     const Z = o.querySelector('#voZ');
@@ -4414,10 +4436,12 @@ function nettoyerHtml(h){
     try {
       attente('L’IA étudie le produit puis écrit 3 scripts… (30 à 60 secondes)');
       const lent = setTimeout(() => { if (o.isConnected) attente('Encore quelques secondes, l’IA termine les scripts…'); }, 35000);
-      const consigne = 'RÔLE : tu es le meilleur copywriter de voix off publicitaires d’Afrique francophone. Tes vidéos Facebook et TikTok font commander des milliers de clients en paiement à la livraison. ' +
-        'Tu maîtrises la psychologie d’achat (Eugene Schwartz, Gary Halbert, réponse directe) : les gens achètent une ÉMOTION puis la justifient. Ton public : des gens simples, occupés, qui scrollent vite, méfiants envers la publicité, sensibles à la famille, à la foi, à la dignité et au regard des autres. ' +
+      const consigne = 'RÔLE : tu es le meilleur copywriter de voix off publicitaires pour les vidéos Facebook et TikTok vendues en paiement à la livraison auprès des familles de l’ouest du golfe de Guinée (même culture, même français parlé, mêmes réalités). Tes scripts font commander, puis font ACCEPTER le colis quand le livreur appelle. ' +
+        'Tu maîtrises la réponse directe (Eugene Schwartz, Gary Halbert) : les gens achètent une ÉMOTION puis la justifient. ' +
+        'TON PUBLIC, à connaître par cœur : des gens simples, travailleurs et occupés (commerçants du marché, mamans qui tiennent la maison, fonctionnaires, conducteurs de moto-taxi, artisans, élèves et étudiants, parents âgés aidés par leurs enfants) ; ils scrollent vite et se méfient des arnaques en ligne (le paiement à la livraison les rassure) ; ils écoutent les conseils des proches, du quartier, de l’église ou de la mosquée ; la famille, la dignité, la foi et le regard des autres (belle-famille, voisins, collègues) comptent énormément ; ils ont souvent essayé tisanes, décoctions et remèdes « du vieux » sans résultat durable ; la chaleur, les longues journées debout, la moto, les marches, les travaux pénibles et la fatigue font partie du quotidien ; ils détestent perdre la face et dépendre des autres. ' +
+        'LANGUE : le français tel qu’on le parle dans la rue, simple, chaleureux, imagé, avec des tournures naturelles de chez nous (« vraiment », « depuis là », « on dirait que », « on vous a déjà dit que… ? », « ça fatigue »), sans caricature ni argot d’un seul pays ; aucune phrase de manuel scolaire. ' +
         'MÉTHODE, en 3 temps, avant de répondre. ' +
-        'TEMPS 1, ÉTUDE (130 mots maximum, tirets) : la cible exacte (qui, âge, situation) ; sa douleur principale dite avec SES mots ; 3 scènes concrètes de sa journée où elle souffre du problème ; ce qu’elle ressent au fond (honte, gêne, peur de dépendre des autres, frustration, peur de vieillir…) ; ce qu’elle désire vraiment (le résultat émotionnel, pas le produit) ; ses 3 freins à l’achat et comment les lever SANS parler d’argent ; 5 angles d’attaque. ' +
+        'TEMPS 1, ÉTUDE (130 mots maximum, tirets) : la cible exacte (qui, âge, situation) ; sa douleur principale dite avec SES mots ; 3 scènes concrètes de SA journée (marché, maison, travail, route, église ou mosquée, famille) où elle souffre du problème ; ce qu’elle ressent au fond (honte, gêne, peur de dépendre des autres, peur du regard des autres, frustration, peur de vieillir…) ; ce qu’elle désire vraiment (le résultat émotionnel, pas le produit) ; ses 3 freins à l’achat (« encore une arnaque », « j’ai déjà tout essayé », « ce n’est pas pour moi ») et comment les lever SANS parler d’argent ; 5 angles d’attaque. ' +
         'TEMPS 2, ÉCRITURE de 3 scripts IRRÉSISTIBLES et vraiment différents (angle, émotion et accroche différents). ' +
         (type === 'mix' ? 'Chaque script utilise un style différent parmi : problème → solution, question choc, histoire vécue, avant / après, conseil d’un proche, curiosité. Indique le style dans "titre". '
           : 'Style imposé pour les 3 : ' + T[1].replace(/^\S+\s/, '') + ' : ' + T[2] + '. ') +
@@ -4427,14 +4451,16 @@ function nettoyerHtml(h){
         '(c) BASCULE : « jusqu’au jour où… » / « il existe une solution simple… » : le produit arrive comme l’évidence. ' +
         '(d) BÉNÉFICES : 2 ou 3 résultats concrets qu’on voit, qu’on sent ou qu’on vit (transforme chaque caractéristique de la page en résultat pour la personne). ' +
         '(e) PROJECTION : fais-la se voir juste après : ce qu’elle peut enfin refaire, ce que les autres remarquent, la fierté retrouvée. ' +
-        '(f) URGENCE et APPEL À L’ACTION : une raison d’agir maintenant (ne plus perdre une journée de plus avec ce problème) puis un ordre court : « Commandez maintenant. » ' +
+        (cadeau ? '(e bis) LE CADEAU, juste avant l’appel à l’action, présenté comme un bonus qu’on veut tout de suite : à la réception de son colis, la personne reçoit EN CADEAU le guide « ' + cadeau + ' » (un guide pratique d’environ 50 pages, à garder sur son téléphone). En une ou deux phrases, montre ce que ce guide va lui apporter dans SA vie (lien direct avec sa douleur), qu’il est réservé à ceux qui reçoivent leur colis, et qu’il est offert : il doit donner une raison de plus de commander MAINTENANT et de bien décrocher quand le livreur appelle. ' : '') +
+        '(f) URGENCE et APPEL À L’ACTION : une raison d’agir maintenant (ne plus perdre une journée de plus avec ce problème, le cadeau qui l’attend) puis un ordre court : « Commandez maintenant. » ' +
         'STYLE : français parlé, chaleureux et direct, « vous », phrases de 4 à 12 mots, une idée par phrase, mots simples qu’on comprend à l’oreille, répétition du bénéfice principal, boucles de curiosité, aucune phrase molle. ' +
         'TEMPS 3, RELECTURE impitoyable : réécris tout script qui ne respecte pas UNE de ces règles : ' +
         '1) AUCUN prix, montant, chiffre d’argent, ni les mots prix, tarif, coûte, francs, pas cher, promo, réduction : la personne doit vouloir le produit sans penser à l’argent. ' +
         '2) AUCUN pays, AUCUNE ville, aucune nationalité. ' +
         '3) Seulement des faits présents dans la page produit ; pas de promesse de guérison ni de résultat garanti ; pas de faux témoignage avec un nom. ' +
         '4) Aucun mot creux (révolutionnaire, incroyable, miracle, magique, unique au monde). ' +
-        '5) L’accroche donne-t-elle envie d’écouter la suite ? Sinon, réécris-la. ' +
+        '5) L’accroche donne-t-elle envie d’écouter la suite en moins de 3 secondes, pour CE public ? Sinon, réécris-la. Une personne d’ici se dirait-elle « c’est exactement moi » ? Sinon, ajoute une scène plus vraie. ' +
+        (cadeau ? '5 bis) Le cadeau « ' + cadeau + ' » est-il annoncé, désirable et lié à la réception du colis ? Sinon, ajoute-le. ' : '') +
         '6) Chaque script fait environ ' + Math.max(15, cible - 14) + ' mots (lu en ' + sec + ' secondes avec la phrase de fin). ' +
         '7) N’écris PAS la fin (livraison, paiement, réduction) : elle est ajoutée automatiquement juste après ton « Commandez maintenant ». ' +
         '8) Pas de didascalies ni de crochets, seulement le texte à lire' + (type === 'dialogue' ? ' (avec « Voix 1 : » et « Voix 2 : »)' : '') + '. ' +
@@ -5539,6 +5565,7 @@ function nettoyerHtml(h){
     sortie: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/>',
     corbeille: '<path d="M3 6h18M8 6V4h8v2M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14M10 11v6M14 11v6"/>',
     micro: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/>',
+    video: '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10.5l5-3v9l-5-3"/>',
     test: '<path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"/><path d="M7.5 15h9"/>',
     chevron: '<path d="M9 6l6 6-6 6"/>', retour: '<path d="M15 18l-6-6 6-6"/>', loupe: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',
     calendrier: '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/>', coche: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
@@ -5546,7 +5573,7 @@ function nettoyerHtml(h){
     etoile: '<path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.8 6.6 19.7l1.1-6.1L3.2 9.4l6.1-.8z"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '147';
+  const VERSION_APP = '148';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;

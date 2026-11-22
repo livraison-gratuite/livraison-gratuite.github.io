@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#0F1B3D;--soft:#5B6478;--line:#E3E8F2;--bg:#F4F6FB;--main:#1736A6;--ok:#12A150;--okbg:#E3F5EA;--etoile:#F5A524}
+:root{--ink:#0F1B3D;--soft:#5B6478;--line:#E3E8F2;--bg:#F4F6FB;--main:#1736A6;--ok:#12A150;--okbg:#E3F5EA;--etoile:#F5A524;--rouge:#C8102E}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;justify-content:center;padding:24px 16px calc(28px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
 .carte{width:100%;max-width:460px;background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:0 12px 36px rgba(15,27,61,.08);padding:24px 20px;align-self:flex-start}
@@ -16,8 +16,9 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink
 .prod img{width:64px;height:64px;border-radius:14px;object-fit:cover;background:#F1F4FA;flex:0 0 auto}
 .prod b{display:block;font-size:15px;line-height:1.3}.prod span{font-size:13px;color:var(--soft)}
 h1{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.25;margin-top:18px}
-.sous{color:var(--soft);font-size:15px;line-height:1.5;margin-top:6px}
+.sous{color:var(--soft);font-size:15px;line-height:1.55;margin-top:6px}
 .bloc{margin-top:22px}.bloc label,.bloc .lib{display:block;font-size:14.5px;font-weight:700;margin-bottom:9px}
+.aide{font-size:13px;color:var(--soft);margin:-4px 0 10px;line-height:1.45}
 .etoiles{display:flex;gap:6px}
 .etoiles button{flex:1;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 0;cursor:pointer}
 .etoiles svg{width:30px;height:30px;fill:#E3E8F2;display:block;margin:auto}
@@ -30,83 +31,281 @@ textarea,input[type=text],input[type=number]{width:100%;border:1px solid var(--l
 textarea{min-height:110px;resize:vertical;line-height:1.5}
 textarea:focus,input:focus{outline:2px solid #C9D6FF;border-color:var(--main)}
 .duo{display:flex;gap:10px}.duo>div{flex:1}.duo .age{flex:0 0 110px}
-.photo{display:flex;gap:12px;align-items:center}
-.photo img{width:64px;height:64px;border-radius:12px;object-fit:cover}
 .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:0;cursor:pointer;border-radius:14px;padding:15px;font:700 15.5px Inter,sans-serif;color:#fff;background:var(--main)}
-.btn.clair{background:#fff;color:var(--ink);border:1px solid var(--line);padding:12px}
-.btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn.clair{background:#fff;color:var(--ink);border:1px solid var(--line);padding:13px 14px;justify-content:flex-start;font-weight:600;font-size:14.5px}
+.btn.clair small{margin-left:auto;font-weight:500;color:var(--soft);font-size:12.5px}
+.btn svg{width:20px;height:20px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .btn:disabled{opacity:.6}
+.outils{display:flex;flex-direction:column;gap:8px}
+.media{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.media:empty{display:none}
+.piece{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:#F9FAFD}
+.piece audio,.piece video{flex:1;min-width:0;max-height:180px;border-radius:8px}
+.piece audio{height:40px}
+.piece .nom{flex:1;font-size:13.5px;color:var(--soft)}
+.piece .suppr{border:0;background:none;color:var(--soft);cursor:pointer;padding:6px;flex:0 0 auto}
+.piece .suppr svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.vignettes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.vignettes .v{position:relative}.vignettes img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;display:block}
+.vignettes .suppr{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;border:0;background:rgba(15,27,61,.75);color:#fff;cursor:pointer;display:grid;place-items:center}
+.vignettes .suppr svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}
+.enreg{display:flex;align-items:center;gap:12px;border:1px solid #F3C2C9;background:#FFF5F6;border-radius:12px;padding:12px 14px}
+.enreg .pt{width:12px;height:12px;border-radius:50%;background:var(--rouge);animation:cl 1s ease-in-out infinite}
+.enreg b{font-variant-numeric:tabular-nums;font-size:15px}.enreg span{font-size:13px;color:var(--soft);flex:1}
+.enreg button{border:0;background:var(--rouge);color:#fff;font:700 14px Inter,sans-serif;border-radius:10px;padding:9px 14px;cursor:pointer}
+@keyframes cl{50%{opacity:.25}}
 .bloc label.accord{display:flex;font-weight:500;margin:0;gap:11px;align-items:flex-start;font-size:13.5px;line-height:1.45;color:#2B3757;background:#F7F9FD;border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer}
 .accord input{width:20px;height:20px;margin-top:1px;flex:0 0 auto;accent-color:var(--main)}
-.err{color:#B42318;font-size:14px;margin-top:12px;min-height:18px}
+.err{color:#B42318;font-size:14px;margin-top:12px;min-height:18px;line-height:1.45}
+.etat{font-size:13.5px;color:var(--soft);margin-top:10px;text-align:center;min-height:18px}
+.barre{height:6px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:10px;display:none}.barre i{display:block;height:100%;width:0;background:var(--main);transition:width .2s}
 .fin{text-align:center;padding:16px 0}
+.fin .sous{font-size:15.5px;color:#2B3757}
 .rond{width:84px;height:84px;margin:0 auto 18px;border-radius:50%;background:var(--okbg);display:grid;place-items:center}
 .rond svg{width:46px;height:46px;fill:none;stroke:var(--ok);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
-.charge{padding:40px 0;color:var(--soft);font-size:15px;text-align:center}
+.recap{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:14px}
+.recap span{font-size:12.5px;font-weight:600;color:var(--main);background:#EEF3FF;border-radius:20px;padding:5px 11px}
+.charge{padding:40px 0;color:var(--soft);font-size:15px;text-align:center;line-height:1.5}
 .spin{width:34px;height:34px;margin:0 auto 14px;border:3px solid var(--line);border-top-color:var(--main);border-radius:50%;animation:t .8s linear infinite}
 @keyframes t{to{transform:rotate(360deg)}}
+.points{display:inline-flex;gap:6px;margin:6px auto 16px}.points i{width:9px;height:9px;border-radius:50%;background:var(--main);opacity:.25;animation:pp 1.2s infinite}
+.points i:nth-child(2){animation-delay:.2s}.points i:nth-child(3){animation-delay:.4s}
+@keyframes pp{40%{opacity:1}}
+.signe{margin-top:18px;font-size:14px;font-weight:600;color:var(--ink)}
 .cache{display:none}
 </style>
 </head>
 <body>
 <main class="carte" id="z"><div class="charge"><div class="spin"></div>Chargement…</div></main>
-<input type="file" accept="image/*" id="fic" class="cache">
+<input type="file" accept="image/*" id="ficPh" class="cache" multiple>
+<input type="file" accept="video/*" id="ficVi" class="cache">
 <script>
 (function(){
   var API = "https://script.google.com/macros/s/AKfycbwgdtcXlXB9niD3hactnz4SLIrpY_q74iQQZwkr1vrUBjczfCCVWwamG69uqnUQZsba/exec";
+  var MAX_PHOTOS = 4, MAX_VOCAL = 300, MAX_VIDEO_MO = 30, MAX_VIDEO_S = 90;
   var z = document.getElementById('z'), c = new URLSearchParams(location.search).get('c') || '', v = '';
   var esc = function(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(x){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[x]; }); };
   var etoile = '<svg viewBox="0 0 24 24"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg>';
   var coche = '<div class="rond"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M7.6 12.4l3 3 5.8-6.2"/></svg></div>';
+  var IC = {
+    micro: '<svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>',
+    photo: '<svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg>',
+    video: '<svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10.5l5-3v9l-5-3"/></svg>',
+    x: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+  };
   var libNote = ['', 'Pas satisfait', 'Peu satisfait', 'Correct', 'Satisfait', 'Très satisfait'];
   function appel(o){ o.c = c; o.v = v; return fetch(API, {method: 'POST', body: JSON.stringify(o)}).then(function(r){ return r.json(); }); }
-  function fini(titre, t){ z.innerHTML = '<div class="fin">' + coche + '<h1>' + esc(titre) + '</h1><p class="sous">' + esc(t) + '</p></div>'; }
+  // Envoi d'un gros fichier avec la progression
+  function appelProgres(o, prog){ o.c = c; o.v = v; return new Promise(function(ok, ko){
+    var x = new XMLHttpRequest(); x.open('POST', API); x.timeout = 300000;
+    x.upload.onprogress = function(e){ if (e.lengthComputable && prog) prog(e.loaded / e.total); };
+    x.onload = function(){ try { ok(JSON.parse(x.responseText)); } catch(e){ ko(e); } };
+    x.onerror = x.ontimeout = function(){ ko(new Error('reseau')); };
+    x.send(JSON.stringify(o)); }); }
   function erreur(t){ z.innerHTML = '<div class="fin"><h1>Lien non valide</h1><p class="sous">' + esc(t) + '</p></div>'; }
   if (!c || c.indexOf('.') < 1) return erreur('Ce lien est incomplet. Utilisez le bouton reçu sur WhatsApp.');
   try { var b = c.slice(0, c.lastIndexOf('.')).replace(/-/g, '+').replace(/_/g, '/'); v = JSON.parse(decodeURIComponent(escape(atob(b + '==='.slice((b.length + 3) % 4))))).v || ''; } catch(e){}
-  var R = {}, note = 0, rep = {}, photo = '';
-  function reduire(f, fin){ var u = URL.createObjectURL(f), im = new Image(); im.onload = function(){ var k = Math.min(1, 1280 / Math.max(im.width, im.height)), cv = document.createElement('canvas'); cv.width = Math.round(im.width * k); cv.height = Math.round(im.height * k); cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height); URL.revokeObjectURL(u); fin(cv.toDataURL('image/jpeg', .82)); }; im.onerror = function(){ fin(''); }; im.src = u; }
+  var R = {}, note = 0, rep = {}, prenom = '';
+  var M = nouveauPanier();   // ce que le client prépare : photos, notes vocales, vidéo
+  function nouveauPanier(){ return { photos: [], vocaux: [], video: null }; }
   function photoSrc(u){ var m = String(u || '').match(/\/d\/([\w-]{20,})/); return m ? 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w200' : u; }
+  function reduire(f, fin){ var u = URL.createObjectURL(f), im = new Image(); im.onload = function(){ var k = Math.min(1, 1280 / Math.max(im.width, im.height)), cv = document.createElement('canvas'); cv.width = Math.round(im.width * k); cv.height = Math.round(im.height * k); cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height); URL.revokeObjectURL(u); fin(cv.toDataURL('image/jpeg', .82)); }; im.onerror = function(){ URL.revokeObjectURL(u); fin(''); }; im.src = u; }
+  function lireB64(blob){ return new Promise(function(ok, ko){ var r = new FileReader(); r.onload = function(){ ok(String(r.result)); }; r.onerror = ko; r.readAsDataURL(blob); }); }
+  var mmss = function(s){ s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + ('0' + s % 60).slice(-2); };
+
+  /* ---------- Outils : écrire, parler, photos, vidéo ---------- */
+  function outilsHTML(ajout){
+    return '<div class="bloc"><label for="tx">' + (ajout ? 'Ce que vous voulez ajouter' : 'Racontez votre expérience') + '</label>'
+      + '<p class="aide">Écrivez, parlez ou filmez : comme vous préférez. Vous pouvez aussi tout mélanger.</p>'
+      + '<textarea id="tx" placeholder="' + (ajout ? 'Écrivez ici…' : 'Ce qui a changé pour vous, ce que vous avez aimé…') + '"></textarea></div>'
+      + '<div class="bloc outils">'
+      + '<div id="zVo"></div>'
+      + '<button type="button" class="btn clair" id="bVo">' + IC.micro + 'Enregistrer une note vocale<small>5 min max</small></button>'
+      + '<button type="button" class="btn clair" id="bPh">' + IC.photo + 'Ajouter des photos<small>' + MAX_PHOTOS + ' max</small></button>'
+      + '<button type="button" class="btn clair" id="bVi">' + IC.video + 'Ajouter une vidéo<small>1 min 30 max</small></button>'
+      + '<div class="media" id="med"></div></div>';
+  }
+  function brancherOutils(){
+    document.getElementById('bPh').onclick = function(){ if (M.photos.length >= MAX_PHOTOS) return dire('Vous avez déjà ' + MAX_PHOTOS + ' photos.'); document.getElementById('ficPh').click(); };
+    document.getElementById('bVi').onclick = function(){ if (M.video) return dire('Une seule vidéo par avis : supprimez d’abord la précédente.'); document.getElementById('ficVi').click(); };
+    document.getElementById('bVo').onclick = enregistrer;
+    afficherMedia();
+  }
+  function dire(t){ var er = document.getElementById('er'); if (er) er.textContent = t; }
+  function afficherMedia(){
+    var med = document.getElementById('med'); if (!med) return;
+    var h = '';
+    if (M.photos.length) h += '<div class="vignettes">' + M.photos.map(function(p, i){ return '<div class="v"><img alt="" src="' + p + '"><button type="button" class="suppr" data-p="' + i + '" aria-label="Retirer la photo">' + IC.x + '</button></div>'; }).join('') + '</div>';
+    M.vocaux.forEach(function(a, i){ h += '<div class="piece"><audio controls src="' + a.url + '"></audio><button type="button" class="suppr" data-a="' + i + '" aria-label="Supprimer la note vocale">' + IC.x + '</button></div>'; });
+    if (M.video) h += '<div class="piece"><video controls playsinline preload="metadata" src="' + M.video.url + '"></video><button type="button" class="suppr" data-vi="1" aria-label="Retirer la vidéo">' + IC.x + '</button></div>';
+    med.innerHTML = h;
+    [].forEach.call(med.querySelectorAll('[data-p]'), function(bt){ bt.onclick = function(){ M.photos.splice(Number(bt.getAttribute('data-p')), 1); afficherMedia(); }; });
+    [].forEach.call(med.querySelectorAll('[data-a]'), function(bt){ bt.onclick = function(){ M.vocaux.splice(Number(bt.getAttribute('data-a')), 1); afficherMedia(); }; });
+    [].forEach.call(med.querySelectorAll('[data-vi]'), function(bt){ bt.onclick = function(){ M.video = null; afficherMedia(); }; });
+  }
+  document.getElementById('ficPh').onchange = function(e){
+    var L = [].slice.call(e.target.files || []).slice(0, MAX_PHOTOS - M.photos.length); e.target.value = '';
+    L.forEach(function(f){ reduire(f, function(d){ if (d && M.photos.length < MAX_PHOTOS) { M.photos.push(d); afficherMedia(); } }); });
+  };
+  document.getElementById('ficVi').onchange = function(e){
+    var f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return;
+    if (f.size > MAX_VIDEO_MO * 1048576) return dire('Cette vidéo est trop lourde. Filmez une vidéo plus courte (1 min 30 au maximum).');
+    var u = URL.createObjectURL(f), t = document.createElement('video'); t.preload = 'metadata';
+    t.onloadedmetadata = function(){ if (t.duration && isFinite(t.duration) && t.duration > MAX_VIDEO_S + 2) { URL.revokeObjectURL(u); return dire('Cette vidéo dure plus de 1 min 30. Filmez une vidéo plus courte.'); }
+      M.video = { blob: f, url: u, mime: f.type || 'video/mp4' }; dire(''); afficherMedia(); };
+    t.onerror = function(){ M.video = { blob: f, url: u, mime: f.type || 'video/mp4' }; afficherMedia(); };
+    t.src = u;
+  };
+  // Note vocale : enregistrée directement sur la page
+  var rec = null;
+  function enregistrer(){
+    if (rec) return;
+    if (!navigator.mediaDevices || !window.MediaRecorder) return dire('Votre téléphone ne permet pas d’enregistrer ici. Écrivez votre avis ou envoyez une vidéo.');
+    navigator.mediaDevices.getUserMedia({audio: true}).then(function(flux){
+      var types = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'], type = '';
+      for (var i = 0; i < types.length; i++) if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(types[i])) { type = types[i]; break; }
+      var mr = new MediaRecorder(flux, type ? {mimeType: type, audioBitsPerSecond: 48000} : {}), morceaux = [], t0 = Date.now();
+      rec = mr; dire('');
+      var zv = document.getElementById('zVo'), bVo = document.getElementById('bVo'); bVo.style.display = 'none';
+      zv.innerHTML = '<div class="enreg"><i class="pt"></i><b id="chr">0:00</b><span>Parlez, on vous écoute…</span><button type="button" id="stop">Terminer</button></div>';
+      var tic = setInterval(function(){ var s = (Date.now() - t0) / 1000, ch = document.getElementById('chr'); if (ch) ch.textContent = mmss(s); if (s >= MAX_VOCAL) mr.stop(); }, 250);
+      mr.ondataavailable = function(e){ if (e.data && e.data.size) morceaux.push(e.data); };
+      mr.onstop = function(){
+        clearInterval(tic); flux.getTracks().forEach(function(t){ t.stop(); }); rec = null;
+        zv.innerHTML = ''; bVo.style.display = '';
+        var mime = (mr.mimeType || type || 'audio/webm'), blob = new Blob(morceaux, {type: mime});
+        if (blob.size < 1500 || Date.now() - t0 < 1500) return dire('La note vocale est trop courte. Réessayez.');
+        M.vocaux.push({ blob: blob, url: URL.createObjectURL(blob), mime: mime }); afficherMedia();
+      };
+      document.getElementById('stop').onclick = function(){ if (mr.state !== 'inactive') mr.stop(); };
+      mr.start(1000);
+    }).catch(function(){ dire('Autorisez le micro pour enregistrer une note vocale (ou écrivez votre avis).'); });
+  }
+  function arreterEnreg(){ if (rec && rec.state !== 'inactive') rec.stop(); }
+  // Envoie les fichiers préparés et rend leurs liens
+  function envoyerFichiers(etat){
+    var liste = [];
+    M.photos.forEach(function(p){ liste.push({ genre: 'photo', mime: 'image/jpeg', data: p }); });
+    M.vocaux.forEach(function(a){ liste.push({ genre: 'audio', mime: a.mime, blob: a.blob }); });
+    if (M.video) liste.push({ genre: 'video', mime: M.video.mime, blob: M.video.blob });
+    var res = { photos: [], audio: [], video: [] }, total = liste.length, i = 0;
+    var barre = document.getElementById('bar'), bi = barre && barre.querySelector('i');
+    var lib = { photo: 'la photo', audio: 'la note vocale', video: 'la vidéo' };
+    function suivant(){
+      if (i >= total) { if (barre) barre.style.display = 'none'; return Promise.resolve(res); }
+      var it = liste[i];
+      etat('Envoi de ' + lib[it.genre] + (total > 1 ? ' (' + (i + 1) + ' sur ' + total + ')' : '') + '…');
+      if (barre) { barre.style.display = 'block'; bi.style.width = Math.round(i / total * 100) + '%'; }
+      return (it.data ? Promise.resolve(it.data) : lireB64(it.blob)).then(function(b64){
+        return appelProgres({ type: 'avisMedia', genre: it.genre, mime: it.mime, b64: b64 }, function(p){ if (bi) bi.style.width = Math.round((i + p) / total * 100) + '%'; });
+      }).then(function(r){
+        if (!r || !r.ok) throw new Error((r && r.erreur) || 'L’envoi n’a pas abouti.');
+        res[it.genre === 'photo' ? 'photos' : it.genre].push(r.url); i++; return suivant();
+      });
+    }
+    return suivant();
+  }
+  function rienAEnvoyer(tx){ return tx.length < 3 && !M.photos.length && !M.vocaux.length && !M.video; }
+
+  /* ---------- Étape 1 : l'avis ---------- */
   function formulaire(){
     var q = (R.questions || []).map(function(x, i){ return '<div class="bloc"><div class="lib">' + esc(x.q) + '</div><div class="choix" data-q="' + i + '">' + x.choix.map(function(ch, j){ return '<button type="button" data-j="' + j + '">' + esc(ch) + '</button>'; }).join('') + '</div></div>'; }).join('');
     z.innerHTML = '<div class="prod">' + (R.photo ? '<img alt="" src="' + esc(photoSrc(R.photo)) + '">' : '') + '<div><span>Votre commande</span><b>' + esc(R.produit) + '</b></div></div>'
-      + '<h1>' + (R.prenom ? esc(R.prenom) + ', votre' : 'Votre') + ' avis compte</h1><p class="sous">Une minute suffit. Votre réponse nous aide à mieux vous servir.</p>'
+      + '<h1>' + (R.prenom ? esc(R.prenom) + ', votre' : 'Votre') + ' avis compte</h1><p class="sous">Prenez votre temps. Votre expérience aide d’autres personnes à faire le bon choix.</p>'
       + '<div class="bloc"><div class="lib">Votre note</div><div class="etoiles">' + [1,2,3,4,5].map(function(n){ return '<button type="button" data-n="' + n + '" aria-label="' + n + ' étoile' + (n > 1 ? 's' : '') + '">' + etoile + '</button>'; }).join('') + '</div><div class="etiq" id="etq"></div></div>'
-      + q
-      + '<div class="bloc"><label for="tx">Racontez votre expérience</label><textarea id="tx" placeholder="Ce qui a changé pour vous, ce que vous avez aimé…"></textarea></div>'
+      + q + outilsHTML(false)
       + '<div class="bloc duo"><div><label for="pn">Votre prénom</label><input type="text" id="pn" maxlength="40" value="' + esc(R.prenom || '') + '"></div><div class="age"><label for="ag">Âge</label><input type="number" id="ag" min="10" max="110" inputmode="numeric" placeholder="facultatif"></div></div>'
-      + '<div class="bloc"><div class="lib">Une photo avec votre produit (facultatif)</div><div class="photo" id="ph"><button type="button" class="btn clair" id="bPh"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg>Ajouter une photo</button></div></div>'
-      + '<div class="bloc"><label class="accord"><input type="checkbox" id="ac"><span>J’accepte que mon avis, mon prénom et ma photo soient publiés sur le site pour aider d’autres clients.</span></label></div>'
-      + '<div class="bloc"><button class="btn" id="go">Envoyer mon avis</button><div class="err" id="er"></div></div>';
+      + '<div class="bloc"><label class="accord"><input type="checkbox" id="ac"><span>J’accepte que mon avis (texte, voix, photos ou vidéo), mon prénom, l’initiale de mon nom, mon quartier et la date de ma commande soient publiés sur le site pour aider d’autres clients.</span></label></div>'
+      + '<div class="bloc"><button class="btn" id="go">Envoyer mon avis</button><div class="barre" id="bar"><i></i></div><div class="etat" id="et"></div><div class="err" id="er"></div></div>';
     [].forEach.call(z.querySelectorAll('.etoiles button'), function(bt){ bt.onclick = function(){ note = Number(bt.getAttribute('data-n'));
       [].forEach.call(z.querySelectorAll('.etoiles button'), function(x){ x.classList.toggle('on', Number(x.getAttribute('data-n')) <= note); });
       document.getElementById('etq').textContent = libNote[note]; }; });
     [].forEach.call(z.querySelectorAll('.choix'), function(g){ [].forEach.call(g.querySelectorAll('button'), function(bt){ bt.onclick = function(){
       [].forEach.call(g.querySelectorAll('button'), function(x){ x.classList.remove('on'); }); bt.classList.add('on');
       var i = Number(g.getAttribute('data-q')); rep[i] = { q: R.questions[i].q, r: bt.textContent }; }; }); });
-    document.getElementById('bPh').onclick = function(){ document.getElementById('fic').click(); };
+    brancherOutils();
     document.getElementById('go').onclick = envoyer;
   }
-  document.getElementById('fic').onchange = function(e){ var f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return;
-    reduire(f, function(d){ if (!d) return; photo = d; document.getElementById('ph').innerHTML = '<img alt="" src="' + d + '"><button type="button" class="btn clair" id="bPh" style="width:auto">Changer</button>';
-      document.getElementById('bPh').onclick = function(){ document.getElementById('fic').click(); }; }); };
   function envoyer(){
-    var er = document.getElementById('er'), tx = document.getElementById('tx').value.trim(), go = document.getElementById('go');
-    if (!note) { er.textContent = 'Choisissez une note de 1 à 5 étoiles.'; return; }
-    if (tx.length < 3) { er.textContent = 'Écrivez quelques mots sur votre expérience.'; return; }
-    er.textContent = ''; go.disabled = true; go.textContent = 'Envoi…';
-    appel({type: 'avisEnvoyer', note: note, texte: tx, prenom: document.getElementById('pn').value.trim(), age: document.getElementById('ag').value,
-      reponses: Object.keys(rep).map(function(k){ return rep[k]; }), img: photo, accord: document.getElementById('ac').checked }).then(function(r){
-      if (!r || !r.ok) { go.disabled = false; go.textContent = 'Envoyer mon avis'; er.textContent = (r && r.erreur) || 'L’envoi n’a pas abouti. Réessayez.'; return; }
-      if (r.deja) return fini('Merci !', 'Votre avis avait déjà été reçu.');
-      fini('Merci' + (r.prenom ? ' ' + r.prenom : '') + ' !', 'Votre avis est bien reçu. Il nous aide beaucoup.');
-    }).catch(function(){ go.disabled = false; go.textContent = 'Envoyer mon avis'; er.textContent = 'Connexion coupée. Vérifiez votre internet puis réessayez.'; });
+    arreterEnreg();
+    var tx = document.getElementById('tx').value.trim(), go = document.getElementById('go'), et = document.getElementById('et');
+    if (!note) return dire('Choisissez une note de 1 à 5 étoiles.');
+    if (rienAEnvoyer(tx)) return dire('Écrivez quelques mots, enregistrez une note vocale ou ajoutez une vidéo.');
+    dire(''); go.disabled = true; go.textContent = 'Envoi en cours…';
+    prenom = document.getElementById('pn').value.trim() || R.prenom || '';
+    var etat = function(t){ et.textContent = t; };
+    envoyerFichiers(etat).then(function(f){
+      etat('Enregistrement de votre avis…');
+      return appel({type: 'avisEnvoyer', note: note, texte: tx, prenom: prenom, age: document.getElementById('ag').value,
+        reponses: Object.keys(rep).map(function(k){ return rep[k]; }), photos: f.photos, audio: f.audio, video: f.video, accord: document.getElementById('ac').checked });
+    }).then(function(r){
+      if (!r || !r.ok) throw new Error((r && r.erreur) || 'L’envoi n’a pas abouti. Réessayez.');
+      if (r.deja) return merciFinal(true);
+      if (r.prenom) prenom = r.prenom;
+      M = nouveauPanier(); toutDit();
+    }).catch(function(e){ go.disabled = false; go.textContent = 'Envoyer mon avis'; etat('');
+      dire(e && e.message && e.message !== 'reseau' && !/fetch|network|json/i.test(e.message) ? e.message : 'Connexion coupée. Vérifiez votre internet puis réessayez : rien n’est perdu.'); });
   }
+
+  /* ---------- Étape 2 : avez-vous tout dit ? ---------- */
+  function toutDit(){
+    z.innerHTML = coche.replace('class="rond"', 'class="rond" style="width:64px;height:64px;margin-bottom:6px"')
+      + '<h1 style="text-align:center">Bien reçu' + (prenom ? ', ' + esc(prenom) : '') + '.</h1>'
+      + '<p class="sous" style="text-align:center">Avant de terminer : avez-vous tout dit ? Un détail, une anecdote, ce que vos proches ont remarqué… Tout compte.</p>'
+      + '<div class="bloc choix"><button type="button" id="oui">Oui, j’ai tout dit</button><button type="button" id="non">Non, je veux ajouter quelque chose</button></div>'
+      + '<div class="err" id="er"></div>';
+    document.getElementById('oui').onclick = terminer;
+    document.getElementById('non').onclick = ajouter;
+  }
+  function ajouter(){
+    z.innerHTML = '<h1 style="margin-top:0">Ajoutez ce que vous voulez</h1><p class="sous">Un mot, une note vocale, une photo ou une vidéo : tout sera joint à votre avis.</p>'
+      + outilsHTML(true)
+      + '<div class="bloc"><button class="btn" id="go">Ajouter à mon avis</button><div class="barre" id="bar"><i></i></div><div class="etat" id="et"></div><div class="err" id="er"></div>'
+      + '<button type="button" class="btn clair" id="ret" style="margin-top:10px;justify-content:center">Retour</button></div>';
+    brancherOutils();
+    document.getElementById('ret').onclick = function(){ arreterEnreg(); M = nouveauPanier(); toutDit(); };
+    document.getElementById('go').onclick = function(){
+      arreterEnreg();
+      var tx = document.getElementById('tx').value.trim(), go = document.getElementById('go'), et = document.getElementById('et');
+      if (rienAEnvoyer(tx)) return dire('Écrivez, enregistrez ou ajoutez quelque chose, ou appuyez sur Retour.');
+      dire(''); go.disabled = true; go.textContent = 'Envoi en cours…';
+      envoyerFichiers(function(t){ et.textContent = t; }).then(function(f){
+        et.textContent = 'Enregistrement…';
+        return appel({type: 'avisAjouter', texte: tx, photos: f.photos, audio: f.audio, video: f.video});
+      }).then(function(r){
+        if (!r || !r.ok) throw new Error((r && r.erreur) || 'L’envoi n’a pas abouti.');
+        if (r.deja) return merciFinal(true);
+        M = nouveauPanier(); toutDit();
+      }).catch(function(e){ go.disabled = false; go.textContent = 'Ajouter à mon avis'; et.textContent = '';
+        dire(e && e.message && e.message !== 'reseau' && !/fetch|network|json/i.test(e.message) ? e.message : 'Connexion coupée. Vérifiez votre internet puis réessayez.'); });
+    };
+  }
+  function terminer(){
+    var b1 = document.getElementById('oui'); b1.disabled = true;
+    appel({type: 'avisFinir'}).then(function(r){
+      if (!r || !r.ok) throw new Error((r && r.erreur) || '');
+      // Un moment de recueillement, puis le remerciement (1 minute), puis l'équipe est prévenue (2 à 3 minutes)
+      z.innerHTML = '<div class="charge"><div class="points"><i></i><i></i><i></i></div><br>Votre message est entre de bonnes mains.<br>Notre équipe le reçoit avec attention…</div>';
+      setTimeout(function(){ merciFinal(false); }, 60000);
+      setTimeout(function(){ appel({type: 'avisFinir', prevenir: true}).catch(function(){}); }, 150000);
+    }).catch(function(){ b1.disabled = false; dire('Connexion coupée. Vérifiez votre internet puis réessayez.'); });
+  }
+  function merciFinal(deja){
+    if (deja) { z.innerHTML = '<div class="fin">' + coche + '<h1>Merci !</h1><p class="sous">Votre avis a déjà été reçu.</p></div>'; return; }
+    var p = prenom ? ' ' + esc(prenom) : '';
+    var corps = note && note <= 2
+      ? 'Merci' + p + ' d’avoir pris le temps de nous dire les choses franchement. Votre satisfaction compte vraiment pour nous : notre équipe va étudier votre retour avec soin et revenir vers vous pour trouver une solution.'
+      : 'Merci du fond du cœur' + p + '. Prendre le temps de partager votre expérience, c’est un vrai cadeau, pour nous et pour toutes les personnes qui hésitent encore. Votre témoignage va les aider à faire le bon choix.<br><br>Toute l’équipe vous souhaite de profiter pleinement de votre produit, en bonne santé, auprès de ceux que vous aimez. Nous sommes toujours là pour vous.';
+    z.innerHTML = '<div class="fin">' + coche + '<h1>Merci' + p + ' !</h1><p class="sous">' + corps + '</p><p class="signe">L’équipe du service client</p></div>';
+  }
+
   appel({type: 'avisInfos'}).then(function(r){
     if (!r || !r.ok) return erreur((r && r.erreur) || 'Ce lien ne fonctionne pas.');
     if (r.introuvable) return erreur('Commande introuvable.');
-    if (r.deja) return fini('Merci !', 'Votre avis a déjà été reçu.');
-    R = r; formulaire();
+    if (r.deja) return merciFinal(true);
+    R = r; prenom = r.prenom || '';
+    if (r.encours) return toutDit();
+    formulaire();
   }).catch(function(){ erreur('Connexion impossible. Vérifiez votre internet puis rouvrez le lien.'); });
 })();
 </script>

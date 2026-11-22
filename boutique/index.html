@@ -237,6 +237,8 @@ details p{color:var(--soft);margin-top:8px}
 .review .rav{flex:0 0 44px;width:44px;height:44px;border-radius:50%;object-fit:cover;margin:0;max-height:none;background:#ddd}
 .review .rini{display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;background:var(--accent,#0B6E4F)}
 .review .rage{font-weight:500;opacity:.75}
+.review .rlieu{font-size:12px;opacity:.7;margin-top:6px}
+.review .rphotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:6px;margin-top:8px}.review .rphotos img{margin:0;height:110px;object-fit:cover}
 .review .rok{font-size:11px;color:#1a7f37;font-weight:700;margin-left:4px;display:inline-flex;align-items:center;gap:3px}.review .rok svg{width:12px;height:12px;stroke-width:2.6}
 .review .raud{margin-top:10px;background:#fff;border-radius:12px;padding:8px}
 .review .raud audio{width:100%;display:block}
@@ -593,7 +595,8 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
   function audioAvis(u){
     u = String(u||'').trim(); let m;
     const t = '<small>' + ico('micro') + 'Note vocale du client</small>';
-    if ((m = u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]{20,})/))) return `<div class="raud">${t}<iframe src="https://drive.google.com/file/d/${m[1]}/preview" loading="lazy"></iframe></div>`;
+    // Note vocale rangée dans Drive : lecteur du téléphone ; si le format ne passe pas, lecteur Drive
+    if ((m = u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]{20,})/))) return `<div class="raud">${t}<audio controls preload="none" src="https://drive.google.com/uc?export=download&amp;id=${m[1]}" onerror="this.outerHTML='&lt;iframe src=&quot;https://drive.google.com/file/d/${m[1]}/preview&quot; loading=&quot;lazy&quot;&gt;&lt;/iframe&gt;'"></audio></div>`;
     if (/^https?:\/\//.test(u)) return `<div class="raud">${t}<audio controls preload="none" src="${esc(u)}"></audio></div>`;
     return '';
   }
@@ -957,7 +960,7 @@ input[type=tel],input[type=text],textarea,select.in,.country select{border-width
       </div></div><div class="pbelow">
       ${desc ? `<section><h2>Description</h2><div class="rich">${rich(P.description)}</div>
         ${P.boite.length ? `<div class="box"><h3>Dans la boîte</h3><ul>${P.boite.map(a=>`<li>${esc(a)}</li>`).join('')}</ul></div>` : ''}</section>` : ''}
-      ${nAvis ? `<section><h2>Ils l'ont déjà reçu</h2><div class="reviews" id="revs" tabindex="0" aria-label="Avis des clients">${P.avis.map(a=>`<div class="review"><div class="rhead">${a.avatar?`<img class="rav" src="${esc(img(a.avatar))}" alt="" loading="lazy">`:`<span class="rav rini">${esc((a.nom||'C').trim().charAt(0).toUpperCase())}</span>`}<div><div class="who">${esc(a.nom)}${a.age?`<span class="rage">, ${esc(/an/i.test(a.age)?a.age:a.age+' ans')}</span>`:''}</div><div class="rs">${'★'.repeat(a.note)}${'☆'.repeat(5-a.note)}${a.verifie?' <span class="rok">' + ico('coche') + 'Achat vérifié</span>':''}</div></div></div>${a.texte?`<p>${esc(a.texte)}</p>`:''}${a.photo?`<img src="${esc(img(a.photo))}" alt="" loading="lazy">`:''}${a.audio?audioAvis(a.audio):''}${a.video?video(a.video):''}</div>`).join('')}</div>
+      ${nAvis ? `<section><h2>Ils l'ont déjà reçu</h2><div class="reviews" id="revs" tabindex="0" aria-label="Avis des clients">${P.avis.map(a=>`<div class="review"><div class="rhead">${a.avatar?`<img class="rav" src="${esc(img(a.avatar))}" alt="" loading="lazy">`:`<span class="rav rini">${esc((a.nom||'C').trim().charAt(0).toUpperCase())}</span>`}<div><div class="who">${esc(a.nom)}${a.age?`<span class="rage">, ${esc(/an/i.test(a.age)?a.age:a.age+' ans')}</span>`:''}</div><div class="rs">${'★'.repeat(a.note)}${'☆'.repeat(5-a.note)}${a.verifie?' <span class="rok">' + ico('coche') + 'Achat vérifié</span>':''}</div></div></div>${(a.lieu||a.date)?`<div class="rlieu">${esc([a.lieu, a.date && 'commandé le ' + a.date].filter(Boolean).join(' · '))}</div>`:''}${a.texte?`<p>${esc(a.texte)}</p>`:''}${String(a.audio||'').split(/\s+/).filter(Boolean).map(audioAvis).join('')}${String(a.photo||'').split(/\s+/).filter(Boolean).length>1?`<div class="rphotos">${String(a.photo).split(/\s+/).filter(Boolean).map(u=>`<img src="${esc(img(u))}" alt="" loading="lazy">`).join('')}</div>`:a.photo?`<img src="${esc(img(a.photo))}" alt="" loading="lazy">`:''}${String(a.video||'').split(/\s+/).filter(Boolean).map(video).join('')}</div>`).join('')}</div>
         ${nAvis > 1 ? `<div class="rdots" id="rdots">${P.avis.map((_,i)=>`<span class="${i?'':'on'}"></span>`).join('')}</div>` : ''}</section>` : ''}
       ${photosClients(P)}
       ${P.faq.length ? `<section><h2>Questions fréquentes</h2>${P.faq.map(f=>`<details><summary>${esc(f.q)}</summary><p>${esc(f.r)}</p></details>`).join('')}</section>` : ''}
