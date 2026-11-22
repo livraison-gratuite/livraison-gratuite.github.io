@@ -115,7 +115,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .ofadd{margin-top:8px;width:100%}
 .pxg>b{font-size:13px;color:var(--soft)}.pxg>span{font-weight:700;font-size:15px}.pxg .field{margin:0}
 .pxauto{display:block;padding:12px 14px;border-radius:12px;background:var(--surface);color:var(--soft);font-weight:700;text-decoration:line-through;min-height:46px}
-.nfbtn{position:relative}.nfbadge{position:absolute;top:2px;right:0;min-width:19px;height:19px;padding:0 5px;border-radius:10px;background:#E5484D;color:#fff;font-size:11.5px;font-weight:800;display:grid;place-items:center;line-height:1}
+.nfbtn{position:relative}.nfbadge{position:absolute;top:2px;right:0;min-width:19px;height:19px;padding:0 5px;white-space:nowrap;border-radius:10px;background:#E5484D;color:#fff;font-size:11.5px;font-weight:800;display:grid;place-items:center;line-height:1}
 .nfhead{display:flex;align-items:center;justify-content:space-between;gap:10px}.nfhead h2{margin:0}
 .nfit{display:flex;gap:10px;width:100%;text-align:left;padding:14px 4px;border-bottom:1px solid var(--line);background:none}
 .nfit .nfdot{flex:0 0 10px;height:10px;border-radius:50%;margin-top:6px;background:transparent}.nfit.nfnl .nfdot{background:var(--main)}
@@ -254,7 +254,7 @@ select.st{width:100%;padding:14px;border-radius:14px;border:2px solid var(--line
 .nav button{width:52px;height:50px;border-radius:999px;display:grid;place-items:center;position:relative;color:var(--soft)}
 .nav button.on{background:var(--surface);color:var(--deep)}
 .nav svg{width:24px;height:24px}
-.nav .dot{position:absolute;top:7px;right:12px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--err);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center}
+.nav .dot{position:absolute;top:7px;right:12px;min-width:18px;height:18px;padding:0 5px;white-space:nowrap;border-radius:9px;background:var(--err);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center}
 
 /* Alerte nouvelle commande */
 .toast{position:fixed;left:12px;right:12px;top:calc(12px + env(safe-area-inset-top));z-index:60;max-width:520px;margin:0 auto;background:var(--sun);color:var(--deep);border-radius:18px;padding:14px 16px;display:flex;gap:12px;align-items:center;box-shadow:0 10px 30px rgba(18,48,143,.35);animation:drop .35s cubic-bezier(.2,1.4,.4,1)}
@@ -1459,6 +1459,10 @@ function nettoyerHtml(h){
   t.content.querySelectorAll('*').forEach(e => [...e.attributes].forEach(a => { if (/^on/i.test(a.name) || /^\s*javascript:/i.test(a.value)) e.removeAttribute(a.name); }));
   return t.innerHTML;
 }
+  // Pastilles rouges : nombre exact jusqu'à 999, puis 1k, 1.2k, 10k, 999k, 1M, 10.5M… (aucune limite)
+  function compteBadge(n){ n = Math.max(0, Math.floor(Number(n) || 0)); if (n < 1000) return String(n);
+    const u = [[1e9, 'G'], [1e6, 'M'], [1e3, 'k']].find(x => n >= x[0]), v = n / u[0];
+    return (v < 100 ? Math.floor(v * 10) / 10 : Math.floor(v)).toString() + u[1]; }
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
   /* ---------- Tout en français : erreurs réseau, réponses du serveur Google ---------- */
@@ -2807,11 +2811,11 @@ function nettoyerHtml(h){
         lastNum = j.dernier.numero; S.set('adm_last', lastNum);
       }
       const nouv = j.commandes.filter(o => o.statut === 'Nouvelle').length;
-      const dn = document.getElementById('dotNew'); dn.textContent = nouv > 99 ? '99+' : nouv; dn.classList.toggle('hidden', !nouv);
+      const dn = document.getElementById('dotNew'); dn.textContent = compteBadge(nouv); dn.classList.toggle('hidden', !nouv);
       appliquerSuivis(j.abandons);
       alerteRelances(j.abandons);
       const ar = j.abandons.filter(a => !a.suivi || a.suivi === 'À relancer').length;
-      const da = document.getElementById('dotAb'); da.textContent = ar > 99 ? '99+' : ar; da.classList.toggle('hidden', !ar);
+      const da = document.getElementById('dotAb'); da.textContent = compteBadge(ar); da.classList.toggle('hidden', !ar);
       if (!pareil && !document.querySelector('.overlay') && !(view === 'orders' && document.activeElement && document.activeElement.id === 'q')) rendreQuandCalme();
       openFromLink();
       if (vueDemandee === 'vendoo' && j.vendoo && j.vendoo.statut === 'proprietaire' && !window.__vAdm){ window.__vAdm = 1; vendooAdmin(); }
@@ -3056,7 +3060,7 @@ function nettoyerHtml(h){
           <div class="stwrap"><button class="store" id="bqBtn" aria-label="Changer de boutique"><span class="stico" aria-hidden="true">${ICO_BOUTIQUE}</span><span class="stn">${nomVisible ? '<span class="stnom">' + esc(D.boutique || 'Ma boutique') + '</span>' : '<span class="stmask" aria-label="Nom masqué"><i></i><i></i><i></i></span>'}</span></button>
           <button class="eyebtn" id="eyeBtn" aria-label="${nomVisible ? 'Masquer' : 'Afficher'} le nom de la boutique" aria-pressed="${nomVisible}">${nomVisible ? ICO_OEIL_BARRE : ICO_OEIL}</button></div>
           <button class="iconbtn refbtn" id="refBtn" aria-label="Actualiser" title="Actualiser (F5)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>
-          <button class="iconbtn nfbtn" id="nfBtn" aria-label="Notifications${D.notifs ? ' : ' + D.notifs + ' non lue' + (D.notifs > 1 ? 's' : '') : ''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>${D.notifs ? `<span class="nfbadge">${D.notifs > 99 ? '99+' : D.notifs}</span>` : ''}</button>
+          <button class="iconbtn nfbtn" id="nfBtn" aria-label="Notifications${D.notifs ? ' : ' + D.notifs + ' non lue' + (D.notifs > 1 ? 's' : '') : ''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>${D.notifs ? `<span class="nfbadge">${compteBadge(D.notifs)}</span>` : ''}</button>
         </div>
 
         ${pushBanner()}
@@ -3952,7 +3956,7 @@ function nettoyerHtml(h){
   }
   function majCompteurAb(){
     const ar = D.abandons.filter(a => aRelancer(a) && a.suivi !== 'Numéro invalide').length, da = document.getElementById('dotAb');
-    if (da){ da.textContent = ar > 99 ? '99+' : ar; da.classList.toggle('hidden', !ar); }
+    if (da){ da.textContent = compteBadge(ar); da.classList.toggle('hidden', !ar); }
   }
   // Gardé sur le téléphone tant que le Google Sheets n'a pas confirmé
   let suivisLocaux = {}; try { suivisLocaux = JSON.parse(S.get('adm_suivis') || '{}') || {}; } catch(e){}
@@ -4272,7 +4276,7 @@ function nettoyerHtml(h){
     if (ts >= auj.getTime()) return 'aujourd’hui ' + h; if (ts >= auj.getTime() - 864e5) return 'hier ' + h;
     return d.toLocaleDateString('fr-FR', {day: 'numeric', month: 'short', year: d.getFullYear() === auj.getFullYear() ? undefined : 'numeric'}) + ' · ' + h; };
   function majCloche(n){ if (D) D.notifs = n; const b = document.getElementById('nfBtn'); if (!b) return;
-    b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>' + (n ? `<span class="nfbadge">${n > 99 ? '99+' : n}</span>` : ''); }
+    b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>' + (n ? `<span class="nfbadge">${compteBadge(n)}</span>` : ''); }
   const K_NF = 'adm_nfcache' + (VID ? '_v' + VID : '');
   async function ouvrirNotifs(){
     const o = feuille(`<div class="nfhead"><h2>🔔 Notifications</h2><button class="iconbtn2" id="nfMenu" aria-label="Options">⋮</button></div><div id="nfL"><div class="charge"><span class="spin"></span></div></div><button class="btn ghost" data-x style="margin-top:14px">Fermer</button>`);
@@ -5500,7 +5504,7 @@ function nettoyerHtml(h){
     preparer: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8.5 12.5l2.5 2.5 4.5-4.8"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '145';
+  const VERSION_APP = '146';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
