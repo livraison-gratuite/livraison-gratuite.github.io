@@ -1,0 +1,39 @@
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:Inter,'DejaVu Sans',sans-serif;color:#13213F;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+section{page-break-before:always}
+section:first-child{page-break-before:auto}
+.chap,.num{font-size:7.6pt;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#2C5BD8;margin-bottom:2.5mm}
+.chapitre .num{display:inline-block;background:#EEF3FF;border-radius:9mm;padding:1mm 3mm}
+h2{font-size:19pt;font-weight:800;letter-spacing:-.02em;line-height:1.15;margin-bottom:4mm;color:#0F1B3D;padding-bottom:3mm;border-bottom:.8mm solid;border-image:linear-gradient(90deg,#1736A6,#2C7BE5 60%,#12A150) 1}
+h3{font-size:11.5pt;font-weight:700;margin:4.5mm 0 1.8mm;color:#0F1B3D;page-break-after:avoid}
+p{font-size:10.4pt;line-height:1.58;margin-bottom:2.8mm}
+p.intro{font-size:11pt;color:#2B3757;font-weight:500}
+ul,ol{margin:0 0 3mm 5mm}
+li{font-size:10.2pt;line-height:1.52;margin-bottom:1.8mm;padding-left:1mm}
+ul li::marker{color:#12A150}
+ol li::marker{color:#1736A6;font-weight:700}
+.encadre{border-radius:3mm;padding:3.4mm 4mm;font-size:9.9pt;line-height:1.5;margin:3.5mm 0;background:#EEF3FF;color:#1D2A57;border-left:1.2mm solid #2C5BD8;page-break-inside:avoid}
+.encadre p,.encadre li{font-size:9.9pt}
+.encadre.vert{background:#EAF7EF;color:#14432A;border-left-color:#12A150}
+.encadre.or{background:#FFF6E5;color:#5C4512;border-left-color:#D69E2E}
+.encadre.rouge{background:#FDECEC;color:#6B1D1D;border-left-color:#D64545}
+table{width:100%;border-collapse:collapse;font-size:9.6pt;margin:2mm 0 3mm}
+th{background:#1736A6;color:#fff;text-align:left;padding:1.8mm 2.2mm;font-weight:700}
+td{padding:1.7mm 2.2mm;border-bottom:.3mm solid #E3E8F2;vertical-align:top}
+table.carnet td,table.carnet th{text-align:center;font-size:8.2pt;padding:1.4mm 1mm}
+table.carnet td:first-child{text-align:left;font-weight:600;white-space:nowrap}
+table.carnet td.case{height:11mm}
+table.carnet td.case::after{content:'';display:inline-block;width:5mm;height:5mm;border:.4mm solid #9AA6BF;border-radius:1.2mm}
+.lignes-ecr b{display:block;font-size:10pt;margin-top:4mm}
+.lignes-ecr span{display:block;height:8.5mm;border-bottom:.3mm dashed #B8C2D6}
+.som{margin:0}.som li{list-style:none;display:flex;gap:2mm;align-items:baseline;font-size:10.4pt;margin-bottom:3mm}
+.som .pts{flex:1;border-bottom:.3mm dotted #B8C2D6;transform:translateY(-1mm)}
+.signature{margin-top:6mm;font-weight:700;color:#1736A6;text-align:right}
+.couv{height:180mm;margin:-14mm -13mm 0;padding:0;background:linear-gradient(160deg,#0F1B3D 0%,#1736A6 55%,#2C7BE5 100%);color:#fff;position:relative}
+.couv .haut{padding:22mm 14mm 0}
+.couv .offert{display:inline-block;font-size:8pt;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border:.35mm solid rgba(255,255,255,.55);border-radius:9mm;padding:1.4mm 4mm}
+.couv h1{font-size:28pt;line-height:1.06;font-weight:800;letter-spacing:-.03em;margin:9mm 0 5mm}
+.couv .st{font-size:11.5pt;line-height:1.45;color:#D6E2FF;max-width:115mm}
+.couv .chips{position:absolute;left:14mm;bottom:22mm;display:flex;flex-direction:column;gap:2.4mm}
+.couv .chips span{font-size:9.4pt;font-weight:600;background:rgba(255,255,255,.12);border-radius:2mm;padding:1.8mm 3mm;width:max-content}
+.couv .bas{position:absolute;left:14mm;bottom:10mm;font-size:8pt;color:#C8D5F5}

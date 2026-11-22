@@ -1,0 +1,43 @@
+name: Cadeaux PDF
+# Met en page en PDF les guides cadeaux écrits par le serveur (un par produit) : boutique/bonus/
+on:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: bonus-cadeaux
+jobs:
+  pdf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Y a-t-il des guides à mettre en page ?
+        id: q
+        run: |
+          API=$(grep -oE 'https://script\.google\.com/macros/s/[A-Za-z0-9_-]+/exec' boutique/index.html | head -1)
+          echo "api=$API" >> $GITHUB_OUTPUT
+          N=$(curl -sL -X POST "$API" -H 'Content-Type: text/plain' -d '{"type":"bonusTextes"}' | python3 -c "import json,sys;print(len(json.load(sys.stdin).get('guides',[])))" || echo 0)
+          echo "n=$N" >> $GITHUB_OUTPUT
+          echo "Guides en attente : $N"
+      - name: Outils
+        if: steps.q.outputs.n != '0'
+        run: |
+          sudo apt-get install -y -qq fonts-inter >/dev/null 2>&1 || true
+          pip install --quiet pypdf
+          npm install --silent --no-save playwright@1.48.2
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Mise en page
+        if: steps.q.outputs.n != '0'
+        env:
+          API: ${{ steps.q.outputs.api }}
+          NODE_PATH: ${{ github.workspace }}/node_modules
+        run: python3 .github/bonus/rendre.py
+      - name: Publier
+        if: steps.q.outputs.n != '0'
+        run: |
+          git add boutique/bonus
+          if git diff --cached --quiet; then echo "Rien de nouveau"; exit 0; fi
+          git -c user.name="Livraison Gratuite" -c user.email="site@livraison-gratuite.github.io" commit -q -m "Cadeaux PDF mis à jour"
+          git pull -q --rebase origin main && git push -q origin main
