@@ -115,6 +115,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .ofadd{margin-top:8px;width:100%}
 .pxg>b{font-size:13px;color:var(--soft)}.pxg>span{font-weight:700;font-size:15px}.pxg .field{margin:0}
 .pxauto{display:block;padding:12px 14px;border-radius:12px;background:var(--surface);color:var(--soft);font-weight:700;text-decoration:line-through;min-height:46px}
+.avet{color:#F5A524;letter-spacing:1px}.avet i{color:#D9DEE8;font-style:normal}.avrep{font-size:13px;color:var(--soft);margin:8px 0;line-height:1.45}.avtexte{font-size:14.5px;line-height:1.5;margin:8px 0}.avtx{width:100%;min-height:90px;border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;font-size:14.5px;margin:8px 0;resize:vertical}.avph{width:96px;height:96px;object-fit:cover;border-radius:10px;margin:4px 0 8px;display:block}.avbt{display:flex;flex-direction:column;gap:8px;margin-top:6px}
 .nfbtn{position:relative}.nfbadge{position:absolute;top:2px;right:0;min-width:19px;height:19px;padding:0 5px;white-space:nowrap;border-radius:10px;background:#E5484D;color:#fff;font-size:11.5px;font-weight:800;display:grid;place-items:center;line-height:1}
 .nfhead{display:flex;align-items:center;justify-content:space-between;gap:10px}.nfhead h2{margin:0}
 .nfit{display:flex;gap:10px;width:100%;text-align:left;padding:14px 4px;border-bottom:1px solid var(--line);background:none}
@@ -2041,9 +2042,9 @@ function nettoyerHtml(h){
     B.querySelector('#rgPx').onclick = () => pixelsMeta(b);
     // WhatsApp officiel : modèles de message (création chez Meta + état de validation) et message d'essai
     const waEt = B.querySelector('#waEtat'), waLib = {APPROVED: ['ok', 'Validé'], PENDING: ['at', 'En attente de validation'], IN_APPEAL: ['at', 'En appel'], REJECTED: ['no', 'Refusé'], PAUSED: ['no', 'En pause'], DISABLED: ['no', 'Désactivé'], ABSENT: ['no', 'Pas encore créé']};
-    const waNoms = {suivi_commande_bonjour: 'Suivi client (bonjour)', suivi_commande_bonsoir: 'Suivi client (bonsoir)', rappel_livraison: 'Rappel du matin', commande_agence: 'Commande à l’agence', confirmation_agence: 'Confirmation à l’agence', suivi_commande_matin: 'Suivi client (matin, secours)', reception_colis: 'Colis reçu ? (le soir de la livraison)', fiche_livraison: 'Fiche livreur à l’agence (client confirmé)', colis_non_recu_agence: 'Alerte colis non reçu à l’agence', rappel_photo: 'Rappel pour la photo du colis (client)', photo_manquante_agence: 'Alerte photo non envoyée (agence)'};
+    const waNoms = {suivi_commande_bonjour: 'Suivi client (bonjour)', suivi_commande_bonsoir: 'Suivi client (bonsoir)', rappel_livraison: 'Rappel du matin', commande_agence: 'Commande à l’agence', confirmation_agence: 'Confirmation à l’agence', suivi_commande_matin: 'Suivi client (matin, secours)', avis_client: 'Demande d’avis (après la livraison)', reception_colis: 'Colis reçu ? (le soir de la livraison)', fiche_livraison: 'Fiche livreur à l’agence (client confirmé)', colis_non_recu_agence: 'Alerte colis non reçu à l’agence', rappel_photo: 'Rappel pour la photo du colis (client)', photo_manquante_agence: 'Alerte photo non envoyée (agence)'};
     const waJournal = J => { if (!J || !J.length) return '<p class="rgaide">Aucun envoi automatique pour l’instant.</p>';
-      const quoi = {commande_agence: 'Commande → agence', confirmation_agence: 'Confirmation → agence', rappel_livraison: 'Rappel du matin → client', suivi_commande_bonjour: 'Suivi → client', suivi_commande_bonsoir: 'Suivi → client', suivi_commande_matin: 'Suivi → client', reception_colis: 'Colis reçu ? → client', fiche_livraison: 'Fiche livreur → agence', colis_non_recu_agence: 'Colis non reçu → agence', rappel_photo: 'Rappel photo → client', photo_manquante_agence: 'Photo manquante → agence'};
+      const quoi = {commande_agence: 'Commande → agence', confirmation_agence: 'Confirmation → agence', rappel_livraison: 'Rappel du matin → client', suivi_commande_bonjour: 'Suivi → client', suivi_commande_bonsoir: 'Suivi → client', suivi_commande_matin: 'Suivi → client', reception_colis: 'Colis reçu ? → client', fiche_livraison: 'Fiche livreur → agence', colis_non_recu_agence: 'Colis non reçu → agence', rappel_photo: 'Rappel photo → client', photo_manquante_agence: 'Photo manquante → agence', avis_client: 'Demande d’avis → client'};
       const h = t => new Date(t).toLocaleString('fr-FR', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'});
       return `<h4 class="rgwah">Derniers envois automatiques</h4><div class="rgwal">${J.slice(0, 25).map(x => `<div><span>${esc(h(x.t))} · ${esc(quoi[x.m] || x.m)}${x.n ? ' · n°' + esc(x.n) : ''}${x.qui && x.m !== 'commande_agence' ? ' · ' + esc(x.qui) : ''}<small style="display:block;color:var(--soft)">+${esc(x.to)}${x.ok ? '' : ' · ' + esc(x.e)}</small></span><b class="wa${x.ok ? 'ok' : 'no'}">${x.ok ? 'Parti' : 'Échec'}</b></div>`).join('')}</div>`; };
     const waAff = j => { const n = j.numero, nOk = n && n.statut === 'CONNECTED'; waEt.innerHTML = `<div class="rgwal">${n ? `<div><span>Numéro ${esc(n.tel || '')}</span><b class="wa${nOk ? 'ok' : 'no'}">${nOk ? 'Connecté' : 'Hors ligne'}</b></div>` : ''}${(j.modeles || []).map(m => { const [c, t] = waLib[m.statut] || ['at', m.statut]; return `<div><span>${esc(waNoms[m.nom] || m.nom)}</span><b class="wa${c}">${esc(t)}${m.raison && m.raison !== 'NONE' ? ' · ' + esc(m.raison) : ''}</b></div>`; }).join('')}</div>`
@@ -2823,6 +2824,7 @@ function nettoyerHtml(h){
       if (vueDemandee === 'analyse' && !window.__vAp){ window.__vAp = 1; analysePubUI(); }
       // Notification « client à préparer » : ouvre directement la liste
       if (vueDemandee === 'prep' && !window.__vPr){ window.__vPr = 1; aPreparerUI(new URLSearchParams(location.search).get('f')); }
+      if (vueDemandee === 'avis' && !window.__vAv){ window.__vAv = 1; avisUI(); }
       if (vueDemandee === 'point' && !window.__vPt){ window.__vPt = 1; pointHebdo({jour: new URLSearchParams(location.search).get('jour'), stock: new URLSearchParams(location.search).get('stock')}); }
       if (!precharge){ precharge = true; setTimeout(() => { traiterFile(); loadPub(); loadPR(); loadTT(); }, 400); }
     } catch(e){
@@ -3758,6 +3760,45 @@ function nettoyerHtml(h){
       + `Le livreur va vous appeler avant de passer : *gardez votre téléphone allumé et décrochez*, même si le numéro ne vous est pas connu.\n\n`
       + `Préparez *${fmt(c.total, c.devise || 'FCFA')}*. Vous payez seulement après avoir vu votre colis.\n\n`
       + `Si vous n’êtes pas disponible aujourd’hui, répondez simplement à ce message : nous trouverons ensemble un autre moment.`;
+  }
+  // Avis clients reçus sur WhatsApp : tu relis, tu corriges si besoin, tu publies sur la page du produit
+  async function avisUI(){
+    const o = feuille(`<h2>Avis clients</h2><p class="sub">Les avis envoyés par tes clients après leur livraison (le délai dépend du produit). Relis-les : seuls ceux que tu publies apparaissent sur la page du produit, avec la mention « Achat vérifié ».</p>
+      <div class="prtabs" role="tablist"><button data-f="r" class="on">À relire <span id="avNr"></span></button><button data-f="p">Publiés</button><button data-f="x">Refusés</button></div>
+      <div id="avL"><div class="charge"><span class="spin"></span></div></div>
+      <button class="btn ghost" id="avX" style="margin-top:14px">Fermer</button>`);
+    o.querySelector('.detail').classList.add('cbsheet');
+    o.querySelector('#avX').onclick = () => o.remove();
+    let L = [], filtre = 'r';
+    const etoiles = n => '<span class="avet">' + '★★★★★'.slice(0, n) + '<i>' + '★★★★★'.slice(0, 5 - n) + '</i></span>';
+    const vignette = u => { const m = String(u || '').match(/\/d\/([\w-]{20,})/); return m ? 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w400' : u; };
+    const dessiner = () => { const z = o.querySelector('#avL'); if (!z) return;
+      const R = L.filter(a => !a.statut || a.statut === 'À relire');
+      o.querySelector('#avNr').textContent = R.length ? '(' + R.length + ')' : '';
+      const V = filtre === 'r' ? R : L.filter(a => a.statut === (filtre === 'p' ? 'Publié' : 'Refusé'));
+      z.innerHTML = V.length ? V.map(a => { const i = L.indexOf(a);
+        return `<div class="prc">
+          <div class="prh"><b>${esc(a.prenom || 'Client')}${a.age ? ', ' + esc(a.age) + ' ans' : ''}</b><span>${esc(new Date(a.t).toLocaleDateString('fr-FR', {day: '2-digit', month: '2-digit'}))}</span></div>
+          <div class="prp">${etoiles(a.note)} · ${esc(a.produit)}${a.pays ? ' · ' + esc(a.pays) : ''}</div>
+          ${a.reponses ? `<div class="avrep">${esc(a.reponses).replace(/\n/g, '<br>')}</div>` : ''}
+          ${filtre === 'r' && a.accord ? `<textarea class="avtx" data-t="${i}">${esc(a.texte)}</textarea>` : `<p class="avtexte">« ${esc(a.texte)} »</p>`}
+          ${a.photo ? `<a href="${esc(a.photo)}" target="_blank" rel="noopener"><img class="avph" alt="" src="${esc(vignette(a.photo))}"></a>` : ''}
+          ${filtre !== 'r' ? '' : a.accord
+            ? `<div class="avbt"><button class="btn" data-pub="${i}">Publier sur la page du produit</button><button class="btn ghost" data-ref="${i}">Ne pas publier</button></div>`
+            : `<div class="prok">Le client n’a pas accepté la publication : avis réservé à ton suivi.<button class="lnk" data-ref="${i}">Classer</button></div>`}
+        </div>`; }).join('')
+        : `<div class="cbvide">${ic('etoile')}<b>${filtre === 'r' ? 'Aucun avis à relire' : filtre === 'p' ? 'Aucun avis publié' : 'Aucun avis refusé'}</b><small>Les avis arrivent quelques jours (lunettes) à un mois (compléments) après la livraison.</small></div>`;
+      z.querySelectorAll('[data-pub],[data-ref]').forEach(b => b.onclick = async () => {
+        const pub = b.dataset.pub != null, a = L[Number(pub ? b.dataset.pub : b.dataset.ref)], tx = z.querySelector('[data-t="' + L.indexOf(a) + '"]');
+        b.disabled = true;
+        try { const j = await call({type: 'avisDecision', bq: a.bq, ligne: a.ligne, action: pub ? 'publier' : 'refuser', texte: tx ? tx.value : undefined});
+          a.statut = pub ? 'Publié' : 'Refusé'; toast(pub ? 'Avis publié sur « ' + (j.produit || a.produit) + ' »' : 'Avis classé'); dessiner(); }
+        catch(e){ b.disabled = false; alert(e.message); }
+      });
+    };
+    o.querySelectorAll('.prtabs [data-f]').forEach(b => b.onclick = () => { filtre = b.dataset.f; o.querySelectorAll('.prtabs [data-f]').forEach(x => x.classList.toggle('on', x === b)); dessiner(); });
+    try { const j = await call({type: 'avisRecus'}); L = j.avis || []; dessiner(); }
+    catch(e){ const z = o.querySelector('#avL'); if (z) z.innerHTML = `<p class="sub">${esc(e.message)}</p>`; }
   }
   async function aPreparerUI(filtre0){
     const o = feuille(`<h2>Clients à préparer</h2><p class="sub">Commandes passées en dehors des heures de livraison. Envoie le message : le client sait quand il sera livré et ce qu’il doit préparer, et il décroche quand le livreur l’appelle.</p>
@@ -5501,15 +5542,16 @@ function nettoyerHtml(h){
     test: '<path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"/><path d="M7.5 15h9"/>',
     chevron: '<path d="M9 6l6 6-6 6"/>', retour: '<path d="M15 18l-6-6 6-6"/>', loupe: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',
     calendrier: '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/>', coche: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
-    preparer: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8.5 12.5l2.5 2.5 4.5-4.8"/>'
+    preparer: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8.5 12.5l2.5 2.5 4.5-4.8"/>',
+    etoile: '<path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.8 6.6 19.7l1.1-6.1L3.2 9.4l6.1-.8z"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '146';
+  const VERSION_APP = '147';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
     app.innerHTML = `<h1 class="mtitre">Réglages</h1><div class="menu">
-      ${m('home', 'accueil', 'Accueil')}${m('orders', 'commandes', 'Commandes')}${m('prep', 'preparer', 'Clients à préparer')}${m('abandons', 'relances', 'Relances (paniers abandonnés)')}${m('products', 'produits', 'Produits')}
+      ${m('home', 'accueil', 'Accueil')}${m('orders', 'commandes', 'Commandes')}${m('prep', 'preparer', 'Clients à préparer')}${m('avis', 'etoile', 'Avis clients')}${m('abandons', 'relances', 'Relances (paniers abandonnés)')}${m('products', 'produits', 'Produits')}
       ${m('direct', 'direct', 'Vue en direct')}${m('tiktok', 'tiktok', 'Promotions TikTok')}${m('pubs', 'pubs', 'Analyse publicitaire')}${m('point', 'point', 'Point du jour et de la semaine')}
       <h3 class="mhd">Canaux de vente</h3>
       <a class="mrow" href="${esc(lienSite(''))}" target="_blank" rel="noopener">${ic('site')}<span>Boutique en ligne</span></a>
@@ -5527,6 +5569,7 @@ function nettoyerHtml(h){
       if (['home', 'orders', 'abandons', 'products', 'direct', 'tiktok', 'apercu'].includes(k)) return go(k);
       if (k === 'pubs') return analysePubUI();
       if (k === 'prep') return aPreparerUI();
+      if (k === 'avis') return avisUI();
       if (k === 'point') return pointHebdo();
       if (k === 'boutiques') return mesBoutiques();
       if (k === 'vendoo') return vendooAdmin();
