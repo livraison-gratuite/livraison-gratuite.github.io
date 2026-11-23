@@ -18,7 +18,7 @@ jobs:
         run: |
           API=$(grep -oE 'https://script\.google\.com/macros/s/[A-Za-z0-9_-]+/exec' boutique/index.html | head -1)
           echo "api=$API" >> $GITHUB_OUTPUT
-          N=$(curl -sL -X POST "$API" -H 'Content-Type: text/plain' -d '{"type":"bonusTextes"}' | python3 -c "import json,sys;print(len(json.load(sys.stdin).get('guides',[])))" || echo 0)
+          N=$(curl -sL "$API" -H 'Content-Type: text/plain' -d '{"type":"bonusTextes"}' | python3 -c "import json,sys;print(len(json.load(sys.stdin).get('guides',[])))" || echo 0)
           echo "n=$N" >> $GITHUB_OUTPUT
           echo "Guides en attente : $N"
       - name: Outils
