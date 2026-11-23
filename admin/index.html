@@ -3967,7 +3967,8 @@ function nettoyerHtml(h){
           try { await OneSignal.User.PushSubscription.optIn(); } catch(x){}
         }
         // Étiquette du téléphone : les notifications de l'abonné ne vont qu'à ses téléphones
-        try { if (VENDOO) OneSignal.User.addTag('vendoo', VID); else OneSignal.User.removeTag('vendoo'); } catch(x){}
+        // Ton téléphone (propriétaire) : marqué « proprio » pour ne recevoir qu'une seule notification par commande (pas celle de l'agence en plus)
+        try { if (VENDOO) { OneSignal.User.addTag('vendoo', VID); OneSignal.User.removeTag('proprio'); } else { OneSignal.User.removeTags(['vendoo', 'agence']); OneSignal.User.addTag('proprio', '1'); } } catch(x){}
         pushOn = !!(OneSignal.Notifications.permission && OneSignal.User.PushSubscription.optedIn); osFini = true;
         OneSignal.User.PushSubscription.addEventListener('change', () => { pushOn = !!OneSignal.User.PushSubscription.optedIn; if (view === 'home' || view === 'settings') render(); });
         osOk(true);
@@ -3986,7 +3987,7 @@ function nettoyerHtml(h){
     try {
       await OneSignal.Notifications.requestPermission();
       await OneSignal.User.PushSubscription.optIn();
-      try { if (VENDOO) OneSignal.User.addTag('vendoo', VID); } catch(x){}
+      try { if (VENDOO) OneSignal.User.addTag('vendoo', VID); else { OneSignal.User.removeTags(['vendoo', 'agence']); OneSignal.User.addTag('proprio', '1'); } } catch(x){}
     } catch(e){ alert("Erreur : " + ((e && e.message) || e)); }
     pushOn = !!(OneSignal.Notifications.permission && OneSignal.User.PushSubscription.optedIn);
     if (!pushOn && 'Notification' in window && Notification.permission === 'denied') alert("Les notifications sont bloquées pour ce site. Dans Chrome : ⋮ → Paramètres → Paramètres des sites → Notifications → autorise " + location.host + ".");
@@ -5573,7 +5574,7 @@ function nettoyerHtml(h){
     etoile: '<path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.8 6.6 19.7l1.1-6.1L3.2 9.4l6.1-.8z"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '148';
+  const VERSION_APP = '149';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;

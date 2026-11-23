@@ -89,7 +89,7 @@ const API = "https://script.google.com/macros/s/AKfycbwgdtcXlXB9niD3hactnz4SLIrp
           await OneSignal.init({ appId: D.onesignal, serviceWorkerPath: 'agence/OneSignalSDKWorker.js', serviceWorkerParam: { scope: '/agence/' }, notifyButton: { enable: false },
             welcomeNotification: { title: 'Rappels activés', message: 'Tu seras prévenu pour les clients à rappeler et les statuts à changer.' } });
           osOk = !!(OneSignal.Notifications.permission && OneSignal.User.PushSubscription.optedIn);
-          if (osOk){ try { await OneSignal.User.addTags({vendoo: 'ag', agence: k}); } catch(x){} if (!D.actif) try { await appel({action: 'abonne'}); D.actif = true; } catch(x){} }
+          if (osOk){ try { const tg = (OneSignal.User.getTags && OneSignal.User.getTags()) || {}; if (!tg.proprio) await OneSignal.User.addTags({vendoo: 'ag', agence: k}); } catch(x){} if (!D.actif) try { await appel({action: 'abonne'}); D.actif = true; } catch(x){} }
           ok(true);
         } catch(e){ osErr = e && e.message || String(e); ok(false); }
       });
@@ -100,7 +100,7 @@ const API = "https://script.google.com/macros/s/AKfycbwgdtcXlXB9niD3hactnz4SLIrp
     const b = e.currentTarget; b.disabled = true; b.textContent = 'Activation…';
     try {
       await new Promise((ok, ko) => window.OneSignalDeferred.push(async OneSignal => {
-        try { await OneSignal.Notifications.requestPermission(); await OneSignal.User.PushSubscription.optIn(); await OneSignal.User.addTags({vendoo: 'ag', agence: k}); ok(); } catch(x){ ko(x); } }));
+        try { await OneSignal.Notifications.requestPermission(); await OneSignal.User.PushSubscription.optIn(); const tg = (OneSignal.User.getTags && OneSignal.User.getTags()) || {}; if (!tg.proprio) await OneSignal.User.addTags({vendoo: 'ag', agence: k}); ok(); } catch(x){ ko(x); } }));
       if (!(window.OneSignal && OneSignal.Notifications.permission)) throw new Error('Tu as refusé les notifications. Autorise-les dans les réglages du navigateur pour ce site, puis réessaie.');
       await appel({action: 'abonne'}); D.actif = true; osOk = true; dessiner();
     } catch(x){ b.disabled = false; b.textContent = 'Activer les rappels'; dessiner(x.message || 'Activation impossible. Réessaie.'); }
