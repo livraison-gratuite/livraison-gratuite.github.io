@@ -4452,7 +4452,7 @@ function nettoyerHtml(h){
         '(c) BASCULE : « jusqu’au jour où… » / « il existe une solution simple… » : le produit arrive comme l’évidence. ' +
         '(d) BÉNÉFICES : 2 ou 3 résultats concrets qu’on voit, qu’on sent ou qu’on vit (transforme chaque caractéristique de la page en résultat pour la personne). ' +
         '(e) PROJECTION : fais-la se voir juste après : ce qu’elle peut enfin refaire, ce que les autres remarquent, la fierté retrouvée. ' +
-        (cadeau ? '(e bis) LE CADEAU, juste avant l’appel à l’action, présenté comme un bonus qu’on veut tout de suite : à la réception de son colis, la personne reçoit EN CADEAU le guide « ' + cadeau + ' » (un guide pratique d’environ 50 pages, à garder sur son téléphone). En une ou deux phrases, montre ce que ce guide va lui apporter dans SA vie (lien direct avec sa douleur), qu’il est réservé à ceux qui reçoivent leur colis, et qu’il est offert : il doit donner une raison de plus de commander MAINTENANT et de bien décrocher quand le livreur appelle. ' : '') +
+        (cadeau ? '(e bis) LE CADEAU, juste avant l’appel à l’action, présenté comme un bonus qu’on veut tout de suite : une fois son colis livré, la personne reçoit EN CADEAU, directement sur son téléphone (par WhatsApp), le guide numérique « ' + cadeau + ' » (un guide pratique d’environ 50 pages en PDF, à lire et garder sur son téléphone). Dis clairement que c’est un guide numérique envoyé sur le téléphone APRÈS la livraison : jamais « livre », jamais « dans le colis », jamais « à la réception du colis », pour que personne ne s’attende à un livre papier. En une ou deux phrases, montre ce que ce guide va lui apporter dans SA vie (lien direct avec sa douleur), qu’il est réservé à ceux qui reçoivent leur colis, et qu’il est offert : il doit donner une raison de plus de commander MAINTENANT et de bien décrocher quand le livreur appelle. Exemple de tournure : « Et dès que votre colis est livré, on vous envoie sur WhatsApp, en cadeau, notre guide numérique… ». ' : '') +
         '(f) URGENCE et APPEL À L’ACTION : une raison d’agir maintenant (ne plus perdre une journée de plus avec ce problème, le cadeau qui l’attend) puis un ordre court : « Commandez maintenant. » ' +
         'STYLE : français parlé, chaleureux et direct, « vous », phrases de 4 à 12 mots, une idée par phrase, mots simples qu’on comprend à l’oreille, répétition du bénéfice principal, boucles de curiosité, aucune phrase molle. ' +
         'TEMPS 3, RELECTURE impitoyable : réécris tout script qui ne respecte pas UNE de ces règles : ' +
@@ -4461,7 +4461,7 @@ function nettoyerHtml(h){
         '3) Seulement des faits présents dans la page produit ; pas de promesse de guérison ni de résultat garanti ; pas de faux témoignage avec un nom. ' +
         '4) Aucun mot creux (révolutionnaire, incroyable, miracle, magique, unique au monde). ' +
         '5) L’accroche donne-t-elle envie d’écouter la suite en moins de 3 secondes, pour CE public ? Sinon, réécris-la. Une personne d’ici se dirait-elle « c’est exactement moi » ? Sinon, ajoute une scène plus vraie. ' +
-        (cadeau ? '5 bis) Le cadeau « ' + cadeau + ' » est-il annoncé, désirable et lié à la réception du colis ? Sinon, ajoute-le. ' : '') +
+        (cadeau ? '5 bis) Le cadeau « ' + cadeau + ' » (titre exact) est-il annoncé comme un guide NUMÉRIQUE envoyé sur WhatsApp après la livraison, désirable et lié à la douleur ? Aucune phrase ne doit laisser croire à un livre papier ou à un objet dans le colis. Sinon, corrige. ' : '') +
         '6) Chaque script fait environ ' + Math.max(15, cible - 14) + ' mots (lu en ' + sec + ' secondes avec la phrase de fin). ' +
         '7) N’écris PAS la fin (livraison, paiement, réduction) : elle est ajoutée automatiquement juste après ton « Commandez maintenant ». ' +
         '8) Pas de didascalies ni de crochets, seulement le texte à lire' + (type === 'dialogue' ? ' (avec « Voix 1 : » et « Voix 2 : »)' : '') + '. ' +
@@ -5574,7 +5574,7 @@ function nettoyerHtml(h){
     etoile: '<path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.8 6.6 19.7l1.1-6.1L3.2 9.4l6.1-.8z"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '149';
+  const VERSION_APP = '150';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
