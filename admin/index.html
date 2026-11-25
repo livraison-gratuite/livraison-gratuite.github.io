@@ -487,6 +487,18 @@ html.ordi .overlay.plein{padding:0}
 .vosc{margin-top:12px;border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:#fff}
 .vosc h4{margin:0 0 4px;font-size:15px}.vosc .vom{color:var(--soft);font-size:12.5px;font-weight:700;margin-bottom:8px}
 .vosc .vot{white-space:pre-wrap;font-size:15.5px;line-height:1.55}.vosc .vofin{display:block;margin-top:8px;font-weight:700;color:var(--main)}
+.voetude .vop{margin:8px 0 0;font-size:14px;line-height:1.5}.voetude .vol{margin:4px 0 0 18px;font-size:14px;line-height:1.5}
+.voseg{margin-top:8px;border:1px solid var(--line);border-radius:12px;padding:9px 11px;font-size:13.5px;line-height:1.45;background:#fff}.voseg span{color:var(--soft);font-weight:700}
+.vott{margin:16px 0 8px;font-weight:800;font-size:15px}
+.voang{display:flex;flex-direction:column;gap:8px}
+.voang button{display:flex;gap:12px;align-items:flex-start;text-align:left;border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px;cursor:pointer;font:inherit;color:inherit}
+.voang button:active{background:#F4F7FF}
+.vonote{flex:0 0 auto;min-width:54px;text-align:center;border-radius:10px;padding:7px 4px;background:#EEF3FF;color:var(--main);font-weight:800;font-size:17px;line-height:1}
+.vonote small{display:block;font-size:10.5px;font-weight:700;opacity:.75;margin-top:3px}.vonote.fort{background:#E3F5EA;color:#0B6B35}.vonote.faible{background:#F3F4F6;color:#6B7280}
+.votx{display:flex;flex-direction:column;gap:3px;font-size:14px;line-height:1.4}.votx b{font-size:15px}.votx small{color:var(--soft);font-size:12.5px}.votx i{font-style:normal;font-weight:600;color:#2B3757}
+.voang1{margin-top:6px;font-size:13.5px;line-height:1.5;color:#2B3757;background:#F7F9FD;border:1px solid var(--line);border-radius:12px;padding:9px 12px}
+.vorec{margin-top:10px;font-size:13px;line-height:1.45;background:#FFF7E0;border:1px solid #F3DFA2;color:#6B5200;border-radius:12px;padding:9px 12px}
+.voplus{margin-top:8px;font-size:13.5px;line-height:1.5}.voplus summary{font-weight:700;color:var(--main);cursor:pointer}.voplus ol,.voplus ul{margin:6px 0 0 18px}
 .vosc .btn{margin-top:10px;padding:12px;font-size:15px}
 .voetude{margin-top:10px;font-size:14px;line-height:1.5;background:var(--surface);border-radius:12px;padding:10px 12px}
 .voetude summary{font-weight:700;cursor:pointer}
@@ -4370,20 +4382,14 @@ function nettoyerHtml(h){
     charger();
   }
 
-  /* ---------- Voix off : étude du produit puis 3 scripts (IA gratuite Gemini du compte) ---------- */
-  const VO_TYPES = [
-    ['probleme', '😣 Problème → solution', 'commence par le problème que vit la personne, fais-le ressentir, puis présente le produit comme la solution simple'],
-    ['question', '❓ Question choc', 'commence par une question directe qui arrête le pouce (la personne se reconnaît tout de suite), puis déroule'],
-    ['histoire', '📖 Histoire vécue', 'raconte une petite scène de vie à la première personne (« je »), comme une mise en scène, sans nom ni âge précis, sans dire que c’est un vrai client'],
-    ['avantapres', '✨ Avant / après', 'montre la vie avant (difficile) puis la vie après le produit (simple, agréable)'],
-    ['comparaison', '⚖️ Comparaison', 'compare avec ce que les gens font aujourd’hui (solution compliquée, longue ou coûteuse) sans citer de montant, puis montre pourquoi ce produit est plus simple'],
-    ['conseil', '🤝 Conseil d’un proche', 'quelqu’un parle à un ami ou un parent, comme un conseil sincère'],
-    ['dialogue', '👥 Dialogue à 2 voix', 'un court dialogue entre deux personnes ; écris « Voix 1 : » et « Voix 2 : » au début de chaque réplique'],
-    ['secret', '🔍 Curiosité / secret', 'éveille la curiosité avec une découverte simple que peu de gens connaissent, puis révèle le produit'],
-    ['direct', '⚡ Direct et rapide', 'phrases très courtes et percutantes, rythme rapide, un bénéfice par phrase'],
-    ['mix', '🎲 3 types différents (l’IA choisit)', '']
+  /* ---------- Voix off : 1) étude marketing (diagnostic, marché, angles notés) 2) l'angle 3) le type de vidéo 4) la durée 5) 3 scripts ---------- */
+  const VO_VIDEOS = [
+    ['voixoff', 'Voix off + images', 'Une voix raconte pendant que des images défilent.'],
+    ['medecin', 'Face caméra : un professionnel de santé explique', 'Une personne du domaine de la santé parle face caméra.'],
+    ['temcam', 'Témoignage face caméra (mise en scène)', 'Une personne raconte « son » vécu face caméra.'],
+    ['temvo', 'Témoignage en voix off (mise en scène)', 'On entend la personne raconter, sans la voir.']
   ];
-  const VO_DUREES = [['15', '⏱ 15 secondes'], ['30', '⏱ 30 secondes'], ['45', '⏱ 45 secondes'], ['60', '⏱ 1 minute'], ['90', '⏱ 1 minute 30']];
+  const VO_DUREES = [['30', '30 secondes'], ['45', '45 secondes'], ['60', '1 minute'], ['90', '1 minute 30'], ['120', '2 minutes']];
   // Fins de script : ajoutées par l'application (texte exact), la réduction n'est pas mise à chaque fois
   const VO_FINS = ['Livraison gratuite partout, paiement à la livraison et une réduction de 40 pourcent aujourd’hui seulement.',
     'Livraison gratuite partout et paiement à la livraison.',
@@ -4412,95 +4418,185 @@ function nettoyerHtml(h){
   let VO_CADEAUX = null;
   async function cadeauDe(P){
     if (!VO_CADEAUX) { try { VO_CADEAUX = (await call({type: 'bonusListe'})).cadeaux || []; } catch(e){ VO_CADEAUX = []; } }
-    const n = s => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').replace(/\s+(tg|bj|ci)$/, '').trim();
+    const n = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').replace(/\s+(tg|bj|ci)$/, '').trim();
     const c = VO_CADEAUX.find(x => { const m = String(x.produit || '').match(/^\/(.+)\/(\w*)$/); return m ? new RegExp(m[1], m[2]).test(P.nom) : n(x.produit) === n(P.nom); });
     return c && c.titre ? c.titre : '';
   }
-  async function voixOff(P, type, duree){
-    type = type || await menuListe(vignette(P.photos[0]), 'Quel type de voix off ?', VO_TYPES.map(([k, l]) => [k, l]));
-    if (!type) return;
-    duree = duree || await menuListe(vignette(P.photos[0]), 'Quelle durée ?', VO_DUREES);
-    if (!duree) return;
-    const sec = +duree, cible = Math.round(sec * VO_MOTS_SEC);
+  // Qui on vise : la personne, sa culture, sa langue (commun à l'étude et aux scripts)
+  const VO_PUBLIC = 'TON PUBLIC : des familles de l’ouest du golfe de Guinée (même culture, même français parlé), des gens simples, travailleurs et occupés (commerçants du marché, mamans qui tiennent la maison, fonctionnaires, conducteurs de moto-taxi, artisans, élèves et étudiants, parents âgés aidés par leurs enfants). ' +
+    '99 % d’entre eux sont sur Facebook et TikTok pour se détendre, pas pour acheter : seule une vidéo qui décrit EXACTEMENT ce qu’ils ressentent les arrête. Ils se méfient des arnaques en ligne (le paiement à la livraison les rassure), écoutent les proches, le quartier, l’église ou la mosquée ; la famille, la dignité, la foi et le regard des autres comptent énormément ; ' +
+    'beaucoup ont déjà essayé tisanes, décoctions, comprimés de la pharmacie ou remèdes « du vieux » sans résultat durable ; la chaleur, les longues journées debout, la moto, les marches et les travaux pénibles font partie du quotidien ; ils détestent perdre la face et dépendre des autres. ' +
+    'LANGUE : le français parlé dans la rue, simple, chaleureux, imagé (« vraiment », « depuis là », « on dirait que », « ça fatigue »), sans caricature ni argot d’un seul pays, aucune phrase de manuel. ';
+  const VO_REGLES = 'RÈGLES ABSOLUES : AUCUN prix, montant ni les mots prix, tarif, coûte, francs, promo, réduction ; AUCUN pays, AUCUNE ville, aucune nationalité ; seulement des faits présents dans la page produit ; jamais « guérir », « guérison », « miracle », « garanti » : on parle de soulager, aider, retrouver ; ' +
+    'les conséquences citées sont VRAIES et sans exagération (ce qui arrive réellement quand on laisse le problème) ; pas de nom propre, pas de chiffre inventé, pas de faux diplôme. ';
+
+  function voEtudeHTML(E){
+    const D = E.diagnostic || {}, M = E.marche || {}, li = a => (Array.isArray(a) ? a : []).map(x => `<li>${esc(typeof x === 'string' ? x : x.delai ? x.delai + ' : ' + (x.texte || '') : Object.values(x).filter(v => typeof v === 'string').join(' → '))}</li>`).join('');
+    const part = v => typeof v === 'number' && v <= 1 ? Math.round(v * 100) + ' %' : String(v || '');
+    const C = M.conscience || {}, S = M.sophistication || {};
+    return `<details class="voetude" open><summary>Diagnostic du problème</summary>
+        ${D.probleme ? `<p class="vop"><b>Le problème :</b> ${esc(D.probleme)}</p>` : ''}
+        ${D.explication ? `<p class="vop"><b>Pourquoi il arrive (expliqué simplement) :</b> ${esc(D.explication)}</p>` : ''}
+        ${(D.signes || []).length ? `<p class="vop"><b>Ce que la personne ressent :</b></p><ul class="vol">${li(D.signes)}</ul>` : ''}
+        ${(D.consequences || []).length ? `<p class="vop"><b>Si elle ne fait rien :</b></p><ul class="vol">${li(D.consequences)}</ul>` : ''}
+        ${D.pourquoiProduit ? `<p class="vop"><b>Pourquoi ce produit :</b> ${esc(D.pourquoiProduit)}</p>` : ''}
+        ${D.pourquoiMaintenant ? `<p class="vop"><b>Pourquoi maintenant :</b> ${esc(D.pourquoiMaintenant)}</p>` : ''}</details>
+      <details class="voetude"><summary>Étude du marché</summary>
+        ${C.niveau ? `<p class="vop"><b>Niveau de conscience du marché : ${esc(C.niveau)}/5 · ${esc(C.nom || '')}</b><br>${esc(C.explication || '')}</p>` : ''}
+        ${S.niveau ? `<p class="vop"><b>Niveau de saturation (sophistication) : ${esc(S.niveau)}/5</b><br>${esc(S.explication || '')}</p>` : ''}
+        ${(M.segments || []).map(s => `<div class="voseg"><b>${esc(s.nom)}</b>${s.part ? ` <span>${esc(part(s.part))}</span>` : ''}<div>${esc(s.etat || '')}</div>${s.levier ? `<div><b>Comment le convaincre :</b> ${esc(s.levier)}</div>` : ''}</div>`).join('')}
+        ${(M.objections || []).length ? `<p class="vop"><b>Ce qui le fait hésiter :</b></p><ul class="vol">${li(M.objections)}</ul>` : ''}</details>`;
+  }
+
+  async function voixOff(P){
+    const cadeau = await cadeauDe(P);
+    const o = feuille(`<h2>Voix off · ${esc(P.nom)}</h2><p class="sub" id="voSub">Étape 1 sur 4 · Étude marketing du produit</p><div id="voZ"></div><button class="btn ghost" data-x style="margin-top:14px">Fermer</button>`);
+    o.querySelector('[data-x]').onclick = () => o.remove();
+    const Z = o.querySelector('#voZ'), sub = t => { o.querySelector('#voSub').textContent = t; };
+    const attente = m => { Z.innerHTML = `<div class="iaload"><span class="spin"></span> <span>${m}</span></div>`; };
     const contexte = ['Nom : ' + P.nom, P.accroche && 'Accroche : ' + P.accroche,
       P.avantages && 'Avantages : ' + voTexte(P.avantages).split('\n').join(' ; '),
-      P.description && 'Page produit :\n' + voTexte(P.description).slice(0, 7000),
+      P.description && 'Page produit :\n' + voTexte(P.description).slice(0, 9000),
       P.boite && 'Dans la boîte : ' + voTexte(P.boite).split('\n').join(' ; '),
-      P.faq && 'Questions des clients : ' + voTexte(P.faq).split('\n').join(' | ')].filter(Boolean).join('\n');
-    const T = VO_TYPES.find(x => x[0] === type);
-    const cadeau = await cadeauDe(P);
-    const o = feuille(`<h2>🎙️ Voix off · ${esc(P.nom)}</h2><p class="sub">${esc(T[1])} · ${sec < 60 ? sec + ' secondes' : sec === 60 ? '1 minute' : '1 minute 30'}</p><div id="voZ"></div><button class="btn ghost" data-x style="margin-top:14px">Fermer</button>`);
-    o.querySelector('[data-x]').onclick = () => o.remove();
-    const Z = o.querySelector('#voZ');
-    const attente = m => { Z.innerHTML = `<div class="iaload"><span class="spin"></span> <span>${m}</span></div>`; };
-    let etude = '';
-    try {
-      attente('L’IA étudie le produit puis écrit 3 scripts… (30 à 60 secondes)');
-      const lent = setTimeout(() => { if (o.isConnected) attente('Encore quelques secondes, l’IA termine les scripts…'); }, 35000);
-      const consigne = 'RÔLE : tu es le meilleur copywriter de voix off publicitaires pour les vidéos Facebook et TikTok vendues en paiement à la livraison auprès des familles de l’ouest du golfe de Guinée (même culture, même français parlé, mêmes réalités). Tes scripts font commander, puis font ACCEPTER le colis quand le livreur appelle. ' +
-        'Tu maîtrises la réponse directe (Eugene Schwartz, Gary Halbert) : les gens achètent une ÉMOTION puis la justifient. ' +
-        'TON PUBLIC, à connaître par cœur : des gens simples, travailleurs et occupés (commerçants du marché, mamans qui tiennent la maison, fonctionnaires, conducteurs de moto-taxi, artisans, élèves et étudiants, parents âgés aidés par leurs enfants) ; ils scrollent vite et se méfient des arnaques en ligne (le paiement à la livraison les rassure) ; ils écoutent les conseils des proches, du quartier, de l’église ou de la mosquée ; la famille, la dignité, la foi et le regard des autres (belle-famille, voisins, collègues) comptent énormément ; ils ont souvent essayé tisanes, décoctions et remèdes « du vieux » sans résultat durable ; la chaleur, les longues journées debout, la moto, les marches, les travaux pénibles et la fatigue font partie du quotidien ; ils détestent perdre la face et dépendre des autres. ' +
-        'LANGUE : le français tel qu’on le parle dans la rue, simple, chaleureux, imagé, avec des tournures naturelles de chez nous (« vraiment », « depuis là », « on dirait que », « on vous a déjà dit que… ? », « ça fatigue »), sans caricature ni argot d’un seul pays ; aucune phrase de manuel scolaire. ' +
-        'MÉTHODE, en 3 temps, avant de répondre. ' +
-        'TEMPS 1, ÉTUDE (130 mots maximum, tirets) : la cible exacte (qui, âge, situation) ; sa douleur principale dite avec SES mots ; 3 scènes concrètes de SA journée (marché, maison, travail, route, église ou mosquée, famille) où elle souffre du problème ; ce qu’elle ressent au fond (honte, gêne, peur de dépendre des autres, peur du regard des autres, frustration, peur de vieillir…) ; ce qu’elle désire vraiment (le résultat émotionnel, pas le produit) ; ses 3 freins à l’achat (« encore une arnaque », « j’ai déjà tout essayé », « ce n’est pas pour moi ») et comment les lever SANS parler d’argent ; 5 angles d’attaque. ' +
-        'TEMPS 2, ÉCRITURE de 3 scripts IRRÉSISTIBLES et vraiment différents (angle, émotion et accroche différents). ' +
-        (type === 'mix' ? 'Chaque script utilise un style différent parmi : problème → solution, question choc, histoire vécue, avant / après, conseil d’un proche, curiosité. Indique le style dans "titre". '
-          : 'Style imposé pour les 3 : ' + T[1].replace(/^\S+\s/, '') + ' : ' + T[2] + '. ') +
-        'Chaque script suit ce chemin : ' +
-        '(a) ACCROCHE (2 à 3 secondes) qui arrête le pouce : une scène ultra précise où la personne se reconnaît, ou une question qui touche sa douleur, ou une phrase surprenante. Exemples de FORMES (ne pas copier) : « Vous aussi, vous… ? », « Si vous… ce message est pour vous. », « Le jour où… », « Personne ne vous dit que… ». ' +
-        '(b) AGITATION : un ou deux détails concrets et visuels du quotidien qui rendent le problème insupportable, et l’émotion qui va avec. ' +
-        '(c) BASCULE : « jusqu’au jour où… » / « il existe une solution simple… » : le produit arrive comme l’évidence. ' +
-        '(d) BÉNÉFICES : 2 ou 3 résultats concrets qu’on voit, qu’on sent ou qu’on vit (transforme chaque caractéristique de la page en résultat pour la personne). ' +
-        '(e) PROJECTION : fais-la se voir juste après : ce qu’elle peut enfin refaire, ce que les autres remarquent, la fierté retrouvée. ' +
-        (cadeau ? '(e bis) LE CADEAU, juste avant l’appel à l’action, présenté comme un bonus qu’on veut tout de suite : une fois son colis livré, la personne reçoit EN CADEAU, directement sur son téléphone (par WhatsApp), le guide numérique « ' + cadeau + ' » (un guide pratique d’environ 50 pages en PDF, à lire et garder sur son téléphone). Dis clairement que c’est un guide numérique envoyé sur le téléphone APRÈS la livraison : jamais « livre », jamais « dans le colis », jamais « à la réception du colis », pour que personne ne s’attende à un livre papier. En une ou deux phrases, montre ce que ce guide va lui apporter dans SA vie (lien direct avec sa douleur), qu’il est réservé à ceux qui reçoivent leur colis, et qu’il est offert : il doit donner une raison de plus de commander MAINTENANT et de bien décrocher quand le livreur appelle. Exemple de tournure : « Et dès que votre colis est livré, on vous envoie sur WhatsApp, en cadeau, notre guide numérique… ». ' : '') +
-        '(f) URGENCE et APPEL À L’ACTION : une raison d’agir maintenant (ne plus perdre une journée de plus avec ce problème, le cadeau qui l’attend) puis un ordre court : « Commandez maintenant. » ' +
-        'STYLE : français parlé, chaleureux et direct, « vous », phrases de 4 à 12 mots, une idée par phrase, mots simples qu’on comprend à l’oreille, répétition du bénéfice principal, boucles de curiosité, aucune phrase molle. ' +
-        'TEMPS 3, RELECTURE impitoyable : réécris tout script qui ne respecte pas UNE de ces règles : ' +
-        '1) AUCUN prix, montant, chiffre d’argent, ni les mots prix, tarif, coûte, francs, pas cher, promo, réduction : la personne doit vouloir le produit sans penser à l’argent. ' +
-        '2) AUCUN pays, AUCUNE ville, aucune nationalité. ' +
-        '3) Seulement des faits présents dans la page produit ; pas de promesse de guérison ni de résultat garanti ; pas de faux témoignage avec un nom. ' +
-        '4) Aucun mot creux (révolutionnaire, incroyable, miracle, magique, unique au monde). ' +
-        '5) L’accroche donne-t-elle envie d’écouter la suite en moins de 3 secondes, pour CE public ? Sinon, réécris-la. Une personne d’ici se dirait-elle « c’est exactement moi » ? Sinon, ajoute une scène plus vraie. ' +
-        (cadeau ? '5 bis) Le cadeau « ' + cadeau + ' » (titre exact) est-il annoncé comme un guide NUMÉRIQUE envoyé sur WhatsApp après la livraison, désirable et lié à la douleur ? Aucune phrase ne doit laisser croire à un livre papier ou à un objet dans le colis. Sinon, corrige. ' : '') +
-        '6) Chaque script fait environ ' + Math.max(15, cible - 14) + ' mots (lu en ' + sec + ' secondes avec la phrase de fin). ' +
-        '7) N’écris PAS la fin (livraison, paiement, réduction) : elle est ajoutée automatiquement juste après ton « Commandez maintenant ». ' +
-        '8) Pas de didascalies ni de crochets, seulement le texte à lire' + (type === 'dialogue' ? ' (avec « Voix 1 : » et « Voix 2 : »)' : '') + '. ' +
-        'Réponds UNIQUEMENT en JSON valide, sans retour à la ligne dans les textes : {"etude":"…","scripts":[{"titre":"angle en 3 à 6 mots","texte":"le script"}]}';
-      let r;
-      const sature = e => /demand|overload|unavailable|ne répond pas|trop de temps/i.test(String(e && e.message || e));
+      P.faq && 'Questions des clients : ' + voTexte(P.faq).split('\n').join(' | '),
+      (P.avis || []).filter(a => a && a.texte).length && 'Avis de clients : ' + (P.avis || []).filter(a => a && a.texte).slice(0, 8).map(a => '« ' + String(a.texte).slice(0, 220) + ' »').join(' ')].filter(Boolean).join('\n');
+    const sature = e => /demand|overload|unavailable|ne répond pas|trop de temps/i.test(String(e && e.message || e));
+    // Appel à l'IA, avec un nouvel essai tout seul si Gemini est saturé
+    async function ia(consigne, msg){
+      attente(msg);
+      const lent = setTimeout(() => { if (o.isConnected) attente('Encore quelques secondes, l’IA termine…'); }, 45000);
       try {
-        try { r = await callIA({type: 'ia', action: 'ia', mode: 'texte', rapide: true, contexte, consigne}, 130000); }
+        let r;
+        try { r = await callIA({type: 'ia', action: 'ia', mode: 'texte', rapide: true, forcer: 'gemini', contexte, consigne}, 150000); if (r && r.ok === false) throw new Error(r.erreur || 'Gemini ne répond pas'); }
         catch(e){
-          // Gemini saturé : on attend un peu et on réessaie tout seul une fois
-          if (!sature(e) || !o.isConnected) throw e;
+          if (!o.isConnected) return null;
           attente('Gemini est très demandé en ce moment, nouvel essai dans 20 secondes…');
-          await new Promise(ok => setTimeout(ok, 20000)); if (!o.isConnected) return;
-          attente('Nouvel essai…');
-          try { r = await callIA({type: 'ia', action: 'ia', mode: 'texte', rapide: true, contexte, consigne}, 130000); }
-          catch(e2){ throw sature(e2) ? new Error(/Groq/.test(e2.message) ? 'Groq et Gemini sont tous les deux occupés en ce moment. Réessaie dans quelques minutes.' : 'Gemini est saturé en ce moment et Groq n’est pas encore branché. Ajoute ta clé Groq gratuite : Réglages → 🤖 Assistant IA → « IA de secours : Groq ».') : e2; }
+          await new Promise(ok => setTimeout(ok, 20000)); if (!o.isConnected) return null;
+          attente(msg);
+          try { r = await callIA({type: 'ia', action: 'ia', mode: 'texte', rapide: true, contexte, consigne}, 150000); }
+          catch(e2){ throw sature(e2) ? new Error(/Groq/.test(e2.message) ? 'Groq et Gemini sont tous les deux occupés en ce moment. Réessaie dans quelques minutes.' : 'Gemini est saturé en ce moment et Groq n’est pas encore branché. Ajoute ta clé Groq gratuite : Réglages → Assistant IA → « IA de secours : Groq ».') : e2; }
         }
+        if (r.sansCle){ Z.innerHTML = '<div class="iaerr">Branche d’abord ton assistant IA gratuit : Réglages → Assistant IA.</div>'; return null; }
+        const J = voJSON(r.texte);
+        if (!J) throw new Error(String(r.texte || '').trim() && !/^\s*[{`]/.test(r.texte) ? r.texte : 'L’IA a mal répondu. Réessaie.');
+        return J;
       } finally { clearTimeout(lent); }
-      if (r.sansCle){ Z.innerHTML = '<div class="iaerr">Branche d’abord ton assistant IA gratuit : Réglages → 🤖 Assistant IA.</div>'; return; }
-      let J = voJSON(r.texte);
-      if (!J || !Array.isArray(J.scripts)) throw new Error(String(r.texte || '').trim() && !/^\s*[{`]/.test(r.texte) ? r.texte : 'L’IA a mal répondu. Réessaie.');
-      const E = J.etude; etude = (typeof E === 'string' ? E : Array.isArray(E) ? E.map(x => typeof x === 'string' ? '- ' + x : JSON.stringify(x)).join('\n') : E && typeof E === 'object' ? Object.entries(E).map(([k, v]) => k + ' : ' + (Array.isArray(v) ? v.join(' ; ') : v)).join('\n') : '').trim();
+    }
+
+    /* ----- Étape 1 : étude marketing (gardée 30 jours pour ce produit) ----- */
+    const cleE = 'vo_etude_' + P.id;
+    async function etude(refaire){
+      let E = null;
+      try { const c = JSON.parse(S.get(cleE) || 'null'); if (!refaire && c && Date.now() - c.t < 30 * 864e5 && c.nom === P.nom) E = c.e; } catch(x){}
+      if (!E){
+        const consigne = 'RÔLE : tu es à la fois un médecin qui sait expliquer à un enfant de 10 ans et le meilleur stratège en marketing de réponse directe (Eugene Schwartz : niveaux de conscience et de sophistication du marché) pour les vidéos Facebook et TikTok vendues en paiement à la livraison. Ton seul but : que la vidéo fasse vendre. ' + VO_PUBLIC +
+          'TA MÉTHODE est celle d’une consultation médicale : le patient décrit ce qu’il ressent, le médecin reconnaît le problème, explique d’où il vient, ce qui arrive si on ne fait rien, puis donne le traitement ; à la fin, le patient peut lui-même expliquer pourquoi il a ce problème et pourquoi il doit prendre ce produit. ' +
+          'Étudie TOUTE la page produit ci-dessus puis réponds en 3 parties. ' +
+          'PARTIE 1, DIAGNOSTIC : "probleme" (le problème que le produit soulage, en une phrase avec les mots de la personne) ; "explication" (pourquoi on a ce problème, ce qui se passe dans le corps, en 4 à 6 phrases qu’un enfant de 10 ans comprend : AUCUN mot médical, AUCUN jargon, des images du quotidien, par exemple un mur qui perd son ciment) ; ' +
+          '"signes" (6 à 8 signes que la personne ressent vraiment au quotidien, très concrets, dits comme elle les dirait, ceux qui lui font penser « cette vidéo parle de moi ») ; "consequences" (4 ou 5 conséquences VRAIES si elle ne fait rien, de la plus proche à la plus lointaine, chacune {"delai":"dans quelques semaines|dans quelques mois|dans quelques années","texte":"…"}) ; ' +
+          '"pourquoiProduit" (comment le produit agit sur la cause, en 2 ou 3 phrases simples, sans promesse de guérison) ; "pourquoiMaintenant" (pourquoi chaque jour d’attente compte). ' +
+          'PARTIE 2, MARCHÉ : "conscience" {"niveau":1 à 5,"nom":"Inconscient du problème | Conscient du problème | Conscient des solutions | Conscient du produit | Très conscient","explication":"où en est la majorité de ce public et ce que ça impose à la vidéo"} ; "sophistication" {"niveau":1 à 5,"explication":"ce que ce public a déjà entendu et essayé, et donc ce qu’il faut lui dire de nouveau (un mécanisme, une explication) pour qu’il croie encore"} ; ' +
+          '"segments" : 3 groupes de cette cible avec leur part estimée : (a) LES DÉÇUS SCEPTIQUES qui savent qu’ils ont le problème, ont déjà essayé des choses qui n’ont pas marché et font très attention avant de payer encore ; (b) LES RÉSIGNÉS qui ont le problème mais vivent avec, ne cherchent pas de solution et ignorent où ça les mène ; (c) un troisième groupe pertinent pour ce produit ; chacun {"nom","part","etat","levier"} où "levier" dit précisément comment le faire passer à l’action (pour les déçus : pourquoi ce qu’ils ont essayé n’a pas marché et pourquoi ceci est différent ; pour les résignés : la peur juste et vraie de ce qui les attend) ; ' +
+          '"objections" : les 4 phrases qu’ils se disent pour ne pas commander, et la réponse à chacune (sans parler d’argent). ' +
+          'PARTIE 3, ANGLES : 6 angles marketing différents pour cette page, triés du meilleur au moins bon, chacun {"titre":"3 à 7 mots","note":note sur 10 (avec une décimale) de sa capacité à faire vendre auprès de CE public,"cible":"le segment visé","levier":"peur | soulagement | fierté | identité | curiosité | preuve | mécanisme nouveau","accroche":"une première phrase de vidéo qui arrête le pouce","pourquoi":"pourquoi cet angle marche ou non, en une phrase"}. Sois exigeant dans tes notes. ' +
+          VO_REGLES +
+          'Réponds UNIQUEMENT en JSON valide, sans retour à la ligne dans les textes : {"diagnostic":{"probleme":"","explication":"","signes":[],"consequences":[],"pourquoiProduit":"","pourquoiMaintenant":""},"marche":{"conscience":{},"sophistication":{},"segments":[],"objections":[]},"angles":[]}';
+        E = await ia(consigne, 'L’IA étudie toute la page produit : diagnostic, marché et angles marketing… (40 à 90 secondes)');
+        if (!E) return;
+        if (!Array.isArray(E.angles) || !E.angles.length) throw new Error('L’IA n’a pas donné d’angles. Réessaie.');
+        try { S.set(cleE, JSON.stringify({t: Date.now(), nom: P.nom, e: E})); } catch(x){}
+      }
+      E.angles = E.angles.filter(a => a && a.titre).sort((a, b) => (+b.note || 0) - (+a.note || 0)).slice(0, 6);
+      choixAngle(E);
+    }
+
+    /* ----- Étape 2 : l'angle (noté sur 10) ----- */
+    function choixAngle(E){
+      sub('Étape 2 sur 4 · Choisis l’angle marketing');
+      const note = n => String(Math.round((+n || 0) * 10) / 10).replace('.', ',');
+      Z.innerHTML = voEtudeHTML(E) +
+        `<div class="vott">Angles marketing de cette page</div><div class="voang">${E.angles.map((a, i) => `<button type="button" data-a="${i}">
+          <span class="vonote${+a.note >= 8 ? ' fort' : +a.note < 6 ? ' faible' : ''}">${note(a.note)}<small>/10</small></span>
+          <span class="votx"><b>${esc(a.titre)}</b>${a.cible ? `<small>Cible : ${esc(a.cible)}${a.levier ? ' · Levier : ' + esc(a.levier) : ''}</small>` : ''}${a.accroche ? `<i>« ${esc(a.accroche)} »</i>` : ''}${a.pourquoi ? `<small>${esc(a.pourquoi)}</small>` : ''}</span></button>`).join('')}</div>
+        <button class="btn blue2" id="voRefaire" style="margin-top:12px">Refaire l’étude du produit</button>`;
+      Z.querySelectorAll('[data-a]').forEach(b => b.onclick = () => choixVideo(E, E.angles[+b.dataset.a]));
+      Z.querySelector('#voRefaire').onclick = () => etude(true).catch(err);
+    }
+
+    /* ----- Étapes 3 et 4 : type de vidéo puis durée ----- */
+    async function choixVideo(E, A){
+      const video = await menuListe(vignette(P.photos[0]), 'Quel type de vidéo ?', VO_VIDEOS.map(([k, l]) => [k, l]));
+      if (!video) return;
+      const duree = await menuListe(vignette(P.photos[0]), 'Quelle durée ?', VO_DUREES);
+      if (!duree) return;
+      scripts(E, A, video, +duree).catch(err);
+    }
+
+    /* ----- Étape 5 : les 3 scripts ----- */
+    async function scripts(E, A, video, sec){
+      const V = VO_VIDEOS.find(x => x[0] === video), cible = Math.round(sec * VO_MOTS_SEC);
+      sub('Étape 4 sur 4 · ' + V[1] + ' · ' + (sec < 60 ? sec + ' secondes' : sec === 60 ? '1 minute' : sec === 90 ? '1 minute 30' : '2 minutes'));
+      const temoin = video === 'temcam' || video === 'temvo', images = video === 'voixoff' || video === 'temvo';
+      const QUI = {
+        voixoff: 'TYPE DE VIDÉO : voix off pendant que des images défilent. Le narrateur parle à la personne avec « vous », comme un proche bien informé. ',
+        medecin: 'TYPE DE VIDÉO : face caméra, c’est un professionnel de santé qui parle (« je ») avec calme, autorité et bienveillance, comme en consultation : « Chaque semaine, je reçois des personnes qui me disent… ». Il ne donne ni nom, ni diplôme, ni titre précis, il ne dit jamais « je suis docteur » ; il parle de ce qu’il voit et explique. Il s’adresse au spectateur avec « vous ». ',
+        temcam: 'TYPE DE VIDÉO : témoignage face caméra JOUÉ par un acteur (mise en scène). La personne parle à la première personne (« je »), avec une vraie émotion, des hésitations naturelles (« franchement… », « je vous jure… », « moi-même je n’y croyais pas »), des détails de sa vie qui sentent le vécu, sa méfiance du début (elle avait déjà essayé d’autres choses), le moment où elle a décidé, le soulagement progressif (jamais une guérison) et ce que ses proches ont remarqué. Pas de prénom, pas d’âge précis, pas de durée inventée exacte. Elle finit en conseillant à celui qui regarde de ne pas attendre comme elle. ',
+        temvo: 'TYPE DE VIDÉO : témoignage en voix off JOUÉ par un acteur (mise en scène) : on entend la personne raconter, on ne la voit pas. Première personne (« je »), ton intime, comme une confidence à une amie, avec une vraie émotion, des hésitations naturelles, des détails de vie qui sentent le vécu, sa méfiance du début, le moment où elle a décidé, le soulagement progressif (jamais une guérison). Pas de prénom, pas d’âge précis. Elle finit en conseillant de ne pas attendre comme elle. '
+      }[video];
+      const D = E.diagnostic || {}, M = E.marche || {};
+      const resume = 'ÉTUDE DÉJÀ FAITE (à utiliser) : problème : ' + (D.probleme || '') + ' | explication simple : ' + (D.explication || '') + ' | signes ressentis : ' + (D.signes || []).join(' ; ') +
+        ' | conséquences si rien : ' + (D.consequences || []).map(c => typeof c === 'string' ? c : (c.delai || '') + ' : ' + (c.texte || '')).join(' ; ') + ' | pourquoi le produit : ' + (D.pourquoiProduit || '') + ' | pourquoi maintenant : ' + (D.pourquoiMaintenant || '') +
+        ' | niveau de conscience du marché : ' + ((M.conscience || {}).niveau || '') + '/5 ' + ((M.conscience || {}).nom || '') + ' | sophistication : ' + ((M.sophistication || {}).niveau || '') + '/5 ' + ((M.sophistication || {}).explication || '') +
+        ' | segments : ' + (M.segments || []).map(s => s.nom + ' (' + (s.levier || '') + ')').join(' ; ') + ' | objections : ' + (M.objections || []).map(x => typeof x === 'string' ? x : JSON.stringify(x)).join(' ; ') + '. ';
+      const consigne = 'RÔLE : tu es le meilleur copywriter de vidéos publicitaires Facebook et TikTok vendues en paiement à la livraison ; tes vidéos font commander puis font ACCEPTER le colis quand le livreur appelle. Tu écris pour vendre, pas pour faire joli. ' + VO_PUBLIC + resume +
+        'ANGLE CHOISI (imposé) : « ' + A.titre + ' » · cible : ' + (A.cible || '') + ' · levier : ' + (A.levier || '') + ' · idée d’accroche : « ' + (A.accroche || '') + ' ». ' + QUI +
+        'Écris 3 scripts vraiment différents (accroche et scène différentes) qui suivent TOUS la MÉTHODE DE LA CONSULTATION, dans cet ordre : ' +
+        '(1) LES SIGNES (accroche, 3 secondes) : décris 2 ou 3 signes précis que la personne ressent, avec SES mots, dans une scène de SA journée, pour qu’elle se dise « c’est exactement moi ». ' +
+        '(2) LES QUESTIONS QUI CONFIRMENT : 1 ou 2 questions courtes sur d’autres signes associés (« Et le soir, vous sentez aussi… ? ») : elle répond oui dans sa tête. ' +
+        '(3) L’EXPLICATION : pourquoi elle a ça, en 2 à 4 phrases qu’un enfant de 10 ans comprend, avec une image du quotidien ; aucun mot médical. ' +
+        '(4) LE DANGER : ce qui arrive VRAIMENT si elle ne fait rien. Pour les résignés, fais naître une peur juste et concrète (sa vie, sa famille, son travail, dépendre des autres) ; pour les déçus, dis pourquoi ce qu’ils ont essayé n’a pas marché (ça ne touchait pas la cause). ' +
+        '(5) LE TRAITEMENT : le produit arrive comme la réponse logique à la cause expliquée : comment il agit, en mots simples, et ce qu’elle va sentir (soulagement, énergie, retrouver ce qu’elle aimait faire). ' +
+        '(6) LA CONFIANCE contre le scepticisme : elle voit son colis avant de payer, rien à risquer ; le produit est simple à prendre. ' +
+        (cadeau ? '(7) LE CADEAU : une fois son colis livré, on lui envoie sur WhatsApp, en cadeau, le guide numérique « ' + cadeau + ' » (un guide pratique en PDF à garder sur son téléphone, jamais « livre », jamais « dans le colis »), présenté comme ce qui va l’aider tout de suite, réservé à ceux qui reçoivent leur colis. ' : '') +
+        '(8) L’APPEL : une raison d’agir aujourd’hui puis « Commandez maintenant. » ' +
+        'STYLE : français parlé, phrases de 4 à 12 mots, une idée par phrase, mots simples à l’oreille, émotion et empathie réelles, aucune phrase molle, aucun mot creux (incroyable, révolutionnaire, magique). ' + VO_REGLES +
+        'Chaque script fait environ ' + Math.max(40, cible - 14) + ' mots au total (lu en ' + sec + ' secondes avec la phrase de fin), répartis à peu près : signes 15 %, questions 10 %, explication 20 %, danger 15 %, traitement 20 %, confiance 7 %, cadeau 8 %, appel 5 %. N’écris PAS la phrase de fin (livraison, paiement) : elle est ajoutée automatiquement après « Commandez maintenant ». Pas de crochets ni d’indications de jeu, seulement ce qui est dit. ' +
+        (video === 'medecin' ? 'La partie "signes" commence comme un soignant qui parle de ses patients (« Chaque semaine, des personnes viennent me voir et me disent… »). ' : '') +
+        (temoin ? 'Toutes les parties sont dites par la personne elle-même (« je »), comme un vrai récit : « signes » = ce qu’elle vivait, « questions » = ce qu’elle se demandait, « explication » = ce qu’on lui a expliqué et qu’elle a enfin compris, « danger » = ce qui lui faisait peur, « traitement » = comment elle a essayé malgré sa méfiance et ce qu’elle sent maintenant, « confiance » = elle a payé seulement après avoir vu son colis, « cadeau » = le guide reçu sur WhatsApp après la livraison, « appel » = son conseil à celui qui regarde, puis « Commandez maintenant ». ' : '') +
+        (images ? 'Pour chaque script, donne aussi "images" : 5 à 8 plans à montrer dans l’ordre (ce qu’on voit à l’écran pendant chaque partie), en une ligne chacun. ' : '') +
+        (video === 'medecin' || video === 'temcam' ? 'Pour chaque script, donne aussi "jeu" : 3 conseils courts pour la personne filmée (ton, regard, gestes, décor). ' : '') +
+        'RELIS chaque script et réécris-le s’il ne respecte pas une seule de ces règles. ' +
+        'Réponds UNIQUEMENT en JSON valide, sans retour à la ligne dans les textes : {"scripts":[{"titre":"3 à 6 mots","parties":{"signes":"…","questions":"…","explication":"…","danger":"…","traitement":"…","confiance":"…",' + (cadeau ? '"cadeau":"…",' : '') + '"appel":"… Commandez maintenant."}' + (images ? ',"images":["…"]' : '') + (video === 'medecin' || video === 'temcam' ? ',"jeu":["…"]' : '') + '}]}';
+      const J = await ia(consigne, 'L’IA écrit 3 scripts « ' + esc(A.titre) + ' »… (40 à 90 secondes)');
+      if (!J) return;
+      if (!Array.isArray(J.scripts)) throw new Error('L’IA a mal répondu. Réessaie.');
+      // Les parties de la méthode, recollées dans l'ordre
+      const ORDRE = ['signes', 'questions', 'explication', 'danger', 'traitement', 'confiance', 'cadeau', 'appel'];
+      J.scripts.forEach(x => { if (x && x.parties && typeof x.parties === 'object') x.texte = ORDRE.map(k => String(x.parties[k] || '').trim()).filter(Boolean).join(' '); });
       J.scripts = J.scripts.filter(x => x && String(x.texte || '').trim()).slice(0, 3);
       // Garde-fou : on retire les phrases qui parlent encore de prix ou de pays
       J.scripts.forEach(x => { if (voInterdits(x.texte).length) x.texte = (String(x.texte).match(/[^.!?…]+[.!?…]*\s*/g) || []).filter(ph => !voInterdits(ph).length).join('').trim(); });
       J.scripts = J.scripts.filter(x => x.texte);
       if (!J.scripts.length) throw new Error('L’IA n’a pas donné de script. Réessaie.');
       const cartes = J.scripts.map((x, i) => {
-        const fin = VO_FINS[i % VO_FINS.length], texte = String(x.texte).trim().replace(/\s*(Voix \d\s*:)/g, '\n$1').trim(), complet = texte + '\n' + fin;
-        return {titre: String(x.titre || 'Script ' + (i + 1)), texte, fin, complet, sec: Math.round(voMots(complet) / VO_MOTS_SEC)};
+        const fin = VO_FINS[i % VO_FINS.length], texte = String(x.texte).trim(), complet = texte + '\n' + fin;
+        return {titre: String(x.titre || 'Script ' + (i + 1)), texte, fin, complet, sec: Math.round(voMots(complet) / VO_MOTS_SEC),
+          images: (Array.isArray(x.images) ? x.images : []).map(String).filter(Boolean), jeu: (Array.isArray(x.jeu) ? x.jeu : []).map(String).filter(Boolean)};
       });
-      Z.innerHTML = (etude ? `<details class="voetude"><summary>📊 Étude du produit (touche pour voir)</summary><div style="margin-top:8px">${esc(etude).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>')}</div></details>` : '') +
+      Z.innerHTML = `<div class="voang1"><b>Angle :</b> ${esc(A.titre)}<br><b>Vidéo :</b> ${esc(V[1])}</div>` +
+        (temoin ? '<div class="vorec">Mise en scène jouée par un acteur : affiche la mention « Reconstitution » en petit à l’écran pendant toute la vidéo.</div>' : '') +
         cartes.map((c, i) => `<div class="vosc"><h4>Script ${i + 1} · ${esc(c.titre)}</h4><div class="vom">≈ ${c.sec} secondes · ${voMots(c.complet)} mots</div>
-          <div class="vot">${esc(c.texte)}<span class="vofin">${esc(c.fin)}</span></div><button class="btn blue2" data-c="${i}">📋 Copier ce script</button></div>`).join('') +
-        `<button class="btn blue" id="voSv" style="margin-top:14px">💾 Enregistrer dans le stockage</button><button class="btn blue2" id="voTout" style="margin-top:8px">📋 Copier les ${cartes.length} scripts</button><button class="btn blue2" id="voRe" style="margin-top:8px">🔁 Générer 3 autres scripts</button>`;
-      const copier = async t => { try { await navigator.clipboard.writeText(t); toast('📋 Copié'); } catch(x){ prompt('Copie ce texte :', t); } };
+          <div class="vot">${esc(c.texte)}<span class="vofin">${esc(c.fin)}</span></div>
+          ${c.images.length ? `<details class="voplus"><summary>Images à montrer</summary><ol>${c.images.map(x => `<li>${esc(x)}</li>`).join('')}</ol></details>` : ''}
+          ${c.jeu.length ? `<details class="voplus"><summary>Conseils pour la personne filmée</summary><ul>${c.jeu.map(x => `<li>${esc(x)}</li>`).join('')}</ul></details>` : ''}
+          <button class="btn blue2" data-c="${i}">Copier ce script</button></div>`).join('') +
+        `<button class="btn blue" id="voSv" style="margin-top:14px">Enregistrer dans le stockage</button><button class="btn blue2" id="voTout" style="margin-top:8px">Copier les ${cartes.length} scripts</button>
+         <button class="btn blue2" id="voRe" style="margin-top:8px">Générer 3 autres scripts (même angle)</button><button class="btn blue2" id="voAng" style="margin-top:8px">Choisir un autre angle</button>`;
+      const copier = async t => { try { await navigator.clipboard.writeText(t); toast('Copié'); } catch(x){ prompt('Copie ce texte :', t); } };
       Z.querySelectorAll('[data-c]').forEach(b => b.onclick = () => copier(cartes[+b.dataset.c].complet));
       Z.querySelector('#voTout').onclick = () => copier(cartes.map((c, i) => 'Script ' + (i + 1) + ' · ' + c.titre + '\n' + c.complet).join('\n\n'));
-      Z.querySelector('#voRe').onclick = () => { o.remove(); voixOff(P, type, duree); };
+      Z.querySelector('#voRe').onclick = () => scripts(E, A, video, sec).catch(err);
+      Z.querySelector('#voAng').onclick = () => choixAngle(E);
       const enregistres = new Set();
       Z.querySelector('#voSv').onclick = async e => {
         const bt = e.currentTarget;
@@ -4508,12 +4604,14 @@ function nettoyerHtml(h){
         if (!choix) return;
         const idx = choix === 'tous' ? cartes.map((_, i) => i) : [+choix];
         bt.disabled = true; bt.textContent = 'Enregistrement…';
-        try { await call({type: 'voix', action: 'sauver', voix: idx.map(i => ({produit: P.id, nom: P.nom, type: T[1].replace(/^\S+\s/, ''), sec: cartes[i].sec, titre: cartes[i].titre, texte: cartes[i].complet}))});
-          idx.forEach(i => enregistres.add(i)); toast(idx.length > 1 ? idx.length + ' voix off enregistrées' : 'Voix off enregistrée'); bt.textContent = '✓ Enregistré · enregistrer encore'; }
-        catch(x){ alert('Enregistrement impossible : ' + x.message); bt.textContent = '💾 Enregistrer dans le stockage'; }
+        try { await call({type: 'voix', action: 'sauver', voix: idx.map(i => ({produit: P.id, nom: P.nom, type: V[1] + ' · ' + A.titre, sec: cartes[i].sec, titre: cartes[i].titre, texte: cartes[i].complet}))});
+          idx.forEach(i => enregistres.add(i)); toast(idx.length > 1 ? idx.length + ' voix off enregistrées' : 'Voix off enregistrée'); bt.textContent = 'Enregistré · enregistrer encore'; }
+        catch(x){ alert('Enregistrement impossible : ' + x.message); bt.textContent = 'Enregistrer dans le stockage'; }
         bt.disabled = false;
       };
-    } catch(e){ if (o.isConnected) Z.innerHTML = `<div class="iaerr">${esc(e.message || String(e))}</div>`; }
+    }
+    const err = e => { if (o.isConnected) Z.innerHTML = `<div class="iaerr">${esc(e && e.message || String(e))}</div>`; };
+    etude(false).catch(err);
   }
 
   // Réduit la photo sur le téléphone avant l'envoi (rapide, même en 3G)
@@ -5574,7 +5672,7 @@ function nettoyerHtml(h){
     etoile: '<path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.8 6.6 19.7l1.1-6.1L3.2 9.4l6.1-.8z"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '150';
+  const VERSION_APP = '151';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
