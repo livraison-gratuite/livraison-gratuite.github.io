@@ -4428,7 +4428,8 @@ function nettoyerHtml(h){
     'beaucoup ont déjà essayé tisanes, décoctions, comprimés de la pharmacie ou remèdes « du vieux » sans résultat durable ; la chaleur, les longues journées debout, la moto, les marches et les travaux pénibles font partie du quotidien ; ils détestent perdre la face et dépendre des autres. ' +
     'LANGUE : le français parlé dans la rue, simple, chaleureux, imagé (« vraiment », « depuis là », « on dirait que », « ça fatigue »), sans caricature ni argot d’un seul pays, aucune phrase de manuel. ';
   const VO_REGLES = 'RÈGLES ABSOLUES : AUCUN prix, montant ni les mots prix, tarif, coûte, francs, promo, réduction ; AUCUN pays, AUCUNE ville, aucune nationalité ; seulement des faits présents dans la page produit ; jamais « guérir », « guérison », « miracle », « garanti » : on parle de soulager, aider, retrouver ; ' +
-    'les conséquences citées sont VRAIES et sans exagération (ce qui arrive réellement quand on laisse le problème) ; pas de nom propre, pas de chiffre inventé, pas de faux diplôme. ';
+    'les conséquences citées sont VRAIES et sans exagération (ce qui arrive réellement quand on laisse le problème) ; pas de nom propre, pas de chiffre inventé, pas de faux diplôme ; ' +
+    'un français PARFAIT : phrases complètes avec leurs articles (« Je me réveille la nuit avec des crampes », jamais « je me réveille nuit avec crampes »), aucune faute d’orthographe ni de grammaire, aucun mot coupé ou abrégé, aucun mot anglais. ';
 
   function voEtudeHTML(E){
     const D = E.diagnostic || {}, M = E.marche || {}, li = a => (Array.isArray(a) ? a : []).map(x => `<li>${esc(typeof x === 'string' ? x : x.delai ? x.delai + ' : ' + (x.texte || '') : Object.values(x).filter(v => typeof v === 'string').join(' → '))}</li>`).join('');
@@ -4467,10 +4468,11 @@ function nettoyerHtml(h){
       const lent = setTimeout(() => { if (o.isConnected) attente('Encore quelques secondes, l’IA termine…'); }, 45000);
       try {
         let r;
-        try { r = await callIA({type: 'ia', action: 'ia', mode: 'texte', rapide: true, forcer: 'gemini', contexte, consigne}, 150000); if (r && r.ok === false) throw new Error(r.erreur || 'Gemini ne répond pas'); }
+        // Groq d'abord (rapide), Gemini seulement en secours : c'est le serveur qui choisit dans cet ordre
+        try { r = await callIA({type: 'ia', action: 'ia', mode: 'texte', rapide: true, contexte, consigne}, 150000); if (r && r.ok === false) throw new Error(r.erreur || 'L’IA ne répond pas'); }
         catch(e){
           if (!o.isConnected) return null;
-          attente('Gemini est très demandé en ce moment, nouvel essai dans 20 secondes…');
+          attente('L’IA est très demandée en ce moment, nouvel essai dans 20 secondes…');
           await new Promise(ok => setTimeout(ok, 20000)); if (!o.isConnected) return null;
           attente(msg);
           try { r = await callIA({type: 'ia', action: 'ia', mode: 'texte', rapide: true, contexte, consigne}, 150000); }
@@ -5672,7 +5674,7 @@ function nettoyerHtml(h){
     etoile: '<path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.8 6.6 19.7l1.1-6.1L3.2 9.4l6.1-.8z"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '151';
+  const VERSION_APP = '152';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
