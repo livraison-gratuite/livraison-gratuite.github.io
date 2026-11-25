@@ -4429,6 +4429,7 @@ function nettoyerHtml(h){
     'LANGUE : le français parlé dans la rue, simple, chaleureux, imagé (« vraiment », « depuis là », « on dirait que », « ça fatigue »), sans caricature ni argot d’un seul pays, aucune phrase de manuel. ';
   const VO_REGLES = 'RÈGLES ABSOLUES : AUCUN prix, montant ni les mots prix, tarif, coûte, francs, promo, réduction ; AUCUN pays, AUCUNE ville, aucune nationalité ; seulement des faits présents dans la page produit ; jamais « guérir », « guérison », « miracle », « garanti » : on parle de soulager, aider, retrouver ; ' +
     'les conséquences citées sont VRAIES et sans exagération (ce qui arrive réellement quand on laisse le problème) ; pas de nom propre, pas de chiffre inventé, pas de faux diplôme ; ' +
+    'aucun résultat exagéré : jamais « disparu », « plus jamais », « en X jours » ou « en X semaines », seulement « ça va mieux », « je sens la différence », « je souffre beaucoup moins » ; ' +
     'un français PARFAIT : phrases complètes avec leurs articles (« Je me réveille la nuit avec des crampes », jamais « je me réveille nuit avec crampes »), aucune faute d’orthographe ni de grammaire, aucun mot coupé ou abrégé, aucun mot anglais. ';
 
   function voEtudeHTML(E){
@@ -4457,7 +4458,7 @@ function nettoyerHtml(h){
     const attente = m => { Z.innerHTML = `<div class="iaload"><span class="spin"></span> <span>${m}</span></div>`; };
     const contexte = ['Nom : ' + P.nom, P.accroche && 'Accroche : ' + P.accroche,
       P.avantages && 'Avantages : ' + voTexte(P.avantages).split('\n').join(' ; '),
-      P.description && 'Page produit :\n' + voTexte(P.description).slice(0, 9000),
+      P.description && 'Page produit :\n' + voTexte(P.description).slice(0, 5000),
       P.boite && 'Dans la boîte : ' + voTexte(P.boite).split('\n').join(' ; '),
       P.faq && 'Questions des clients : ' + voTexte(P.faq).split('\n').join(' | '),
       (P.avis || []).filter(a => a && a.texte).length && 'Avis de clients : ' + (P.avis || []).filter(a => a && a.texte).slice(0, 8).map(a => '« ' + String(a.texte).slice(0, 220) + ' »').join(' ')].filter(Boolean).join('\n');
@@ -4476,7 +4477,7 @@ function nettoyerHtml(h){
           await new Promise(ok => setTimeout(ok, 20000)); if (!o.isConnected) return null;
           attente(msg);
           try { r = await callIA({type: 'ia', action: 'ia', mode: 'texte', rapide: true, contexte, consigne}, 150000); }
-          catch(e2){ throw sature(e2) ? new Error(/Groq/.test(e2.message) ? 'Groq et Gemini sont tous les deux occupés en ce moment. Réessaie dans quelques minutes.' : 'Gemini est saturé en ce moment et Groq n’est pas encore branché. Ajoute ta clé Groq gratuite : Réglages → Assistant IA → « IA de secours : Groq ».') : e2; }
+          catch(e2){ throw new Error('Groq et Gemini n’ont pas pu répondre pour le moment. Réessaie dans une minute. (Détail : ' + String(e2 && e2.message || e2).replace(/^L’assistant ne répond pas pour le moment \(|\)\. Réessaie dans un instant\.$/g, '') + ')'); }
         }
         if (r.sansCle){ Z.innerHTML = '<div class="iaerr">Branche d’abord ton assistant IA gratuit : Réglages → Assistant IA.</div>'; return null; }
         const J = voJSON(r.texte);
@@ -4561,20 +4562,29 @@ function nettoyerHtml(h){
         '(6) LA CONFIANCE contre le scepticisme : elle voit son colis avant de payer, rien à risquer ; le produit est simple à prendre. ' +
         (cadeau ? '(7) LE CADEAU : une fois son colis livré, on lui envoie sur WhatsApp, en cadeau, le guide numérique « ' + cadeau + ' » (un guide pratique en PDF à garder sur son téléphone, jamais « livre », jamais « dans le colis »), présenté comme ce qui va l’aider tout de suite, réservé à ceux qui reçoivent leur colis. ' : '') +
         '(8) L’APPEL : une raison d’agir aujourd’hui puis « Commandez maintenant. » ' +
-        'STYLE : français parlé, phrases de 4 à 12 mots, une idée par phrase, mots simples à l’oreille, émotion et empathie réelles, aucune phrase molle, aucun mot creux (incroyable, révolutionnaire, magique). ' + VO_REGLES +
-        'Chaque script fait environ ' + Math.max(40, cible - 14) + ' mots au total (lu en ' + sec + ' secondes avec la phrase de fin), répartis à peu près : signes 15 %, questions 10 %, explication 20 %, danger 15 %, traitement 20 %, confiance 7 %, cadeau 8 %, appel 5 %. N’écris PAS la phrase de fin (livraison, paiement) : elle est ajoutée automatiquement après « Commandez maintenant ». Pas de crochets ni d’indications de jeu, seulement ce qui est dit. ' +
+        'CE QUI FAIT PAYER (sois impitoyable avec toi-même) : ' +
+        '- L’accroche est une SCÈNE précise au présent, avec « vous », en moins de 12 mots, qu’on voit et qu’on sent (« Vous tendez le bras pour lire un message… et les lettres dansent quand même. »). Jamais le nom du produit, jamais une question générale (« Vous avez mal ? »). ' +
+        '- Des mots qui se SENTENT : piquer, craquer, brûler, tirer, lourd, raide, comme du sable, comme une aiguille. Montre la gêne et la honte du quotidien (demander de l’aide, cacher sa douleur, refuser une sortie, le regard des autres). ' +
+        '- L’explication est UNE image du quotidien puis « Ce n’est pas votre faute. » : la personne comprend enfin pourquoi rien n’a marché. ' +
+        '- Le danger se passe dans SA vie : ne plus pouvoir travailler, dépendre de ses enfants, ne plus porter son petit-fils, rester assis pendant que les autres dansent. ' +
+        '- Le produit : UNE phrase sur comment il agit, puis surtout ce qu’elle va RESSENTIR. Pas de liste d’ingrédients ni de vitamines expliquées une par une. ' +
+        '- Une projection : « Imaginez demain matin… » : elle se voit déjà soulagée. ' +
+        '- Rythme parlé : phrases de 3 à 12 mots, des pauses (« … »), une petite tournure de chez nous de temps en temps (« hein ? », « vraiment »), jamais deux phrases qui commencent pareil. Aucun mot creux (incroyable, révolutionnaire, magique, solution idéale). ' +
+        'EXEMPLE DU NIVEAU ATTENDU (pour un autre produit : ne copie aucune phrase, garde seulement l’énergie) : « Vous tendez le bras pour lire un message… et les lettres dansent quand même. Au marché, vous demandez à l’enfant de lire le prix pour vous. Ça gêne, hein ? Et le soir, vos yeux piquent, comme du sable dedans. Ce n’est pas la fatigue. Avec l’âge, la petite loupe de votre œil devient dure, comme un vieux plastique : elle n’arrive plus à faire le point. Ce n’est pas votre faute. Mais chaque jour où vous forcez, les maux de tête s’installent, et un jour vous ne lisez plus vos papiers sans aide. Ces lunettes font le travail que votre œil ne fait plus, de près comme de loin. Imaginez demain matin : vous lisez votre message tout seul, du premier coup. Vous voyez votre colis avant de payer, rien à risquer. Et une fois livré, on vous envoie sur WhatsApp notre guide pour garder une bonne vue. Ne laissez plus personne lire à votre place. Commandez maintenant. » ' + VO_REGLES +
+        'Chaque script fait ' + Math.max(40, cible - 14) + ' mots au total, JAMAIS plus de ' + Math.max(45, cible - 6) + ' (lu en ' + sec + ' secondes avec la phrase de fin : compte tes mots), répartis à peu près : signes 15 %, questions 10 %, explication 20 %, danger 15 %, traitement 20 %, confiance 7 %, cadeau 8 %, appel 5 %. N’écris PAS la phrase de fin (livraison, paiement) : elle est ajoutée automatiquement après « Commandez maintenant ». Pas de crochets ni d’indications de jeu, seulement ce qui est dit. ' +
         (video === 'medecin' ? 'La partie "signes" commence comme un soignant qui parle de ses patients (« Chaque semaine, des personnes viennent me voir et me disent… »). ' : '') +
-        (temoin ? 'Toutes les parties sont dites par la personne elle-même (« je »), comme un vrai récit : « signes » = ce qu’elle vivait, « questions » = ce qu’elle se demandait, « explication » = ce qu’on lui a expliqué et qu’elle a enfin compris, « danger » = ce qui lui faisait peur, « traitement » = comment elle a essayé malgré sa méfiance et ce qu’elle sent maintenant, « confiance » = elle a payé seulement après avoir vu son colis, « cadeau » = le guide reçu sur WhatsApp après la livraison, « appel » = son conseil à celui qui regarde, puis « Commandez maintenant ». ' : '') +
+        (temoin ? 'Toutes les parties sont dites par la personne elle-même (« je »), comme un vrai récit : « signes » = ce qu’elle vivait, « questions » = 1 ou 2 questions qu’elle POSE à celui qui regarde (« Et vous, le soir, vos pieds piquent aussi ? »), « explication » = ce qu’on lui a expliqué et qu’elle a enfin compris, « danger » = ce qui lui faisait peur, « traitement » = comment elle a essayé malgré sa méfiance et ce qu’elle sent maintenant, « confiance » = elle a payé seulement après avoir vu son colis, « cadeau » = le guide reçu sur WhatsApp après la livraison, « appel » = son conseil à celui qui regarde, puis « Commandez maintenant ». ' : '') +
         (images ? 'Pour chaque script, donne aussi "images" : 5 à 8 plans à montrer dans l’ordre (ce qu’on voit à l’écran pendant chaque partie), en une ligne chacun. ' : '') +
         (video === 'medecin' || video === 'temcam' ? 'Pour chaque script, donne aussi "jeu" : 3 conseils courts pour la personne filmée (ton, regard, gestes, décor). ' : '') +
-        'RELIS chaque script et réécris-le s’il ne respecte pas une seule de ces règles. ' +
-        'Réponds UNIQUEMENT en JSON valide, sans retour à la ligne dans les textes : {"scripts":[{"titre":"3 à 6 mots","parties":{"signes":"…","questions":"…","explication":"…","danger":"…","traitement":"…","confiance":"…",' + (cadeau ? '"cadeau":"…",' : '') + '"appel":"… Commandez maintenant."}' + (images ? ',"images":["…"]' : '') + (video === 'medecin' || video === 'temcam' ? ',"jeu":["…"]' : '') + '}]}';
+        'Avant de répondre, RELIS chaque script comme une maman fatiguée qui scrolle le soir : si une seule phrase est plate, générique ou ressemble à une notice, réécris-la. ' +
+        'Réponds UNIQUEMENT en JSON valide, sans retour à la ligne dans les textes : {"scripts":[{"titre":"3 à 6 mots","parties":{"signes":"…","questions":"…","explication":"…","danger":"…","traitement":"…","confiance":"…",' + (cadeau ? '"cadeau":"…",' : '') + '"appel":"une seule raison d’agir aujourd’hui, puis Commandez maintenant. (une seule fois)"}' + (images ? ',"images":["…"]' : '') + (video === 'medecin' || video === 'temcam' ? ',"jeu":["…"]' : '') + '}]}';
       const J = await ia(consigne, 'L’IA écrit 3 scripts « ' + esc(A.titre) + ' »… (40 à 90 secondes)');
       if (!J) return;
       if (!Array.isArray(J.scripts)) throw new Error('L’IA a mal répondu. Réessaie.');
       // Les parties de la méthode, recollées dans l'ordre
       const ORDRE = ['signes', 'questions', 'explication', 'danger', 'traitement', 'confiance', 'cadeau', 'appel'];
-      J.scripts.forEach(x => { if (x && x.parties && typeof x.parties === 'object') x.texte = ORDRE.map(k => String(x.parties[k] || '').trim()).filter(Boolean).join(' '); });
+      J.scripts.forEach(x => { if (x && x.parties && typeof x.parties === 'object') x.texte = ORDRE.map(k => String(x.parties[k] || '').trim()).filter(Boolean).join(' ');
+        if (x && x.texte) x.texte = String(x.texte).replace(/\s*(commandez (dès )?maintenant[.!]?\s*)+$/i, '').replace(/[,;:\s]+$/, '').replace(/([^.!?…])$/, '$1.') + ' Commandez maintenant.'; });
       J.scripts = J.scripts.filter(x => x && String(x.texte || '').trim()).slice(0, 3);
       // Garde-fou : on retire les phrases qui parlent encore de prix ou de pays
       J.scripts.forEach(x => { if (voInterdits(x.texte).length) x.texte = (String(x.texte).match(/[^.!?…]+[.!?…]*\s*/g) || []).filter(ph => !voInterdits(ph).length).join('').trim(); });
@@ -5674,7 +5684,7 @@ function nettoyerHtml(h){
     etoile: '<path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.8 6.6 19.7l1.1-6.1L3.2 9.4l6.1-.8z"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '152';
+  const VERSION_APP = '153';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
