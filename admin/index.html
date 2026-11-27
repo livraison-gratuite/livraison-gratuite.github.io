@@ -4437,8 +4437,8 @@ function nettoyerHtml(h){
     try { return JSON.parse(t.slice(a, b + 1)); } catch(e){}
     try { return JSON.parse(t.slice(a, b + 1).replace(/\r?\n/g, ' ')); } catch(e){}
     // Réponse coupée : on récupère les scripts complets qu'elle contient
-    const k = t.indexOf('"scripts"'); if (k < 0) return null;
-    const ok = [], s = t.slice(t.indexOf('[', k) + 1).replace(/\r?\n/g, ' ');
+    const cle = t.indexOf('"scripts"') >= 0 ? 'scripts' : 'scenes', k = t.indexOf('"' + cle + '"');
+    const ok = [], s = k < 0 ? '' : t.slice(t.indexOf('[', k) + 1).replace(/\r?\n/g, ' ');
     let pr = 0, deb = -1, ch = false, esc2 = false;
     for (let i = 0; i < s.length; i++){
       const c = s[i];
@@ -4448,7 +4448,9 @@ function nettoyerHtml(h){
       else if (c === '}' && pr){ pr--; if (!pr && deb >= 0){ try { ok.push(JSON.parse(s.slice(deb, i + 1))); } catch(e){} deb = -1; } }
       else if (c === ']' && !pr) break;
     }
-    return ok.length ? {scripts: ok} : null;
+    const R = {[cle]: ok};
+    ['genre', 'personnage', 'decor'].forEach(c => { const m = t.match(new RegExp('"' + c + '"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"')); if (m) try { R[c] = JSON.parse('"' + m[1] + '"'); } catch(e){} });
+    return ok.length || R.personnage ? R : null;
   }
   // Cadeau offert après la livraison (guide PDF du produit) : la voix off l'annonce pour faire commander et accepter le colis
   let VO_CADEAUX = null;
@@ -4500,20 +4502,20 @@ function nettoyerHtml(h){
       (P.avis || []).filter(a => a && a.texte).length && 'Avis de clients : ' + (P.avis || []).filter(a => a && a.texte).slice(0, 8).map(a => '« ' + String(a.texte).slice(0, 220) + ' »').join(' ')].filter(Boolean).join('\n');
     const sature = e => /demand|overload|unavailable|ne répond pas|trop de temps/i.test(String(e && e.message || e));
     // Appel à l'IA, avec un nouvel essai tout seul si Gemini est saturé
-    async function ia(consigne, msg, cible){
+    async function ia(consigne, msg, cible, sansCtx){
       const attente = m => { (cible || Z).innerHTML = `<div class="iaload"><span class="spin"></span> <span>${m}</span></div>`; };
       attente(msg);
       const lent = setTimeout(() => { if (o.isConnected) attente('Encore quelques secondes, l’IA termine…'); }, 45000);
       try {
         let r;
         // Groq d'abord (rapide), Gemini seulement en secours : c'est le serveur qui choisit dans cet ordre
-        try { r = await callIA({type: 'ia', action: 'ia', mode: 'texte', rapide: true, contexte, consigne}, 150000); if (r && r.ok === false) throw new Error(r.erreur || 'L’IA ne répond pas'); }
+        try { r = await callIA({type: 'ia', action: 'ia', mode: 'texte', rapide: true, contexte: sansCtx ? '' : contexte, consigne}, 150000); if (r && r.ok === false) throw new Error(r.erreur || 'L’IA ne répond pas'); }
         catch(e){
           if (!o.isConnected) return null;
           attente('L’IA est très demandée en ce moment, nouvel essai dans 20 secondes…');
           await new Promise(ok => setTimeout(ok, 20000)); if (!o.isConnected) return null;
           attente(msg);
-          try { r = await callIA({type: 'ia', action: 'ia', mode: 'texte', rapide: true, contexte, consigne}, 150000); }
+          try { r = await callIA({type: 'ia', action: 'ia', mode: 'texte', rapide: true, contexte: sansCtx ? '' : contexte, consigne}, 150000); }
           catch(e2){ throw new Error('Groq et Gemini n’ont pas pu répondre pour le moment. Réessaie dans une minute. (Détail : ' + String(e2 && e2.message || e2).replace(/^L’assistant ne répond pas pour le moment \(|\)\. Réessaie dans un instant\.$/g, '') + ')'); }
         }
         if (r.sansCle){ (cible || Z).innerHTML = '<div class="iaerr">Branche d’abord ton assistant IA gratuit : Réglages → Assistant IA.</div>'; return null; }
@@ -4672,22 +4674,36 @@ function nettoyerHtml(h){
         const morceaux = voDecouper(c.complet, 22);
         const parle = video === 'medecin' || video === 'temcam';
         F.innerHTML = `<div class="iaload"><span class="spin"></span> <span>L’IA prépare ${morceaux.length} scènes hyperréalistes…</span></div>`; b.disabled = true;
-        const consigne = 'RÔLE : tu es un réalisateur de publicités vidéo hyperréalistes pour Facebook et TikTok, et tu écris les prompts pour Google Flow (Veo), qui génère des scènes de 8 secondes. ' +
-          'TYPE DE VIDÉO : ' + V[1] + '. ' + (parle ? 'Une seule et même personne parle face caméra dans toutes les scènes. ' : 'On entend une voix off pendant que des images réelles défilent. ') +
-          'Le texte est déjà découpé en ' + morceaux.length + ' morceaux, un par scène (ne change AUCUN mot, ne les recopie pas) : ' + morceaux.map((m, k) => '[' + (k + 1) + '] « ' + m + ' »').join(' ') + ' ' +
-          'Décris d’abord UNE fois le personnage et le décor, avec assez de précision pour qu’il soit identique dans toutes les scènes : genre, âge apparent, peau, visage, coiffure ou foulard, tenue précise (couleurs, motifs, pagne, chemise…), un décor du quotidien d’Afrique de l’Ouest francophone (cour, salon, boutique, marché, cabinet simple…), la lumière. ' +
-          (video === 'medecin' ? 'Le personnage est un professionnel de santé en blouse blanche, sans badge ni nom visible. ' : '') +
-          'Puis pour CHAQUE morceau, dans l’ordre : "plan" (cadrage et mouvement de caméra : plan rapproché, gros plan sur le visage, léger travelling avant…) ; ' +
-          (parle ? '"gestes" : ce que la personne FAIT exactement pendant qu’elle dit ce morceau, synchronisé avec les mots : mains, posture, regard, expressions du visage, objets touchés (elle se masse le genou quand elle parle de douleur, pose la main sur la poitrine, montre la boîte du produit, hoche la tête, sourit…), au présent, commençant par un verbe (« se penche vers la caméra, pose la main sur son genou droit et grimace légèrement ») ; ' :
-            '"gestes" : ce qu’on VOIT à l’écran pendant ce morceau, une action réelle et précise qui illustre exactement les mots (une personne se lève avec peine, se masse le dos, monte un escalier, ouvre son colis…), au présent ; ') +
-          '"ton" : l’émotion de la voix en 2 à 4 mots. ' +
-          'Tout doit être crédible et naturel, comme filmé au smartphone par un vrai client : pas de mise en scène de studio, pas de prix, aucun texte à l’écran. ' +
-          'Réponds UNIQUEMENT en JSON valide, sans retour à la ligne dans les textes : {"genre":"femme|homme","personnage":"…","decor":"…","scenes":[{"plan":"…","gestes":"…","ton":"…"}]} avec exactement ' + morceaux.length + ' scènes.';
+        // Consigne pour une série de morceaux (avec ou sans personnage déjà fixé)
+        const cons = (debut, liste, P0) => 'RÔLE : tu es un réalisateur de publicités vidéo hyperréalistes pour Facebook et TikTok, et tu écris les prompts pour Google Flow (Veo), qui génère des scènes de 8 secondes. ' +
+          'PRODUIT : ' + P.nom + '. TYPE DE VIDÉO : ' + V[1] + '. ' + (parle ? 'Une seule et même personne parle face caméra dans toutes les scènes. ' : 'On entend une voix off pendant que des images réelles défilent. ') +
+          'Voici les morceaux du texte, un par scène (ne change AUCUN mot, ne les recopie pas) : ' + liste.map((m, k) => '[' + (debut + k + 1) + '] « ' + m + ' »').join(' ') + ' ' +
+          (P0 ? 'PERSONNAGE ET DÉCOR DÉJÀ FIXÉS (ne les redécris pas, garde-les en tête) : ' + P0.personnage + ' ' + P0.decor + ' ' :
+            'Décris d’abord UNE fois le personnage et le décor, assez précisément pour qu’ils soient identiques dans toutes les scènes (50 mots maximum chacun) : genre, âge apparent, peau, visage, coiffure ou foulard, tenue précise (couleurs, motifs, pagne, chemise…), un décor du quotidien d’Afrique de l’Ouest francophone (cour, salon, boutique, marché, cabinet simple…), la lumière. ' +
+            (video === 'medecin' ? 'Le personnage est un professionnel de santé en blouse blanche, sans badge ni nom visible. ' : '')) +
+          'Pour CHAQUE morceau, dans l’ordre : "plan" (cadrage et mouvement de caméra, 10 mots maximum) ; ' +
+          (parle ? '"gestes" : ce que la personne FAIT exactement pendant qu’elle dit ce morceau, synchronisé avec les mots (mains, posture, regard, expression du visage, objet touché : elle se masse le genou quand elle parle de douleur, pose la main sur la poitrine, montre la boîte du produit, hoche la tête, sourit…), au présent, 30 mots maximum, en commençant par un verbe ; ' :
+            '"gestes" : ce qu’on VOIT à l’écran pendant ce morceau, une action réelle et précise qui illustre exactement les mots, au présent, 30 mots maximum ; ') +
+          '"ton" : l’émotion de la voix en 2 à 4 mots. Tout est crédible et naturel, comme filmé au smartphone par un vrai client ; aucun prix, aucun texte à l’écran. ' +
+          'Réponds UNIQUEMENT en JSON valide, sans retour à la ligne dans les textes : ' + (P0 ? '{"scenes":[{"plan":"…","gestes":"…","ton":"…"}]}' : '{"genre":"femme|homme","personnage":"…","decor":"…","scenes":[{"plan":"…","gestes":"…","ton":"…"}]}') + ' avec exactement ' + liste.length + ' scènes.';
         try {
-          const J = await ia(consigne, 'L’IA prépare ' + morceaux.length + ' scènes hyperréalistes… (20 à 60 secondes)', F);
-          if (!J) return;
-          const sc = Array.isArray(J.scenes) ? J.scenes : [];
-          if (!sc.length) throw new Error('L’IA a mal répondu. Réessaie.');
+          let J = null;
+          try { J = await ia(cons(0, morceaux, null), 'L’IA prépare ' + morceaux.length + ' scènes hyperréalistes… (20 à 60 secondes)', F, true); if (!J) return; }
+          catch(e){ if (!/mal répondu/.test(String(e && e.message))) throw e; }
+          // Réponse incomplète : on fixe le personnage puis on complète par séries de 5 scènes
+          if (!J || !J.personnage){
+            J = await ia(cons(0, morceaux.slice(0, 5), null), 'L’IA prépare les scènes 1 à ' + Math.min(5, morceaux.length) + ' sur ' + morceaux.length + '…', F, true); if (!J) return;
+            if (!J.personnage) throw new Error('L’IA a mal répondu. Réessaie.');
+          }
+          J.scenes = (Array.isArray(J.scenes) ? J.scenes : []).filter(s => s && s.gestes).slice(0, morceaux.length);
+          while (J.scenes.length < morceaux.length){
+            const d0 = J.scenes.length, lot = morceaux.slice(d0, d0 + 5);
+            const R = await ia(cons(d0, lot, J), 'L’IA prépare les scènes ' + (d0 + 1) + ' à ' + (d0 + lot.length) + ' sur ' + morceaux.length + '…', F, true); if (!R) return;
+            const plus = (Array.isArray(R.scenes) ? R.scenes : []).filter(s => s && s.gestes).slice(0, lot.length);
+            if (!plus.length) throw new Error('L’IA a mal répondu. Réessaie.');
+            J.scenes = J.scenes.concat(plus);
+          }
+          const sc = J.scenes;
           const elle = /femme/i.test(J.genre || '') ? 'Elle' : 'Il';
           const pt = s => String(s || '').trim().replace(/[.\s]+$/, ''), maj = s => s.charAt(0).toUpperCase() + s.slice(1);
           const ton = s => pt(s.ton) ? ' (ton : ' + pt(s.ton).toLowerCase() + ')' : '', dit = m => m.replace(/[,;:]$/, '…');
@@ -5778,7 +5794,7 @@ function nettoyerHtml(h){
     etoile: '<path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.8 6.6 19.7l1.1-6.1L3.2 9.4l6.1-.8z"/>'
   };
   const ic = n => IC(ICONES[n] || '');
-  const VERSION_APP = '155';
+  const VERSION_APP = '156';
   function settings(){
     const proprio = D.vendoo && D.vendoo.statut === 'proprietaire', abonne = VENDOO && D.vendoo && D.vendoo.statut !== 'proprietaire';
     const m = (id, icone, titre) => `<button class="mrow" data-mn="${id}">${ic(icone)}<span>${titre}</span></button>`;
